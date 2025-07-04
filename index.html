@@ -235,7 +235,7 @@
     <div class="container">
         <header class="header">
             <h1>📄 Receipt Scanner</h1>
-            <p>Snap, scan, and organize your receipts123</p>
+            <p>Snap, scan, and organize your receipts</p>
         </header>
 
         <main class="main-content">
@@ -343,21 +343,23 @@
         }
 
         function handleFile(file) {
+            console.log('File selected:', file.name, file.type, file.size);
+            
             if (!file.type.startsWith('image/')) {
                 showStatus('Please select an image file', 'error');
                 return;
             }
 
-            // Check for unsupported formats
-            const supportedFormats = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-            if (!supportedFormats.includes(file.type.toLowerCase())) {
-                showStatus(`Unsupported format: ${file.type}. Please use JPG, PNG, GIF, or WebP.`, 'error');
+            // Check for unsupported formats (but be more permissive)
+            const unsupportedFormats = ['image/heic', 'image/heif'];
+            if (unsupportedFormats.includes(file.type.toLowerCase())) {
+                showStatus(`HEIC format not supported. Please convert to JPG first.`, 'error');
                 return;
             }
 
-            // Check file size (max 10MB)
-            if (file.size > 10 * 1024 * 1024) {
-                showStatus('Image too large. Please use an image smaller than 10MB.', 'error');
+            // Increase file size limit to 15MB for high-res photos
+            if (file.size > 15 * 1024 * 1024) {
+                showStatus('Image too large. Please use an image smaller than 15MB.', 'error');
                 return;
             }
 
@@ -365,27 +367,32 @@
             const reader = new FileReader();
             
             reader.onload = (e) => {
+                console.log('FileReader completed, setting image source...');
                 const img = document.getElementById('previewImage');
+                
                 img.onload = () => {
-                    // Validate image loaded properly
-                    if (img.naturalWidth === 0 || img.naturalHeight === 0) {
-                        showStatus('Invalid image file. Please try a different image.', 'error');
-                        return;
-                    }
-                    console.log(`Image loaded: ${img.naturalWidth}x${img.naturalHeight}`);
+                    console.log(`Image loaded successfully: ${img.naturalWidth}x${img.naturalHeight}`);
+                    // Remove strict validation - any loaded image is fine
                     document.getElementById('uploadArea').style.display = 'none';
                     document.getElementById('previewArea').style.display = 'block';
+                    showStatus('Image loaded successfully!', 'success');
                 };
-                img.onerror = () => {
-                    showStatus('Failed to load image. Please try a different file.', 'error');
+                
+                img.onerror = (error) => {
+                    console.error('Image load error:', error);
+                    showStatus('Failed to display image. File may be corrupted.', 'error');
                 };
+                
+                console.log('Setting image src...');
                 img.src = e.target.result;
             };
             
-            reader.onerror = () => {
+            reader.onerror = (error) => {
+                console.error('FileReader error:', error);
                 showStatus('Failed to read image file', 'error');
             };
             
+            console.log('Starting FileReader...');
             reader.readAsDataURL(file);
         }
 
@@ -512,13 +519,8 @@
                     throw new Error('No image found to process');
                 }
 
-                // Check image dimensions
-                if (img.naturalWidth === 0 || img.naturalHeight === 0) {
-                    throw new Error('Invalid image dimensions. Please try uploading the image again.');
-                }
-
                 console.log(`Image source type: ${img.src.substring(0, 30)}...`);
-                console.log(`Image dimensions: ${img.naturalWidth}x${img.naturalHeight}`);
+                console.log(`Original image dimensions: ${img.naturalWidth}x${img.naturalHeight}`);
                 
                 // Wait for image to be fully loaded
                 await new Promise((resolve, reject) => {
@@ -533,7 +535,7 @@
                             }
                         };
                         img.onerror = () => reject(new Error('Image failed to load'));
-                        setTimeout(() => reject(new Error('Image load timeout')), 10000);
+                        setTimeout(() => reject(new Error('Image load timeout')), 15000);
                     }
                 });
 
@@ -543,39 +545,28 @@
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 
-                // Limit canvas size to prevent memory issues
-                const maxSize = 1500;
-                let { width, height } = img;
+                // Scale down large images for better OCR performance
+                const maxSize = 2000; // Increased for better quality
+                let width = img.naturalWidth;
+                let height = img.naturalHeight;
                 
                 if (width > maxSize || height > maxSize) {
                     const ratio = Math.min(maxSize / width, maxSize / height);
                     width = Math.floor(width * ratio);
                     height = Math.floor(height * ratio);
+                    console.log(`Scaling image from ${img.naturalWidth}x${img.naturalHeight} to ${width}x${height}`);
                 }
                 
                 canvas.width = width;
                 canvas.height = height;
                 
-                // Draw and enhance image
+                // Draw image to canvas
                 ctx.drawImage(img, 0, 0, width, height);
-                
-                // Convert to higher contrast for better OCR
-                const imageData = ctx.getImageData(0, 0, width, height);
-                const data = imageData.data;
-                
-                // Simple contrast enhancement
-                for (let i = 0; i < data.length; i += 4) {
-                    const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                    const enhanced = avg > 128 ? 255 : avg < 64 ? 0 : avg;
-                    data[i] = data[i + 1] = data[i + 2] = enhanced;
-                }
-                
-                ctx.putImageData(imageData, 0, 0);
 
-                console.log(`Processing optimized image: ${width}x${height}`);
+                console.log(`Processing image: ${width}x${height}`);
                 updateProcessingText('Reading text from image...');
 
-                // Perform OCR with timeout
+                // Perform OCR with optimized settings
                 const ocrPromise = Tesseract.recognize(
                     canvas,
                     'eng',
@@ -588,27 +579,29 @@
                             } else if (m.status) {
                                 updateProcessingText(`OCR: ${m.status}...`);
                             }
-                        }
+                        },
+                        tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK
                     }
                 );
 
-                // Add timeout to OCR process
+                // Add timeout to OCR process (increased for large images)
                 const timeoutPromise = new Promise((_, reject) => {
-                    setTimeout(() => reject(new Error('OCR process timed out after 60 seconds')), 60000);
+                    setTimeout(() => reject(new Error('OCR process timed out after 90 seconds')), 90000);
                 });
 
                 const result = await Promise.race([ocrPromise, timeoutPromise]);
                 
                 console.log('OCR completed. Confidence:', result.data.confidence);
                 console.log('Extracted text length:', result.data.text.length);
+                console.log('First 200 chars:', result.data.text.substring(0, 200));
                 
                 if (!result.data.text || result.data.text.trim().length === 0) {
                     throw new Error('No text was detected in the image. Try a clearer photo with better lighting.');
                 }
                 
-                if (result.data.confidence < 20) {
+                if (result.data.confidence < 15) {
                     console.warn('Very low confidence OCR result:', result.data.confidence);
-                    throw new Error('Text detection confidence too low. Please try a clearer, well-lit image.');
+                    showStatus(`Low confidence (${Math.round(result.data.confidence)}%). Results may be inaccurate.`, 'error');
                 }
                 
                 return result.data.text;
@@ -618,9 +611,9 @@
                 
                 // Provide specific error messages based on error type
                 if (error.message.includes('timeout')) {
-                    throw new Error('OCR took too long to process. Try a smaller or simpler image.');
-                } else if (error.message.includes('dimensions')) {
-                    throw new Error('Image format not supported. Please try JPG or PNG format.');
+                    throw new Error('OCR took too long to process. The image might be too complex or large.');
+                } else if (error.message.includes('load')) {
+                    throw new Error('Image loading failed. Please try uploading the image again.');
                 } else if (error.message.includes('Tesseract')) {
                     throw new Error('OCR service unavailable. Please check internet connection.');
                 } else if (error.message.includes('confidence')) {
