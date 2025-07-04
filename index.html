@@ -235,7 +235,7 @@
     <div class="container">
         <header class="header">
             <h1>📄 Receipt Scanner</h1>
-            <p>Snap, scan, and organize your receipts</p>
+            <p>Snap, scan, and organize your receipts123</p>
         </header>
 
         <main class="main-content">
@@ -348,13 +348,42 @@
                 return;
             }
 
+            // Check for unsupported formats
+            const supportedFormats = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!supportedFormats.includes(file.type.toLowerCase())) {
+                showStatus(`Unsupported format: ${file.type}. Please use JPG, PNG, GIF, or WebP.`, 'error');
+                return;
+            }
+
+            // Check file size (max 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showStatus('Image too large. Please use an image smaller than 10MB.', 'error');
+                return;
+            }
+
             currentImage = file;
             const reader = new FileReader();
             
             reader.onload = (e) => {
-                document.getElementById('previewImage').src = e.target.result;
-                document.getElementById('uploadArea').style.display = 'none';
-                document.getElementById('previewArea').style.display = 'block';
+                const img = document.getElementById('previewImage');
+                img.onload = () => {
+                    // Validate image loaded properly
+                    if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+                        showStatus('Invalid image file. Please try a different image.', 'error');
+                        return;
+                    }
+                    console.log(`Image loaded: ${img.naturalWidth}x${img.naturalHeight}`);
+                    document.getElementById('uploadArea').style.display = 'none';
+                    document.getElementById('previewArea').style.display = 'block';
+                };
+                img.onerror = () => {
+                    showStatus('Failed to load image. Please try a different file.', 'error');
+                };
+                img.src = e.target.result;
+            };
+            
+            reader.onerror = () => {
+                showStatus('Failed to read image file', 'error');
             };
             
             reader.readAsDataURL(file);
@@ -483,49 +512,92 @@
                     throw new Error('No image found to process');
                 }
 
-                console.log('Image source:', img.src.substring(0, 50) + '...');
+                // Check image dimensions
+                if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+                    throw new Error('Invalid image dimensions. Please try uploading the image again.');
+                }
+
+                console.log(`Image source type: ${img.src.substring(0, 30)}...`);
+                console.log(`Image dimensions: ${img.naturalWidth}x${img.naturalHeight}`);
                 
-                // Create a canvas to pre-process the image
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                
-                // Wait for image to load if needed
+                // Wait for image to be fully loaded
                 await new Promise((resolve, reject) => {
-                    if (img.complete) {
+                    if (img.complete && img.naturalWidth > 0) {
                         resolve();
                     } else {
-                        img.onload = resolve;
-                        img.onerror = () => reject(new Error('Failed to load image'));
+                        img.onload = () => {
+                            if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+                                resolve();
+                            } else {
+                                reject(new Error('Image failed to load properly'));
+                            }
+                        };
+                        img.onerror = () => reject(new Error('Image failed to load'));
                         setTimeout(() => reject(new Error('Image load timeout')), 10000);
                     }
                 });
 
-                // Set canvas size and draw image
-                canvas.width = img.naturalWidth || img.width;
-                canvas.height = img.naturalHeight || img.height;
-                ctx.drawImage(img, 0, 0);
+                updateProcessingText('Preparing image for OCR...');
 
-                console.log(`Processing image: ${canvas.width}x${canvas.height}`);
-                updateProcessingText('Analyzing image...');
+                // Create canvas and optimize image for OCR
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Limit canvas size to prevent memory issues
+                const maxSize = 1500;
+                let { width, height } = img;
+                
+                if (width > maxSize || height > maxSize) {
+                    const ratio = Math.min(maxSize / width, maxSize / height);
+                    width = Math.floor(width * ratio);
+                    height = Math.floor(height * ratio);
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Draw and enhance image
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Convert to higher contrast for better OCR
+                const imageData = ctx.getImageData(0, 0, width, height);
+                const data = imageData.data;
+                
+                // Simple contrast enhancement
+                for (let i = 0; i < data.length; i += 4) {
+                    const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                    const enhanced = avg > 128 ? 255 : avg < 64 ? 0 : avg;
+                    data[i] = data[i + 1] = data[i + 2] = enhanced;
+                }
+                
+                ctx.putImageData(imageData, 0, 0);
 
-                // Perform OCR with better options
-                const result = await Tesseract.recognize(
+                console.log(`Processing optimized image: ${width}x${height}`);
+                updateProcessingText('Reading text from image...');
+
+                // Perform OCR with timeout
+                const ocrPromise = Tesseract.recognize(
                     canvas,
                     'eng',
                     {
                         logger: (m) => {
                             console.log('OCR Progress:', m);
-                            if (m.status === 'recognizing text') {
+                            if (m.status === 'recognizing text' && m.progress) {
                                 const progress = Math.round(m.progress * 100);
                                 updateProcessingText(`Reading text... ${progress}%`);
                             } else if (m.status) {
                                 updateProcessingText(`OCR: ${m.status}...`);
                             }
-                        },
-                        tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
-                        tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.,$/:-() '
+                        }
                     }
                 );
+
+                // Add timeout to OCR process
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('OCR process timed out after 60 seconds')), 60000);
+                });
+
+                const result = await Promise.race([ocrPromise, timeoutPromise]);
                 
                 console.log('OCR completed. Confidence:', result.data.confidence);
                 console.log('Extracted text length:', result.data.text.length);
@@ -534,9 +606,9 @@
                     throw new Error('No text was detected in the image. Try a clearer photo with better lighting.');
                 }
                 
-                if (result.data.confidence < 30) {
-                    console.warn('Low confidence OCR result:', result.data.confidence);
-                    showStatus('Text detection confidence is low. Results may be inaccurate.', 'error');
+                if (result.data.confidence < 20) {
+                    console.warn('Very low confidence OCR result:', result.data.confidence);
+                    throw new Error('Text detection confidence too low. Please try a clearer, well-lit image.');
                 }
                 
                 return result.data.text;
@@ -544,15 +616,17 @@
             } catch (error) {
                 console.error('OCR Error Details:', error);
                 
-                // Provide specific error messages
-                if (error.message.includes('Tesseract')) {
-                    throw new Error('OCR service unavailable. Please check internet connection and try again.');
-                } else if (error.message.includes('image')) {
-                    throw new Error('Image processing failed. Try uploading a different image.');
-                } else if (error.message.includes('timeout')) {
-                    throw new Error('OCR took too long. Try a smaller or clearer image.');
+                // Provide specific error messages based on error type
+                if (error.message.includes('timeout')) {
+                    throw new Error('OCR took too long to process. Try a smaller or simpler image.');
+                } else if (error.message.includes('dimensions')) {
+                    throw new Error('Image format not supported. Please try JPG or PNG format.');
+                } else if (error.message.includes('Tesseract')) {
+                    throw new Error('OCR service unavailable. Please check internet connection.');
+                } else if (error.message.includes('confidence')) {
+                    throw error; // Pass through confidence errors as-is
                 } else {
-                    throw new Error(`OCR failed: ${error.message}`);
+                    throw new Error(`OCR processing failed: ${error.message}`);
                 }
             }
         }
