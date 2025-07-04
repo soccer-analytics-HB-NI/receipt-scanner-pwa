@@ -12,6 +12,9 @@
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOC4wMCAxMjguMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEyOC4wMCAxMjguMDAiIGZpbGw9IiMyNTYzZWIiIHJ4PSI2LjAiIHJ5PSI2LjAiPjwvcmVjdD48cGF0aCBkPSJNNDQgMjRsMzYgMDhsNDggMzZsNDggMCBWajQ0IDI0IDcyIDI0IDcyIDQ4JTEzNy43MiA0OCAzNy43MiA0OCA0MCA0OCA0MFoiIGZpbGw9IiNmZmZmZmYiLz48L3N2Zz4=">
     
+    <!-- Tesseract.js for OCR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -255,9 +258,6 @@
 
     <div class="status" id="status"></div>
 
-    <!-- Tesseract.js for OCR -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
-    
     <script>
         // Global variables
         let currentImage = null;
@@ -268,7 +268,6 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', async () => {
                 try {
-                    // We'll add the service worker file in the next step
                     console.log('PWA ready for service worker');
                 } catch (error) {
                     console.log('Service worker registration failed');
@@ -361,46 +360,32 @@
                 
             } catch (error) {
                 console.error('Processing error:', error);
-                showStatus('Error processing receipt', 'error');
+                showStatus('Error processing receipt: ' + error.message, 'error');
                 resetUpload();
             }
         }
 
         async function performOCR() {
-            return new Promise((resolve, reject) => {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const img = new Image();
+            try {
+                const img = document.getElementById('previewImage');
                 
-                img.onload = async () => {
-                    // Optimize image for OCR
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
-                    
-                    try {
-                        const result = await Tesseract.recognize(
-                            canvas,
-                            'eng',
-                            {
-                                logger: (m) => {
-                                    if (m.status === 'recognizing text') {
-                                        const progress = Math.round(m.progress * 100);
-                                        updateProcessingText(`Reading text... ${progress}%`);
-                                    }
-                                }
+                const result = await Tesseract.recognize(
+                    img,
+                    'eng',
+                    {
+                        logger: (m) => {
+                            if (m.status === 'recognizing text') {
+                                const progress = Math.round(m.progress * 100);
+                                updateProcessingText(`Reading text... ${progress}%`);
                             }
-                        );
-                        
-                        resolve(result.data.text);
-                    } catch (error) {
-                        reject(error);
+                        }
                     }
-                };
+                );
                 
-                img.onerror = () => reject(new Error('Failed to load image'));
-                img.src = document.getElementById('previewImage').src;
-            });
+                return result.data.text;
+            } catch (error) {
+                throw new Error('OCR failed: ' + error.message);
+            }
         }
 
         function parseReceiptText(text) {
@@ -469,7 +454,7 @@
             for (const pattern of totalPatterns) {
                 const match = text.match(pattern);
                 if (match) {
-                    return `${match[1]}`;
+                    return `$${match[1]}`;
                 }
             }
             
@@ -477,157 +462,8 @@
             const amounts = text.match(/\$\d+\.\d{2}/g);
             if (amounts && amounts.length > 0) {
                 const sortedAmounts = amounts.sort((a, b) => {
-                    const aVal = parseFloat(a.replace('
-
-        function displayResults() {
-            document.getElementById('processing').style.display = 'none';
-            
-            const resultsContent = document.getElementById('resultsContent');
-            resultsContent.innerHTML = `
-                <div class="result-item">
-                    <strong>Store:</strong> ${extractedData.store}
-                </div>
-                <div class="result-item">
-                    <strong>Date:</strong> ${extractedData.date}
-                </div>
-                <div class="result-item">
-                    <strong>Total:</strong> ${extractedData.total}
-                </div>
-                <div class="result-item">
-                    <strong>Items:</strong>
-                    <ul style="margin-top: 10px;">
-                        ${extractedData.items.map(item => 
-                            `<li>${item.name} - ${item.price} (${item.category})</li>`
-                        ).join('')}
-                    </ul>
-                </div>
-                <details style="margin-top: 15px;">
-                    <summary style="cursor: pointer; font-weight: bold; color: #64748b;">
-                        View Extracted Text
-                    </summary>
-                    <div style="background: #f1f5f9; padding: 10px; border-radius: 5px; margin-top: 10px; font-family: monospace; font-size: 0.9em; white-space: pre-wrap;">${extractedData.rawText}</div>
-                </details>
-            `;
-            
-            document.getElementById('results').style.display = 'block';
-        }
-
-        function saveToSheet() {
-            // Placeholder for Google Sheets integration
-            showStatus('Feature coming soon!', 'success');
-        }
-
-        function resetUpload() {
-            currentImage = null;
-            extractedData = null;
-            extractedText = null;
-            document.getElementById('fileInput').value = '';
-            document.getElementById('uploadArea').style.display = 'block';
-            document.getElementById('previewArea').style.display = 'none';
-            document.getElementById('processing').style.display = 'none';
-            document.getElementById('results').style.display = 'none';
-        }
-
-        function showStatus(message, type) {
-            const status = document.getElementById('status');
-            status.textContent = message;
-            status.className = `status ${type}`;
-            status.style.display = 'block';
-            
-            setTimeout(() => {
-                status.style.display = 'none';
-            }, 3000);
-        }
-
-        // Install prompt for PWA
-        let deferredPrompt;
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            
-            // Show install button or notification
-            setTimeout(() => {
-                if (confirm('Install Receipt Scanner as an app?')) {
-                    deferredPrompt.prompt();
-                }
-            }, 5000);
-        });
-    </script>
-</body>
-</html>, ''));
-                    const bVal = parseFloat(b.replace('
-
-        function displayResults() {
-            document.getElementById('processing').style.display = 'none';
-            
-            const resultsContent = document.getElementById('resultsContent');
-            resultsContent.innerHTML = `
-                <div class="result-item">
-                    <strong>Store:</strong> ${extractedData.store}
-                </div>
-                <div class="result-item">
-                    <strong>Date:</strong> ${extractedData.date}
-                </div>
-                <div class="result-item">
-                    <strong>Total:</strong> ${extractedData.total}
-                </div>
-                <div class="result-item">
-                    <strong>Items:</strong>
-                    <ul style="margin-top: 10px;">
-                        ${extractedData.items.map(item => 
-                            `<li>${item.name} - ${item.price} (${item.category})</li>`
-                        ).join('')}
-                    </ul>
-                </div>
-            `;
-            
-            document.getElementById('results').style.display = 'block';
-        }
-
-        function saveToSheet() {
-            // Placeholder for Google Sheets integration
-            showStatus('Feature coming soon!', 'success');
-        }
-
-        function resetUpload() {
-            currentImage = null;
-            extractedData = null;
-            document.getElementById('fileInput').value = '';
-            document.getElementById('uploadArea').style.display = 'block';
-            document.getElementById('previewArea').style.display = 'none';
-            document.getElementById('processing').style.display = 'none';
-            document.getElementById('results').style.display = 'none';
-        }
-
-        function showStatus(message, type) {
-            const status = document.getElementById('status');
-            status.textContent = message;
-            status.className = `status ${type}`;
-            status.style.display = 'block';
-            
-            setTimeout(() => {
-                status.style.display = 'none';
-            }, 3000);
-        }
-
-        // Install prompt for PWA
-        let deferredPrompt;
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            
-            // Show install button or notification
-            setTimeout(() => {
-                if (confirm('Install Receipt Scanner as an app?')) {
-                    deferredPrompt.prompt();
-                }
-            }, 5000);
-        });
-    </script>
-</body>
-</html>, ''));
+                    const aVal = parseFloat(a.replace('$', ''));
+                    const bVal = parseFloat(b.replace('$', ''));
                     return bVal - aVal;
                 });
                 return sortedAmounts[0];
@@ -643,14 +479,14 @@
                 // Look for lines with prices
                 const priceMatch = line.match(/.*?\$(\d+\.\d{2})/);
                 if (priceMatch) {
-                    const price = `${priceMatch[1]}`;
+                    const price = `$${priceMatch[1]}`;
                     const name = line.replace(/\$\d+\.\d{2}.*/, '').trim();
                     
                     if (name.length > 2 && name.length < 100) {
                         items.push({
                             name: name,
                             price: price,
-                            category: "General" // We'll improve this with AI later
+                            category: "General"
                         });
                     }
                 }
@@ -696,6 +532,12 @@
                         ).join('')}
                     </ul>
                 </div>
+                <details style="margin-top: 15px;">
+                    <summary style="cursor: pointer; font-weight: bold; color: #64748b;">
+                        View Extracted Text
+                    </summary>
+                    <div style="background: #f1f5f9; padding: 10px; border-radius: 5px; margin-top: 10px; font-family: monospace; font-size: 0.9em; white-space: pre-wrap;">${extractedData.rawText}</div>
+                </details>
             `;
             
             document.getElementById('results').style.display = 'block';
@@ -703,12 +545,13 @@
 
         function saveToSheet() {
             // Placeholder for Google Sheets integration
-            showStatus('Feature coming soon!', 'success');
+            showStatus('Google Sheets integration coming soon!', 'success');
         }
 
         function resetUpload() {
             currentImage = null;
             extractedData = null;
+            extractedText = null;
             document.getElementById('fileInput').value = '';
             document.getElementById('uploadArea').style.display = 'block';
             document.getElementById('previewArea').style.display = 'none';
