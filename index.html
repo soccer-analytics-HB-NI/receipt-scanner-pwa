@@ -249,7 +249,7 @@
                 <button class="btn btn-secondary" onclick="selectFile()">Choose File</button>
             </div>
 
-            <input type="file" id="fileInput" accept="image/*" capture="camera">
+            <input type="file" id="fileInput" accept="image/*,image/heic,image/heif" capture="environment">
 
             <div class="preview-area" id="previewArea">
                 <img id="previewImage" class="preview-image" alt="Receipt preview">
@@ -271,6 +271,7 @@
                 <div style="text-align: center; margin-top: 20px;">
                     <button class="btn" onclick="saveToSheet()">Save to Spreadsheet</button>
                     <button class="btn btn-secondary" onclick="resetUpload()">Scan Another</button>
+                    <button class="btn btn-secondary" onclick="showSettings()" style="background: #6b7280;">⚙️ Settings</button>
                 </div>
             </div>
         </main>
@@ -283,6 +284,7 @@
         let currentImage = null;
         let extractedData = null;
         let extractedText = null;
+        let userApiKey = null; // Store API key in memory during session
 
         // Service Worker Registration
         if ('serviceWorker' in navigator) {
@@ -325,13 +327,16 @@
 
         function openCamera() {
             const fileInput = document.getElementById('fileInput');
-            fileInput.setAttribute('capture', 'camera');
+            // Better mobile camera support
+            fileInput.setAttribute('capture', 'environment'); // Use back camera
+            fileInput.setAttribute('accept', 'image/*'); // Accept all images
             fileInput.click();
         }
 
         function selectFile() {
             const fileInput = document.getElementById('fileInput');
             fileInput.removeAttribute('capture');
+            fileInput.setAttribute('accept', 'image/*,image/heic,image/heif'); // Include HEIC for better iOS support
             fileInput.click();
         }
 
@@ -345,46 +350,71 @@
         function handleFile(file) {
             console.log('File selected:', file.name, file.type, file.size);
             
+            // Be very permissive with image formats - let browser decide
             if (!file.type.startsWith('image/')) {
-                showStatus('Please select an image file', 'error');
-                return;
+                // Even if MIME type is missing, check file extension
+                const fileName = file.name.toLowerCase();
+                const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff', '.tif'];
+                const hasImageExtension = imageExtensions.some(ext => fileName.endsWith(ext));
+                
+                if (!hasImageExtension) {
+                    showStatus('Please select an image file', 'error');
+                    return;
+                }
+                console.log('MIME type missing but file extension suggests image');
             }
 
-            // Check for unsupported formats (but be more permissive)
-            const unsupportedFormats = ['image/heic', 'image/heif'];
-            if (unsupportedFormats.includes(file.type.toLowerCase())) {
+            // Only block known problematic formats
+            const problematicFormats = ['image/heic', 'image/heif'];
+            if (problematicFormats.includes(file.type.toLowerCase())) {
                 showStatus(`HEIC format not supported. Please convert to JPG first.`, 'error');
                 return;
             }
 
-            // Increase file size limit to 15MB for high-res photos
-            if (file.size > 15 * 1024 * 1024) {
-                showStatus('Image too large. Please use an image smaller than 15MB.', 'error');
+            // Increase file size limit for high-res phone photos
+            if (file.size > 25 * 1024 * 1024) {
+                showStatus('Image too large. Please use an image smaller than 25MB.', 'error');
                 return;
             }
 
             currentImage = file;
+            
+            // Use createImageBitmap for better format support if available
+            if (window.createImageBitmap) {
+                handleFileWithImageBitmap(file);
+            } else {
+                handleFileWithFileReader(file);
+            }
+        }
+
+        function handleFileWithImageBitmap(file) {
+            createImageBitmap(file)
+                .then(bitmap => {
+                    console.log(`ImageBitmap created: ${bitmap.width}x${bitmap.height}`);
+                    
+                    // Draw to canvas to create data URL
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = bitmap.width;
+                    canvas.height = bitmap.height;
+                    ctx.drawImage(bitmap, 0, 0);
+                    
+                    const dataURL = canvas.toDataURL('image/jpeg', 0.9);
+                    displayImage(dataURL);
+                    bitmap.close(); // Free memory
+                })
+                .catch(error => {
+                    console.log('ImageBitmap failed, falling back to FileReader:', error);
+                    handleFileWithFileReader(file);
+                });
+        }
+
+        function handleFileWithFileReader(file) {
             const reader = new FileReader();
             
             reader.onload = (e) => {
-                console.log('FileReader completed, setting image source...');
-                const img = document.getElementById('previewImage');
-                
-                img.onload = () => {
-                    console.log(`Image loaded successfully: ${img.naturalWidth}x${img.naturalHeight}`);
-                    // Remove strict validation - any loaded image is fine
-                    document.getElementById('uploadArea').style.display = 'none';
-                    document.getElementById('previewArea').style.display = 'block';
-                    showStatus('Image loaded successfully!', 'success');
-                };
-                
-                img.onerror = (error) => {
-                    console.error('Image load error:', error);
-                    showStatus('Failed to display image. File may be corrupted.', 'error');
-                };
-                
-                console.log('Setting image src...');
-                img.src = e.target.result;
+                console.log('FileReader completed, processing image...');
+                displayImage(e.target.result);
             };
             
             reader.onerror = (error) => {
@@ -394,6 +424,24 @@
             
             console.log('Starting FileReader...');
             reader.readAsDataURL(file);
+        }
+
+        function displayImage(dataURL) {
+            const img = document.getElementById('previewImage');
+            
+            img.onload = () => {
+                console.log(`Image displayed: ${img.naturalWidth}x${img.naturalHeight}`);
+                document.getElementById('uploadArea').style.display = 'none';
+                document.getElementById('previewArea').style.display = 'block';
+                showStatus('Image loaded successfully!', 'success');
+            };
+            
+            img.onerror = (error) => {
+                console.error('Image display error:', error);
+                showStatus('Failed to display image. Please try a different file.', 'error');
+            };
+            
+            img.src = dataURL;
         }
 
         async function processReceipt() {
@@ -408,9 +456,9 @@
                 updateProcessingText('Extracting text from image...');
                 extractedText = await performOCR();
                 
-                // Step 2: Parse text into structured data
-                updateProcessingText('Organizing receipt data...');
-                extractedData = parseReceiptText(extractedText);
+                // Step 2: Use AI to parse and improve the text
+                updateProcessingText('AI is organizing receipt data...');
+                extractedData = await parseReceiptWithAI(extractedText);
 
                 displayResults();
                 
@@ -418,10 +466,102 @@
                 console.error('Processing error:', error);
                 
                 // Show error but offer fallback
-                showStatus('OCR failed: ' + error.message, 'error');
+                showStatus('Processing failed: ' + error.message, 'error');
                 
-                // Offer manual entry fallback
-                displayFallbackEntry(error.message);
+                // Try basic parsing as fallback
+                updateProcessingText('Trying basic parsing...');
+                try {
+                    extractedData = parseReceiptText(extractedText || 'No text extracted');
+                    displayResults();
+                } catch (fallbackError) {
+                    displayFallbackEntry(error.message);
+                }
+            }
+        }
+
+        async function parseReceiptWithAI(text) {
+            // Check if user has provided API key
+            if (!userApiKey) {
+                const apiKey = prompt(
+                    "To improve accuracy, enter your OpenAI API key (optional):\n\n" +
+                    "Get one at https://platform.openai.com/api-keys\n\n" +
+                    "Leave blank to use basic parsing:"
+                );
+                
+                if (apiKey && apiKey.trim()) {
+                    userApiKey = apiKey.trim();
+                }
+            }
+
+            if (userApiKey) {
+                return await parseWithOpenAI(text, userApiKey);
+            } else {
+                console.log('No API key provided, using basic parsing');
+                return parseReceiptText(text);
+            }
+        }
+
+        async function parseWithOpenAI(text, apiKey) {
+            try {
+                console.log('Using AI to parse receipt...');
+                
+                const prompt = `Parse this receipt text and extract structured data. Return ONLY valid JSON with this exact format:
+
+{
+  "store": "store name",
+  "date": "MM/DD/YYYY",
+  "total": "$XX.XX",
+  "items": [
+    {"name": "item name", "price": "$XX.XX", "category": "category"}
+  ]
+}
+
+Categories should be: Groceries, Electronics, Clothing, Restaurant, Gas, Pharmacy, Home, Entertainment, or Other.
+
+Receipt text:
+${text}`;
+
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: [
+                            {
+                                role: 'user',
+                                content: prompt
+                            }
+                        ],
+                        max_tokens: 1000,
+                        temperature: 0.1
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`OpenAI API error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const aiResponse = data.choices[0].message.content.trim();
+                
+                console.log('AI Response:', aiResponse);
+                
+                // Try to parse the JSON response
+                const parsedData = JSON.parse(aiResponse);
+                
+                // Add raw text for debugging
+                parsedData.rawText = text;
+                parsedData.aiParsed = true;
+                
+                return parsedData;
+                
+            } catch (error) {
+                console.error('AI parsing failed:', error);
+                showStatus('AI parsing failed, using basic parsing', 'error');
+                return parseReceiptText(text);
             }
         }
 
@@ -749,8 +889,16 @@
         function displayResults() {
             document.getElementById('processing').style.display = 'none';
             
+            const aiIndicator = extractedData.aiParsed ? 
+                '<span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-left: 10px;">✨ AI Enhanced</span>' : 
+                '<span style="background: #f59e0b; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-left: 10px;">📝 Basic Parsing</span>';
+            
             const resultsContent = document.getElementById('resultsContent');
             resultsContent.innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <h3 style="display: inline;">Receipt Details</h3>
+                    ${aiIndicator}
+                </div>
                 <div class="result-item">
                     <strong>Store:</strong> ${extractedData.store}
                 </div>
@@ -764,10 +912,14 @@
                     <strong>Items:</strong>
                     <ul style="margin-top: 10px;">
                         ${extractedData.items.map(item => 
-                            `<li>${item.name} - ${item.price} (${item.category})</li>`
+                            `<li>${item.name} - ${item.price} <em style="color: #64748b;">(${item.category})</em></li>`
                         ).join('')}
                     </ul>
                 </div>
+                ${!extractedData.aiParsed ? `
+                <div style="background: #fffbeb; border: 1px solid #fbbf24; padding: 15px; border-radius: 10px; margin: 15px 0;">
+                    <strong>💡 Tip:</strong> Add your OpenAI API key in Settings for better accuracy and automatic categorization!
+                </div>` : ''}
                 <details style="margin-top: 15px;">
                     <summary style="cursor: pointer; font-weight: bold; color: #64748b;">
                         View Extracted Text
@@ -777,6 +929,67 @@
             `;
             
             document.getElementById('results').style.display = 'block';
+        }
+
+        function showSettings() {
+            const maskedKey = userApiKey ? userApiKey.substring(0, 8) + '...' : 'Not set';
+            
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+                background: rgba(0,0,0,0.5); z-index: 10000; 
+                display: flex; align-items: center; justify-content: center;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%;">
+                    <h2 style="margin-bottom: 20px;">⚙️ Settings</h2>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <h3>OpenAI API Key</h3>
+                        <p style="color: #64748b; margin: 10px 0;">For improved accuracy and automatic categorization</p>
+                        <input type="password" id="apiKeyInput" placeholder="sk-..." 
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin: 10px 0;">
+                        <small style="color: #64748b;">Current: ${maskedKey}</small>
+                        <p style="font-size: 0.9em; color: #64748b; margin-top: 10px;">
+                            Get your API key at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a><br>
+                            Cost: ~$0.01-0.03 per receipt<br>
+                            <em>Note: API key is stored in memory only (not saved between sessions)</em>
+                        </p>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button class="btn" onclick="saveSettings()">Save Settings</button>
+                        <button class="btn btn-secondary" onclick="closeSettings()">Cancel</button>
+                        <button class="btn" style="background: #dc2626;" onclick="clearSettings()">Clear API Key</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            window.settingsModal = modal;
+        }
+
+        function saveSettings() {
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+            if (apiKey) {
+                userApiKey = apiKey;
+                showStatus('API key saved for this session!', 'success');
+            }
+            closeSettings();
+        }
+
+        function clearSettings() {
+            userApiKey = null;
+            showStatus('API key cleared', 'success');
+            closeSettings();
+        }
+
+        function closeSettings() {
+            if (window.settingsModal) {
+                document.body.removeChild(window.settingsModal);
+                window.settingsModal = null;
+            }
         }
 
         function saveToSheet() {
@@ -793,6 +1006,11 @@
             document.getElementById('previewArea').style.display = 'none';
             document.getElementById('processing').style.display = 'none';
             document.getElementById('results').style.display = 'none';
+            
+            // Close settings if open
+            if (window.settingsModal) {
+                closeSettings();
+            }
         }
 
         function showStatus(message, type) {
