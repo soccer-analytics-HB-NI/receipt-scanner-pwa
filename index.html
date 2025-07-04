@@ -1,1 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2563eb">
+    <title>Receipt Scanner</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVjZWlwdCBTY2FubmVyIiwic2hvcnRfbmFtZSI6IlJlY2VpcHRzIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmZmZmZmYiLCJ0aGVtZV9jb2xvciI6IiMyNTYzZWIiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCM2FXUjBhRDBpTVRJNElpQm9aV2xuYUhROUlqRXlPQ0lpSUhacFpYZENiM2c5SWpBZ01DQXhNamd1TURBZ01USTRMakF3SWlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpUGp4eVpXTjBJSGRwWkhSb1BTSXhNamd1TURBZ01USTRMakF3SWlCbWFXeHNQU0lqTWpVMk0yVmlJaUJ5ZUQwaU5pNHdJaUJ5ZVQwaU5pNHdJajQ4TDNKbFkzUStQSEJoZEdnZ1pEMGlUVFEwSURJMGJETTJJREE0YkRRNElETTJiRFE0SURBZ1drbzBOQ0F5TkNBM01pQXlOQ0IzTWlBME9DVXhNemN1TnpJZ05EZ2dNemN1TnpJZ05EZ2dOREFnTkRnZ05EQmFJaUJtYVd4c1BTSWpabVptWm1abUlpOCtQQzl6ZG1jKyIsInNpemVzIjoiMTI4eDEyOCIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOC4wMCAxMjguMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEyOC4wMCAxMjguMDAiIGZpbGw9IiMyNTYzZWIiIHJ4PSI2LjAiIHJ5PSI2LjAiPjwvcmVjdD48cGF0aCBkPSJNNDQgMjRsMzYgMDhsNDggMzZsNDggMCBWajQ0IDI0IDcyIDI0IDcyIDQ4JTEzNy43MiA0OCAzNy43MiA0OCA0MCA0OCA0MFoiIGZpbGw9IiNmZmZmZmYiLz48L3N2Zz4=">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            flex-grow: 1;
+        }
+
+        .upload-area {
+            border: 3px dashed #e2e8f0;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #2563eb;
+            background-color: #f8fafc;
+        }
+
+        .upload-area.dragover {
+            border-color: #2563eb;
+            background-color: #eff6ff;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #64748b;
+        }
+
+        .upload-text {
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .upload-text h3 {
+            margin-bottom: 10px;
+            color: #1e293b;
+        }
+
+        .btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #64748b;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .preview-area {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .processing {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-item {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .result-item strong {
+            color: #1e293b;
+        }
+
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: white;
+            display: none;
+            z-index: 1000;
+        }
+
+        .status.success {
+            background: #10b981;
+        }
+
+        .status.error {
+            background: #ef4444;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📄 Receipt Scanner</h1>
+            <p>Snap, scan, and organize your receipts</p>
+        </header>
+
+        <main class="main-content">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">
+                    <h3>Take a photo or upload receipt</h3>
+                    <p>Drag and drop an image here, or click to select</p>
+                </div>
+                <button class="btn" onclick="openCamera()">Take Photo</button>
+                <button class="btn btn-secondary" onclick="selectFile()">Choose File</button>
+            </div>
+
+            <input type="file" id="fileInput" accept="image/*" capture="camera">
+
+            <div class="preview-area" id="previewArea">
+                <img id="previewImage" class="preview-image" alt="Receipt preview">
+                <div style="text-align: center; margin-top: 15px;">
+                    <button class="btn" onclick="processReceipt()">Process Receipt</button>
+                    <button class="btn btn-secondary" onclick="resetUpload()">Try Another</button>
+                </div>
+            </div>
+
+            <div class="processing" id="processing">
+                <div class="spinner"></div>
+                <p>Processing your receipt...</p>
+                <small>Extracting text and organizing data</small>
+            </div>
+
+            <div class="results" id="results">
+                <h3>Receipt Details</h3>
+                <div id="resultsContent"></div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn" onclick="saveToSheet()">Save to Spreadsheet</button>
+                    <button class="btn btn-secondary" onclick="resetUpload()">Scan Another</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <script>
+        // Global variables
+        let currentImage = null;
+        let extractedData = null;
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    // We'll add the service worker file in the next step
+                    console.log('PWA ready for service worker');
+                } catch (error) {
+                    console.log('Service worker registration failed');
+                }
+            });
+        }
+
+        // File input handling
+        document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+
+        // Drag and drop functionality
+        const uploadArea = document.getElementById('uploadArea');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        uploadArea.addEventListener('click', () => {
+            document.getElementById('fileInput').click();
+        });
+
+        function openCamera() {
+            const fileInput = document.getElementById('fileInput');
+            fileInput.setAttribute('capture', 'camera');
+            fileInput.click();
+        }
+
+        function selectFile() {
+            const fileInput = document.getElementById('fileInput');
+            fileInput.removeAttribute('capture');
+            fileInput.click();
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showStatus('Please select an image file', 'error');
+                return;
+            }
+
+            currentImage = file;
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                document.getElementById('previewImage').src = e.target.result;
+                document.getElementById('uploadArea').style.display = 'none';
+                document.getElementById('previewArea').style.display = 'block';
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        async function processReceipt() {
+            if (!currentImage) return;
+
+            // Show processing state
+            document.getElementById('previewArea').style.display = 'none';
+            document.getElementById('processing').style.display = 'block';
+
+            try {
+                // Placeholder for OCR and AI processing
+                // We'll implement this in the next steps
+                await simulateProcessing();
+                
+                // Mock data for now
+                extractedData = {
+                    store: "Sample Store",
+                    date: new Date().toLocaleDateString(),
+                    total: "$12.34",
+                    items: [
+                        { name: "Sample Item 1", price: "$5.99", category: "Groceries" },
+                        { name: "Sample Item 2", price: "$6.35", category: "Groceries" }
+                    ]
+                };
+
+                displayResults();
+                
+            } catch (error) {
+                showStatus('Error processing receipt', 'error');
+                resetUpload();
+            }
+        }
+
+        async function simulateProcessing() {
+            // Simulate processing time
+            await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+
+        function displayResults() {
+            document.getElementById('processing').style.display = 'none';
+            
+            const resultsContent = document.getElementById('resultsContent');
+            resultsContent.innerHTML = `
+                <div class="result-item">
+                    <strong>Store:</strong> ${extractedData.store}
+                </div>
+                <div class="result-item">
+                    <strong>Date:</strong> ${extractedData.date}
+                </div>
+                <div class="result-item">
+                    <strong>Total:</strong> ${extractedData.total}
+                </div>
+                <div class="result-item">
+                    <strong>Items:</strong>
+                    <ul style="margin-top: 10px;">
+                        ${extractedData.items.map(item => 
+                            `<li>${item.name} - ${item.price} (${item.category})</li>`
+                        ).join('')}
+                    </ul>
+                </div>
+            `;
+            
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function saveToSheet() {
+            // Placeholder for Google Sheets integration
+            showStatus('Feature coming soon!', 'success');
+        }
+
+        function resetUpload() {
+            currentImage = null;
+            extractedData = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('uploadArea').style.display = 'block';
+            document.getElementById('previewArea').style.display = 'none';
+            document.getElementById('processing').style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+            
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 3000);
+        }
+
+        // Install prompt for PWA
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button or notification
+            setTimeout(() => {
+                if (confirm('Install Receipt Scanner as an app?')) {
+                    deferredPrompt.prompt();
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
