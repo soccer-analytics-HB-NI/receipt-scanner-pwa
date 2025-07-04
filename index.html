@@ -12,8 +12,28 @@
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOC4wMCAxMjguMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEyOC4wMCAxMjguMDAiIGZpbGw9IiMyNTYzZWIiIHJ4PSI2LjAiIHJ5PSI2LjAiPjwvcmVjdD48cGF0aCBkPSJNNDQgMjRsMzYgMDhsNDggMzZsNDggMCBWajQ0IDI0IDcyIDI0IDcyIDQ4JTEzNy43MiA0OCAzNy43MiA0OCA0MCA0OCA0MFoiIGZpbGw9IiNmZmZmZmYiLz48L3N2Zz4=">
     
-    <!-- Tesseract.js for OCR -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
+    <!-- Tesseract.js for OCR with fallback -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js" 
+            onerror="console.error('Primary Tesseract CDN failed'); loadTesseractFallback();"></script>
+    <script>
+        // Fallback CDN loader
+        function loadTesseractFallback() {
+            const fallback = document.createElement('script');
+            fallback.src = 'https://unpkg.com/tesseract.js@4.1.1/dist/tesseract.min.js';
+            fallback.onerror = () => console.error('All Tesseract CDNs failed');
+            document.head.appendChild(fallback);
+        }
+        
+        // Check if Tesseract loaded
+        window.addEventListener('load', () => {
+            if (typeof Tesseract === 'undefined') {
+                console.error('Tesseract.js failed to load');
+                showStatus('OCR library failed to load. Check internet connection.', 'error');
+            } else {
+                console.log('Tesseract.js loaded successfully');
+            }
+        });
+    </script>
     
     <style>
         * {
@@ -215,7 +235,7 @@
     <div class="container">
         <header class="header">
             <h1>📄 Receipt Scanner</h1>
-            <p>Snap, scan, and organize your receipts123</p>
+            <p>Snap, scan, and organize your receipts</p>
         </header>
 
         <main class="main-content">
@@ -360,31 +380,180 @@
                 
             } catch (error) {
                 console.error('Processing error:', error);
-                showStatus('Error processing receipt: ' + error.message, 'error');
-                resetUpload();
+                
+                // Show error but offer fallback
+                showStatus('OCR failed: ' + error.message, 'error');
+                
+                // Offer manual entry fallback
+                displayFallbackEntry(error.message);
             }
+        }
+
+        function displayFallbackEntry(errorMessage) {
+            document.getElementById('processing').style.display = 'none';
+            
+            const resultsContent = document.getElementById('resultsContent');
+            resultsContent.innerHTML = `
+                <div style="text-align: center; padding: 20px; background: #fef2f2; border-radius: 10px; border: 1px solid #fecaca;">
+                    <h4 style="color: #dc2626; margin-bottom: 15px;">OCR Processing Failed</h4>
+                    <p style="color: #7f1d1d; margin-bottom: 20px;">${errorMessage}</p>
+                    
+                    <div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                        <h5 style="margin-bottom: 15px;">Manual Entry (Temporary)</h5>
+                        <input type="text" id="manualStore" placeholder="Store Name" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+                        <input type="date" id="manualDate" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+                        <input type="text" id="manualTotal" placeholder="Total Amount (e.g., $12.34)" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+                        <textarea id="manualItems" placeholder="Items (one per line, e.g., 'Milk - $3.99')" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px; height: 80px;"></textarea>
+                        <button class="btn" onclick="processManualEntry()" style="margin-top: 10px;">Save Manual Entry</button>
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
+                        <h5>Troubleshooting Tips:</h5>
+                        <ul style="text-align: left; color: #374151;">
+                            <li>Ensure good internet connection</li>
+                            <li>Try a clearer, well-lit photo</li>
+                            <li>Make sure receipt is flat and straight</li>
+                            <li>Refresh the page and try again</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            // Set today's date as default
+            document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
+            
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function processManualEntry() {
+            const store = document.getElementById('manualStore').value || 'Unknown Store';
+            const date = document.getElementById('manualDate').value || new Date().toLocaleDateString();
+            const total = document.getElementById('manualTotal').value || 'N/A';
+            const itemsText = document.getElementById('manualItems').value;
+            
+            // Parse manual items
+            const items = [];
+            if (itemsText.trim()) {
+                const lines = itemsText.split('\n');
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (trimmed) {
+                        const parts = trimmed.split(' - ');
+                        items.push({
+                            name: parts[0] || trimmed,
+                            price: parts[1] || 'N/A',
+                            category: 'General'
+                        });
+                    }
+                });
+            } else {
+                items.push({
+                    name: 'Manual entry - see total',
+                    price: total,
+                    category: 'General'
+                });
+            }
+
+            extractedData = {
+                store: store,
+                date: date,
+                total: total,
+                items: items,
+                rawText: 'Manual entry - OCR was not available'
+            };
+
+            displayResults();
+            showStatus('Manual entry saved successfully!', 'success');
         }
 
         async function performOCR() {
             try {
+                // Check if Tesseract is available
+                if (typeof Tesseract === 'undefined') {
+                    throw new Error('Tesseract.js library not loaded. Please check your internet connection and refresh the page.');
+                }
+
+                console.log('Starting OCR process...');
+                updateProcessingText('Initializing OCR...');
+
                 const img = document.getElementById('previewImage');
                 
+                // Validate image
+                if (!img || !img.src) {
+                    throw new Error('No image found to process');
+                }
+
+                console.log('Image source:', img.src.substring(0, 50) + '...');
+                
+                // Create a canvas to pre-process the image
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Wait for image to load if needed
+                await new Promise((resolve, reject) => {
+                    if (img.complete) {
+                        resolve();
+                    } else {
+                        img.onload = resolve;
+                        img.onerror = () => reject(new Error('Failed to load image'));
+                        setTimeout(() => reject(new Error('Image load timeout')), 10000);
+                    }
+                });
+
+                // Set canvas size and draw image
+                canvas.width = img.naturalWidth || img.width;
+                canvas.height = img.naturalHeight || img.height;
+                ctx.drawImage(img, 0, 0);
+
+                console.log(`Processing image: ${canvas.width}x${canvas.height}`);
+                updateProcessingText('Analyzing image...');
+
+                // Perform OCR with better options
                 const result = await Tesseract.recognize(
-                    img,
+                    canvas,
                     'eng',
                     {
                         logger: (m) => {
+                            console.log('OCR Progress:', m);
                             if (m.status === 'recognizing text') {
                                 const progress = Math.round(m.progress * 100);
                                 updateProcessingText(`Reading text... ${progress}%`);
+                            } else if (m.status) {
+                                updateProcessingText(`OCR: ${m.status}...`);
                             }
-                        }
+                        },
+                        tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
+                        tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.,$/:-() '
                     }
                 );
                 
+                console.log('OCR completed. Confidence:', result.data.confidence);
+                console.log('Extracted text length:', result.data.text.length);
+                
+                if (!result.data.text || result.data.text.trim().length === 0) {
+                    throw new Error('No text was detected in the image. Try a clearer photo with better lighting.');
+                }
+                
+                if (result.data.confidence < 30) {
+                    console.warn('Low confidence OCR result:', result.data.confidence);
+                    showStatus('Text detection confidence is low. Results may be inaccurate.', 'error');
+                }
+                
                 return result.data.text;
+                
             } catch (error) {
-                throw new Error('OCR failed: ' + error.message);
+                console.error('OCR Error Details:', error);
+                
+                // Provide specific error messages
+                if (error.message.includes('Tesseract')) {
+                    throw new Error('OCR service unavailable. Please check internet connection and try again.');
+                } else if (error.message.includes('image')) {
+                    throw new Error('Image processing failed. Try uploading a different image.');
+                } else if (error.message.includes('timeout')) {
+                    throw new Error('OCR took too long. Try a smaller or clearer image.');
+                } else {
+                    throw new Error(`OCR failed: ${error.message}`);
+                }
             }
         }
 
