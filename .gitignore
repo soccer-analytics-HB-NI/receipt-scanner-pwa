@@ -3,20 +3,10 @@ config.js
 .env
 .env.local
 
-# Node modules (if you add build tools later)
-node_modules/
-npm-debug.log*
-
-# Editor files
-.vscode/
-.idea/
-*.swp
-*.swo
-
 # OS files
 .DS_Store
 Thumbs.db
 
-# Build outputs
-dist/
-build/
+# Editor files
+.vscode/
+.idea/
