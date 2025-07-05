@@ -15,6 +15,10 @@
     <!-- Tesseract.js for OCR with fallback -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js" 
             onerror="console.error('Primary Tesseract CDN failed'); loadTesseractFallback();"></script>
+    
+    <!-- Load config file if available -->
+    <script src="config.js" onerror="console.log('Config file not found - using manual API key entry')"></script>
+    
     <script>
         // Fallback CDN loader
         function loadTesseractFallback() {
@@ -81,6 +85,64 @@
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             flex-grow: 1;
+        }
+
+        .ai-toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .ai-toggle {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #cbd5e1;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #2563eb;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(30px);
+        }
+
+        .toggle-label {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .toggle-description {
+            font-size: 0.85em;
+            color: #64748b;
+            margin-top: 5px;
         }
 
         .upload-area {
@@ -235,10 +297,23 @@
     <div class="container">
         <header class="header">
             <h1>📄 Receipt Scanner</h1>
-            <p>Snap, scan, and organize your receipts123</p>
+            <p>Snap, scan, and organize your receipts</p>
         </header>
 
         <main class="main-content">
+            <div class="ai-toggle-container">
+                <div class="ai-toggle">
+                    <span class="toggle-label">🤖 AI Enhanced Processing</span>
+                    <div class="toggle-switch" id="aiToggle" onclick="toggleAI()">
+                        <div class="toggle-slider"></div>
+                    </div>
+                    <span class="toggle-label">📝 Basic Processing</span>
+                </div>
+                <div class="toggle-description" id="toggleDescription">
+                    AI provides better accuracy and automatic categorization
+                </div>
+            </div>
+
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon">📷</div>
                 <div class="upload-text">
@@ -284,17 +359,72 @@
         let currentImage = null;
         let extractedData = null;
         let extractedText = null;
-        let userApiKey = null; // Store API key in memory during session
+        let userApiKey = null;
+        let useAI = true; // Default AI setting
 
-        // Service Worker Registration
+        // Initialize app settings from config
+        function initializeApp() {
+            // Load settings from config file if available
+            if (typeof window.APP_CONFIG !== 'undefined') {
+                console.log('Config file loaded successfully');
+                userApiKey = window.APP_CONFIG.OPENAI_API_KEY;
+                useAI = window.APP_CONFIG.USE_AI_BY_DEFAULT !== false; // Default to true
+                console.log('API key loaded from config:', userApiKey ? 'Yes' : 'No');
+            } else {
+                console.log('No config file found, using defaults');
+                useAI = true; // Default to AI mode
+            }
+            
+            // Update toggle UI
+            updateToggleUI();
+            
+            // Show status if API key is loaded
+            if (userApiKey) {
+                showStatus('API key loaded from config file', 'success');
+            }
+        }
+
+        // Toggle AI processing on/off
+        function toggleAI() {
+            useAI = !useAI;
+            updateToggleUI();
+            
+            const status = useAI ? 'AI Enhanced mode enabled' : 'Basic processing mode enabled';
+            showStatus(status, 'success');
+        }
+
+        // Update toggle UI appearance
+        function updateToggleUI() {
+            const toggle = document.getElementById('aiToggle');
+            const description = document.getElementById('toggleDescription');
+            
+            if (useAI) {
+                toggle.classList.add('active');
+                if (userApiKey) {
+                    description.textContent = '✨ AI provides better accuracy and automatic categorization';
+                } else {
+                    description.textContent = '⚠️ AI mode selected but no API key configured. Will prompt for key.';
+                }
+            } else {
+                toggle.classList.remove('active');
+                description.textContent = '📝 Basic text parsing - fast and free (no AI required)';
+            }
+        }
+
+        // Service Worker Registration and App Initialization
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', async () => {
                 try {
                     console.log('PWA ready for service worker');
+                    initializeApp(); // Initialize app settings
                 } catch (error) {
                     console.log('Service worker registration failed');
+                    initializeApp(); // Still initialize app
                 }
             });
+        } else {
+            // Initialize app even if no service worker support
+            window.addEventListener('load', initializeApp);
         }
 
         // File input handling
@@ -456,9 +586,14 @@
                 updateProcessingText('Extracting text from image...');
                 extractedText = await performOCR();
                 
-                // Step 2: Use AI to parse and improve the text
-                updateProcessingText('AI is organizing receipt data...');
-                extractedData = await parseReceiptWithAI(extractedText);
+                // Step 2: Parse based on user's AI preference
+                if (useAI) {
+                    updateProcessingText('AI is organizing receipt data...');
+                    extractedData = await parseReceiptWithAI(extractedText);
+                } else {
+                    updateProcessingText('Organizing receipt data...');
+                    extractedData = parseReceiptText(extractedText);
+                }
 
                 displayResults();
                 
@@ -480,25 +615,24 @@
         }
 
         async function parseReceiptWithAI(text) {
-            // Check if user has provided API key
+            // Check if user has provided API key (from config or manual entry)
             if (!userApiKey) {
                 const apiKey = prompt(
-                    "To improve accuracy, enter your OpenAI API key (optional):\n\n" +
+                    "AI mode requires an OpenAI API key:\n\n" +
                     "Get one at https://platform.openai.com/api-keys\n\n" +
-                    "Leave blank to use basic parsing:"
+                    "Enter your API key (or Cancel for basic parsing):"
                 );
                 
                 if (apiKey && apiKey.trim()) {
                     userApiKey = apiKey.trim();
+                    showStatus('API key saved for this session', 'success');
+                } else {
+                    showStatus('No API key provided, using basic parsing', 'error');
+                    return parseReceiptText(text);
                 }
             }
 
-            if (userApiKey) {
-                return await parseWithOpenAI(text, userApiKey);
-            } else {
-                console.log('No API key provided, using basic parsing');
-                return parseReceiptText(text);
-            }
+            return await parseWithOpenAI(text, userApiKey);
         }
 
         async function parseWithOpenAI(text, apiKey) {
@@ -916,9 +1050,13 @@ ${text}`;
                         ).join('')}
                     </ul>
                 </div>
-                ${!extractedData.aiParsed ? `
+                ${!extractedData.aiParsed && useAI ? `
                 <div style="background: #fffbeb; border: 1px solid #fbbf24; padding: 15px; border-radius: 10px; margin: 15px 0;">
-                    <strong>💡 Tip:</strong> Add your OpenAI API key in Settings for better accuracy and automatic categorization!
+                    <strong>💡 Tip:</strong> AI mode is enabled but no API key was provided. Add your OpenAI API key via Settings for better accuracy!
+                </div>` : ''}
+                ${!useAI ? `
+                <div style="background: #f0f9ff; border: 1px solid #0ea5e9; padding: 15px; border-radius: 10px; margin: 15px 0;">
+                    <strong>ℹ️ Info:</strong> Basic processing mode is active. Toggle AI mode above for improved accuracy and categorization.
                 </div>` : ''}
                 <details style="margin-top: 15px;">
                     <summary style="cursor: pointer; font-weight: bold; color: #64748b;">
