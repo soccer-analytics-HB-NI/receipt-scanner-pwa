@@ -1055,7 +1055,7 @@
     <div class="container">
         <header class="header">
             <h1>📄 Receipt Scanner</h1>
-            <p>Snap, scan, and organize your receipts123</p>
+            <p>Snap, scan, and organize your receipts</p>
         </header>
 
         <main class="main-content">
@@ -1185,9 +1185,17 @@
         // Also initialize on DOM ready as backup
         document.addEventListener('DOMContentLoaded', initializeApp);
 
-        // File input handling with better mobile support
+        // Setup event listeners when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Setting up event listeners...');
+            
             const fileInput = document.getElementById('fileInput');
+            const uploadArea = document.getElementById('uploadArea');
+            
+            if (!fileInput || !uploadArea) {
+                console.error('Required elements not found!');
+                return;
+            }
             
             // Universal change handler
             fileInput.addEventListener('change', function(event) {
@@ -1211,32 +1219,30 @@
                 }
             });
             
-            console.log('✅ Universal file input handler attached');
-        });
+            // Drag and drop functionality
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
 
-        // Drag and drop functionality
-        const uploadArea = document.getElementById('uploadArea');
-        
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
 
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
 
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
-            }
-        });
-
-        uploadArea.addEventListener('click', () => {
-            document.getElementById('fileInput').click();
+            uploadArea.addEventListener('click', () => {
+                document.getElementById('fileInput').click();
+            });
+            
+            console.log('✅ All event listeners setup complete');
         });
 
         function openCamera() {
