@@ -169,7 +169,7 @@
     <div class="container">
         <header class="header">
             <h1>📄 Receipt Scanner</h1>
-            <p>Snap, scan, and organize your receipts123</p>
+            <p>Snap, scan, and organize your receipts</p>
         </header>
 
         <main class="main-content">
@@ -226,7 +226,34 @@
                 <h3>Receipt Details</h3>
                 <div id="resultsContent"></div>
                 <br>
-                <button class="btn btn-secondary" onclick="resetUpload()">Scan Another</button>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn" onclick="addToCollection()">Add to Collection</button>
+                    <button class="btn btn-secondary" onclick="resetUpload()">Scan Another</button>
+                </div>
+            </div>
+
+            <!-- Collection Summary -->
+            <div id="collectionSummary" style="margin-top: 20px; display: none;">
+                <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 10px; padding: 15px; text-align: center;">
+                    <h4 style="color: #0c4a6e; margin-bottom: 10px;">📋 Receipt Collection</h4>
+                    <p id="collectionCount" style="margin-bottom: 15px; color: #0c4a6e;">0 receipts collected</p>
+                    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                        <button class="btn" onclick="exportCSV()">📥 Download CSV</button>
+                        <button class="btn btn-secondary" onclick="viewCollection()">👁️ View All</button>
+                        <button class="btn" style="background: #dc2626;" onclick="clearCollection()">🗑️ Clear All</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Collection Viewer -->
+            <div id="collectionViewer" style="margin-top: 20px; display: none;">
+                <div style="background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px;">
+                    <h4 style="margin-bottom: 15px;">📋 All Collected Receipts</h4>
+                    <div id="collectionList"></div>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button class="btn btn-secondary" onclick="hideCollection()">Close View</button>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -237,6 +264,7 @@
         var currentImage = null;
         var extractedData = null;
         var useAI = false; // Start with basic mode
+        var allReceipts = []; // Store multiple receipts
 
         function showStatus(message, type) {
             var status = document.getElementById('status');
@@ -572,6 +600,172 @@
             extractedData = data;
         }
 
+        // Collection Management Functions
+        function addToCollection() {
+            if (!extractedData) {
+                showStatus('No receipt data to add', 'error');
+                return;
+            }
+
+            // Add timestamp and unique ID
+            var receiptWithId = JSON.parse(JSON.stringify(extractedData));
+            receiptWithId.id = Date.now();
+            receiptWithId.scannedAt = new Date().toLocaleString();
+            
+            allReceipts.push(receiptWithId);
+            updateCollectionDisplay();
+            showStatus('Receipt added to collection! (' + allReceipts.length + ' total)', 'success');
+            
+            // Auto-reset for next scan
+            setTimeout(function() {
+                resetUpload();
+            }, 1500);
+        }
+
+        function updateCollectionDisplay() {
+            var summary = document.getElementById('collectionSummary');
+            var count = document.getElementById('collectionCount');
+            
+            if (allReceipts.length > 0) {
+                summary.style.display = 'block';
+                count.textContent = allReceipts.length + ' receipt' + (allReceipts.length === 1 ? '' : 's') + ' collected';
+            } else {
+                summary.style.display = 'none';
+            }
+        }
+
+        function viewCollection() {
+            var viewer = document.getElementById('collectionViewer');
+            var list = document.getElementById('collectionList');
+            
+            var html = '';
+            for (var i = 0; i < allReceipts.length; i++) {
+                var receipt = allReceipts[i];
+                html += '<div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 10px;">';
+                html += '<div style="display: flex; justify-content: between; align-items: center; margin-bottom: 8px;">';
+                html += '<strong>' + receipt.store + '</strong>';
+                html += '<span style="font-size: 0.8rem; color: #64748b; margin-left: auto;">' + receipt.scannedAt + '</span>';
+                html += '</div>';
+                html += '<div>Date: ' + receipt.date + ' | Total: ' + receipt.total + ' | Items: ' + receipt.items.length + '</div>';
+                html += '<button class="btn" style="background: #dc2626; font-size: 0.8rem; padding: 4px 8px; margin-top: 8px;" onclick="removeFromCollection(' + i + ')">Remove</button>';
+                html += '</div>';
+            }
+            
+            if (allReceipts.length === 0) {
+                html = '<p style="text-align: center; color: #64748b;">No receipts collected yet.</p>';
+            }
+            
+            list.innerHTML = html;
+            viewer.style.display = 'block';
+        }
+
+        function hideCollection() {
+            document.getElementById('collectionViewer').style.display = 'none';
+        }
+
+        function removeFromCollection(index) {
+            allReceipts.splice(index, 1);
+            updateCollectionDisplay();
+            viewCollection(); // Refresh the view
+            showStatus('Receipt removed from collection', 'success');
+        }
+
+        function clearCollection() {
+            if (confirm('Are you sure you want to clear all ' + allReceipts.length + ' receipts?')) {
+                allReceipts = [];
+                updateCollectionDisplay();
+                hideCollection();
+                showStatus('All receipts cleared', 'success');
+            }
+        }
+
+        // CSV Export Functions
+        function exportCSV() {
+            if (allReceipts.length === 0) {
+                showStatus('No receipts to export', 'error');
+                return;
+            }
+
+            var csv = generateCSV();
+            downloadCSV(csv);
+            showStatus('CSV downloaded with ' + allReceipts.length + ' receipts!', 'success');
+        }
+
+        function generateCSV() {
+            // Find the maximum number of items across all receipts
+            var maxItems = 0;
+            for (var i = 0; i < allReceipts.length; i++) {
+                if (allReceipts[i].items.length > maxItems) {
+                    maxItems = allReceipts[i].items.length;
+                }
+            }
+
+            // Create CSV header
+            var headers = ['Store', 'Date', 'Total', 'Scanned At', 'AI Parsed'];
+            
+            // Add product columns
+            for (var p = 1; p <= maxItems; p++) {
+                headers.push('Product ' + p + ' Name');
+                headers.push('Product ' + p + ' Price');
+                headers.push('Product ' + p + ' Category');
+            }
+
+            var csvContent = headers.join(',') + '\n';
+
+            // Add data rows
+            for (var i = 0; i < allReceipts.length; i++) {
+                var receipt = allReceipts[i];
+                var row = [];
+                
+                // Basic receipt info
+                row.push(escapeCSV(receipt.store));
+                row.push(escapeCSV(receipt.date));
+                row.push(escapeCSV(receipt.total));
+                row.push(escapeCSV(receipt.scannedAt));
+                row.push(receipt.aiParsed ? 'Yes' : 'No');
+                
+                // Add items
+                for (var j = 0; j < maxItems; j++) {
+                    if (j < receipt.items.length) {
+                        var item = receipt.items[j];
+                        row.push(escapeCSV(item.name || ''));
+                        row.push(escapeCSV(item.price || ''));
+                        row.push(escapeCSV(item.category || ''));
+                    } else {
+                        row.push('', '', ''); // Empty cells for missing items
+                    }
+                }
+                
+                csvContent += row.join(',') + '\n';
+            }
+
+            return csvContent;
+        }
+
+        function escapeCSV(field) {
+            if (field === null || field === undefined) return '';
+            var str = String(field);
+            if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                return '"' + str.replace(/"/g, '""') + '"';
+            }
+            return str;
+        }
+
+        function downloadCSV(csvContent) {
+            var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            var link = document.createElement('a');
+            
+            if (link.download !== undefined) {
+                var url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'receipts-' + new Date().toISOString().split('T')[0] + '.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
         function resetUpload() {
             currentImage = null;
             extractedData = null;
@@ -580,6 +774,7 @@
             document.getElementById('previewArea').style.display = 'none';
             document.getElementById('processing').style.display = 'none';
             document.getElementById('results').style.display = 'none';
+            hideCollection(); // Hide collection viewer when resetting
         }
 
         // File input event listener
