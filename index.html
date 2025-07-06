@@ -612,22 +612,33 @@
                 try {
                     console.log('PWA ready for service worker');
                     initializeApp(); // Initialize app settings
+                    setupEventListeners(); // Setup event listeners
                 } catch (error) {
                     console.log('Service worker registration failed');
                     initializeApp(); // Still initialize app
+                    setupEventListeners(); // Setup event listeners
                 }
             });
         } else {
             // Initialize app even if no service worker support
-            window.addEventListener('load', initializeApp);
+            window.addEventListener('load', () => {
+                initializeApp();
+                setupEventListeners();
+            });
         }
 
         // Also initialize on DOM ready as backup
-        document.addEventListener('DOMContentLoaded', initializeApp);
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeApp();
+            setupEventListeners();
+        });
 
         // File input handling with better mobile support
-        document.addEventListener('DOMContentLoaded', function() {
+        function setupEventListeners() {
+            console.log('Setting up event listeners...');
+            
             const fileInput = document.getElementById('fileInput');
+            const uploadArea = document.getElementById('uploadArea');
             
             // Universal change handler
             fileInput.addEventListener('change', function(event) {
@@ -651,33 +662,40 @@
                 }
             });
             
-            console.log('✅ Universal file input handler attached');
-        });
+            // Drag and drop functionality
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
 
-        // Drag and drop functionality
-        const uploadArea = document.getElementById('uploadArea');
-        
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
 
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
 
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
-            }
-        });
+            uploadArea.addEventListener('click', () => {
+                document.getElementById('fileInput').click();
+            });
+            
+            console.log('✅ Event listeners setup complete');
+        }
 
-        uploadArea.addEventListener('click', () => {
-            document.getElementById('fileInput').click();
-        });
+        // Make functions globally available
+        window.openCamera = openCamera;
+        window.selectFile = selectFile;
+        window.toggleAI = toggleAI;
+        window.processReceipt = processReceipt;
+        window.resetUpload = resetUpload;
+        window.saveToSheet = saveToSheet;
+        window.processManualEntry = processManualEntry;
 
         function openCamera() {
             console.log('📷 Opening camera...');
@@ -688,10 +706,6 @@
             fileInput.setAttribute('capture', 'environment');
             // Use more specific accept attribute for camera to encourage JPEG conversion
             fileInput.setAttribute('accept', 'image/jpeg,image/jpg,image/png,image/webp,image/*');
-            
-            // Add change listener if not already added
-            fileInput.removeEventListener('change', handleFileSelect);
-            fileInput.addEventListener('change', handleFileSelect);
             
             fileInput.click();
         }
@@ -705,18 +719,7 @@
             fileInput.removeAttribute('capture');
             fileInput.setAttribute('accept', 'image/*');
             
-            // Add change listener if not already added
-            fileInput.removeEventListener('change', handleFileSelect);
-            fileInput.addEventListener('change', handleFileSelect);
-            
             fileInput.click();
-        }
-
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                handleFile(file);
-            }
         }
 
         // Enhanced HEIC/HEIF detection and conversion
