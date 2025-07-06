@@ -490,7 +490,7 @@
     <div class="container">
         <header class="header">
             <h1>📄 Receipt Scanner</h1>
-            <p>Snap, scan, and organize your receipts123</p>
+            <p>Snap, scan, and organize your receipts</p>
         </header>
 
         <main class="main-content">
@@ -527,7 +527,7 @@
                 <button class="btn btn-secondary" onclick="selectFile()">Choose File</button>
             </div>
 
-            <input type="file" id="fileInput" accept="image/*,image/heic,image/heif" capture="environment">
+            <input type="file" id="fileInput" accept="image/*" capture="environment">
 
             <div class="preview-area" id="previewArea">
                 <img id="previewImage" class="preview-image" alt="Receipt preview">
@@ -647,7 +647,7 @@
 
         function openCamera() {
             const fileInput = document.getElementById('fileInput');
-            // Better mobile camera support
+            // Better mobile camera support with more permissive accept
             fileInput.setAttribute('capture', 'environment'); // Use back camera
             fileInput.setAttribute('accept', 'image/*'); // Accept all images
             fileInput.click();
@@ -656,7 +656,8 @@
         function selectFile() {
             const fileInput = document.getElementById('fileInput');
             fileInput.removeAttribute('capture');
-            fileInput.setAttribute('accept', 'image/*,image/heic,image/heif'); // Include HEIC for better iOS support
+            // Very permissive - accept all image types
+            fileInput.setAttribute('accept', 'image/*,image/jpeg,image/jpg,image/png,image/gif,image/webp,image/bmp,image/tiff'); 
             fileInput.click();
         }
 
