@@ -173,6 +173,31 @@
         </header>
 
         <main class="main-content">
+            <!-- AI Toggle Section -->
+            <div style="background: rgba(255, 255, 255, 0.95); border-radius: 15px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                    <div style="text-align: center; flex: 1;">
+                        <div style="font-size: 1.5rem; margin-bottom: 5px;">📝</div>
+                        <span style="font-size: 0.9rem; color: #64748b;">Basic</span>
+                    </div>
+                    
+                    <div style="flex: 0 0 auto; margin: 0 20px;">
+                        <div id="aiToggle" onclick="toggleAI()" style="width: 60px; height: 30px; background: #e2e8f0; border-radius: 15px; cursor: pointer; position: relative; transition: all 0.3s ease;">
+                            <div id="toggleSlider" style="width: 26px; height: 26px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; flex: 1;">
+                        <div style="font-size: 1.5rem; margin-bottom: 5px;">🤖</div>
+                        <span style="font-size: 0.9rem; color: #64748b;">AI Enhanced</span>
+                    </div>
+                </div>
+                
+                <div id="toggleDescription" style="text-align: center; font-size: 0.85rem; color: #64748b; padding: 10px; background: #f8fafc; border-radius: 8px;">
+                    Fast basic text parsing
+                </div>
+            </div>
+
             <div class="upload-area" id="uploadArea" onclick="selectFile()">
                 <div style="font-size: 3rem; margin-bottom: 15px;">📷</div>
                 <h3>Take a photo or upload receipt</h3>
@@ -211,6 +236,7 @@
     <script>
         var currentImage = null;
         var extractedData = null;
+        var useAI = false; // Start with basic mode
 
         function showStatus(message, type) {
             var status = document.getElementById('status');
@@ -221,6 +247,34 @@
             setTimeout(function() {
                 status.style.display = 'none';
             }, 3000);
+        }
+
+        function toggleAI() {
+            useAI = !useAI;
+            updateToggleUI();
+            
+            var message = useAI ? 'AI Enhanced mode enabled' : 'Basic mode enabled';
+            showStatus(message, 'success');
+        }
+
+        function updateToggleUI() {
+            var toggle = document.getElementById('aiToggle');
+            var slider = document.getElementById('toggleSlider');
+            var description = document.getElementById('toggleDescription');
+            
+            if (useAI) {
+                toggle.style.background = '#3b82f6';
+                slider.style.transform = 'translateX(30px)';
+                description.textContent = '✨ AI provides better accuracy and automatic categorization';
+                description.style.background = '#eff6ff';
+                description.style.color = '#1e40af';
+            } else {
+                toggle.style.background = '#e2e8f0';
+                slider.style.transform = 'translateX(0px)';
+                description.textContent = 'Fast basic text parsing';
+                description.style.background = '#f8fafc';
+                description.style.color = '#64748b';
+            }
         }
 
         function openCamera() {
@@ -308,13 +362,85 @@
             document.getElementById('processing').style.display = 'block';
 
             performOCR().then(function(text) {
-                var data = parseReceiptText(text);
+                if (useAI) {
+                    updateProcessingText('AI is organizing receipt data...');
+                    return parseReceiptWithAI(text);
+                } else {
+                    updateProcessingText('Organizing receipt data...');
+                    return parseReceiptText(text);
+                }
+            }).then(function(data) {
                 displayResults(data);
             }).catch(function(error) {
-                showStatus('OCR failed: ' + error.message, 'error');
+                showStatus('Processing failed: ' + error.message, 'error');
                 document.getElementById('processing').style.display = 'none';
                 document.getElementById('previewArea').style.display = 'block';
             });
+        }
+
+        function updateProcessingText(text) {
+            var processing = document.getElementById('processing');
+            var p = processing.querySelector('p');
+            if (p) p.textContent = text;
+        }
+
+        function parseReceiptWithAI(text) {
+            return new Promise(function(resolve, reject) {
+                // For demo purposes, we'll simulate AI processing
+                // In production, you'd call your AI API here
+                
+                setTimeout(function() {
+                    try {
+                        var aiData = enhanceReceiptDataWithAI(parseReceiptText(text));
+                        aiData.aiParsed = true;
+                        resolve(aiData);
+                    } catch (error) {
+                        // Fallback to basic parsing if AI fails
+                        showStatus('AI parsing failed, using basic parsing', 'error');
+                        resolve(parseReceiptText(text));
+                    }
+                }, 2000); // Simulate AI processing time
+            });
+        }
+
+        function enhanceReceiptDataWithAI(basicData) {
+            // Simulate AI enhancements
+            var enhanced = JSON.parse(JSON.stringify(basicData)); // Deep copy
+            
+            // AI would categorize items better
+            for (var i = 0; i < enhanced.items.length; i++) {
+                var item = enhanced.items[i];
+                var name = item.name.toLowerCase();
+                
+                // Simple categorization logic (AI would be much smarter)
+                if (name.includes('milk') || name.includes('cheese') || name.includes('yogurt')) {
+                    item.category = 'Dairy';
+                } else if (name.includes('bread') || name.includes('cereal') || name.includes('pasta')) {
+                    item.category = 'Grains';
+                } else if (name.includes('apple') || name.includes('banana') || name.includes('orange')) {
+                    item.category = 'Fruits';
+                } else if (name.includes('chicken') || name.includes('beef') || name.includes('fish')) {
+                    item.category = 'Meat';
+                } else if (name.includes('soap') || name.includes('shampoo') || name.includes('detergent')) {
+                    item.category = 'Personal Care';
+                } else {
+                    item.category = 'General';
+                }
+            }
+            
+            // AI would also clean up store names better
+            var storeName = enhanced.store.toLowerCase();
+            if (storeName.includes('walmart') || storeName.includes('wal-mart')) {
+                enhanced.store = 'Walmart';
+            } else if (storeName.includes('target')) {
+                enhanced.store = 'Target';
+            } else if (storeName.includes('kroger')) {
+                enhanced.store = 'Kroger';
+            } else if (storeName.includes('safeway')) {
+                enhanced.store = 'Safeway';
+            }
+            
+            return enhanced;
         }
 
         function performOCR() {
@@ -357,6 +483,22 @@
                 store = lines[0].trim();
             }
 
+            // Better date detection
+            var date = new Date().toLocaleDateString();
+            var datePatterns = [
+                /\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/,
+                /\b\d{1,2}-\d{1,2}-\d{2,4}\b/,
+                /\b\d{4}-\d{1,2}-\d{1,2}\b/
+            ];
+            
+            for (var p = 0; p < datePatterns.length; p++) {
+                var match = text.match(datePatterns[p]);
+                if (match) {
+                    date = match[0];
+                    break;
+                }
+            }
+
             var total = 'N/A';
             var amounts = text.match(/\$\d+\.\d{2}/g);
             if (amounts && amounts.length > 0) {
@@ -370,38 +512,63 @@
                     var name = line.replace(/\$\d+\.\d{2}.*/, '').trim();
                     var price = line.match(/\$\d+\.\d{2}/)[0];
                     if (name.length > 2) {
-                        items.push({ name: name, price: price });
+                        items.push({ 
+                            name: name, 
+                            price: price,
+                            category: 'General'
+                        });
                     }
                 }
             }
 
             if (items.length === 0) {
-                items.push({ name: 'Items found but details unclear', price: total });
+                items.push({ 
+                    name: 'Items found but details unclear', 
+                    price: total,
+                    category: 'General'
+                });
             }
 
             return {
                 store: store,
-                date: new Date().toLocaleDateString(),
+                date: date,
                 total: total,
                 items: items,
-                rawText: text
+                rawText: text,
+                aiParsed: false
             };
         }
 
         function displayResults(data) {
             document.getElementById('processing').style.display = 'none';
             
+            var aiIndicator = data.aiParsed ? 
+                '<span style="background: #10b981; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 10px;">✨ AI Enhanced</span>' :
+                '<span style="background: #f59e0b; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 10px;">📝 Basic Parsing</span>';
+            
             var html = '';
+            html += '<div style="margin-bottom: 15px;"><h3 style="display: inline;">Receipt Details</h3>' + aiIndicator + '</div>';
             html += '<div class="result-item"><strong>Store:</strong> ' + data.store + '</div>';
             html += '<div class="result-item"><strong>Date:</strong> ' + data.date + '</div>';
             html += '<div class="result-item"><strong>Total:</strong> ' + data.total + '</div>';
-            html += '<div class="result-item"><strong>Items:</strong><ul>';
+            html += '<div class="result-item"><strong>Items:</strong><ul style="margin-top: 10px;">';
             
             for (var i = 0; i < data.items.length; i++) {
-                html += '<li>' + data.items[i].name + ' - ' + data.items[i].price + '</li>';
+                var item = data.items[i];
+                html += '<li>' + item.name + ' - ' + item.price;
+                if (data.aiParsed && item.category !== 'General') {
+                    html += ' <em style="color: #64748b;">(' + item.category + ')</em>';
+                }
+                html += '</li>';
             }
             
             html += '</ul></div>';
+            
+            // Add raw text view
+            html += '<details style="margin-top: 15px;">';
+            html += '<summary style="cursor: pointer; font-weight: bold; color: #64748b;">View Extracted Text</summary>';
+            html += '<div style="background: #f1f5f9; padding: 10px; border-radius: 5px; margin-top: 10px; font-family: monospace; font-size: 0.85rem; white-space: pre-wrap;">' + data.rawText + '</div>';
+            html += '</details>';
             
             document.getElementById('resultsContent').innerHTML = html;
             document.getElementById('results').style.display = 'block';
@@ -447,6 +614,9 @@
             });
 
             showStatus('Receipt Scanner ready!', 'success');
+            
+            // Initialize toggle UI
+            updateToggleUI();
         });
     </script>
 </body>
