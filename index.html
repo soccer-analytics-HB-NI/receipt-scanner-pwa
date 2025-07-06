@@ -32,891 +32,6 @@
         window.addEventListener('load', () => {
             if (typeof Tesseract === 'undefined') {
                 console.error('Tesseract.js failed to load');
-                showStatus('OCR library failed to load. Check internet connection.', 'error');
-            } else {
-                console.log('Tesseract.js loaded successfully');
-            }
-        });
-    </script>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            min-height: 100vh;
-            color: #333;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            
-            /* Default Basic mode background */
-            background: linear-gradient(135deg, #2D3748 0%, #4A5568 40%, #2D3748 100%);
-            background-size: 400% 400%;
-            animation: gradientShiftBasic 10s ease infinite;
-        }
-
-        /* AI mode background (default) */
-        body.ai-mode {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 40%, #667eea 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 8s ease infinite;
-        }
-
-        /* Basic mode background */
-        body.basic-mode {
-            background: linear-gradient(135deg, #2D3748 0%, #4A5568 40%, #2D3748 100%);
-            background-size: 400% 400%;
-            animation: gradientShiftBasic 10s ease infinite;
-        }
-
-        @keyframes gradientShift {
-            0% { 
-                background-position: 0% 50%;
-                filter: hue-rotate(0deg);
-            }
-            25% {
-                background-position: 100% 50%;
-                filter: hue-rotate(5deg);
-            }
-            50% { 
-                background-position: 100% 0%;
-                filter: hue-rotate(10deg);
-            }
-            75% {
-                background-position: 0% 0%;
-                filter: hue-rotate(5deg);
-            }
-            100% { 
-                background-position: 0% 50%;
-                filter: hue-rotate(0deg);
-            }
-        }
-
-        @keyframes gradientShiftBasic {
-            0% { 
-                background-position: 0% 50%;
-                filter: brightness(1);
-            }
-            50% { 
-                background-position: 100% 50%;
-                filter: brightness(1.1);
-            }
-            100% { 
-                background-position: 0% 50%;
-                filter: brightness(1);
-            }
-        }
-
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            color: white;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .header p {
-            opacity: 0.9;
-            font-size: 1.1rem;
-        }
-
-        .main-content {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            flex-grow: 1;
-        }
-
-        .ai-toggle-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .ai-toggle-container:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .ai-toggle {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-            gap: 20px;
-            width: 100%;
-        }
-
-        .toggle-left {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            justify-self: end;
-        }
-
-        .toggle-right {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            justify-self: start;
-        }
-
-        .toggle-switch-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(248, 250, 252, 0.8);
-            padding: 8px 16px;
-            border-radius: 25px;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-            justify-self: center;
-        }
-
-        .toggle-switch-wrapper.active {
-            background: rgba(37, 99, 235, 0.1);
-            border-color: rgba(37, 99, 235, 0.3);
-        }
-
-        .toggle-switch {
-            position: relative;
-            width: 70px;
-            height: 35px;
-            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .toggle-switch.active {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
-        }
-
-        .toggle-slider {
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 29px;
-            height: 29px;
-            background: linear-gradient(135deg, #ffffff, #f8fafc);
-            border-radius: 50%;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        /* When toggle is active (AI mode), slider moves to the right */
-        .toggle-switch.active .toggle-slider {
-            transform: translateX(35px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Default state: slider on the left (Basic mode) */
-        .toggle-switch:not(.active) .toggle-slider {
-            transform: translateX(0px);
-        }
-
-        .toggle-icon {
-            font-size: 1.8rem;
-            margin-bottom: 4px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            opacity: 0.7;
-            transform: scale(1);
-        }
-
-        .toggle-icon.active {
-            opacity: 1;
-            transform: scale(1.3);
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-        }
-
-        .toggle-label {
-            font-weight: 500;
-            color: #374151;
-            font-size: 1rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            opacity: 0.7;
-        }
-
-        .toggle-label.active {
-            color: #2563eb;
-            font-weight: 700;
-            opacity: 1;
-        }
-
-        .toggle-description {
-            font-size: 0.9em;
-            color: #64748b;
-            text-align: center;
-            margin-top: 15px;
-            padding: 12px;
-            background: rgba(248, 250, 252, 0.6);
-            border-radius: 12px;
-            border-left: 4px solid #e2e8f0;
-            transition: all 0.3s ease;
-        }
-
-        .toggle-description.ai-active {
-            border-left-color: #3b82f6;
-            background: rgba(59, 130, 246, 0.05);
-            color: #1e40af;
-        }
-
-        @media (max-width: 600px) {
-            .ai-toggle {
-                display: grid;
-                grid-template-columns: 1fr auto 1fr;
-                align-items: center;
-                gap: 15px;
-                width: 100%;
-            }
-            
-            .toggle-left {
-                justify-self: end;
-                grid-column: 1;
-            }
-            
-            .toggle-switch-wrapper {
-                justify-self: center;
-                grid-column: 2;
-            }
-            
-            .toggle-right {
-                justify-self: start;
-                grid-column: 3;
-            }
-
-            .toggle-left, .toggle-right {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 6px;
-            }
-
-            .toggle-icon {
-                font-size: 1.4rem;
-            }
-
-            .toggle-label {
-                font-size: 0.85rem;
-            }
-
-            .toggle-switch {
-                width: 60px;
-                height: 30px;
-            }
-
-            .toggle-slider {
-                width: 24px;
-                height: 24px;
-            }
-
-            .toggle-switch.active .toggle-slider {
-                transform: translateX(30px);
-            }
-        }
-
-        .upload-area {
-            border: 3px dashed #e2e8f0;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-            margin-bottom: 30px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .upload-area:hover {
-            border-color: #2563eb;
-            background-color: #f8fafc;
-        }
-
-        .upload-area.dragover {
-            border-color: #2563eb;
-            background-color: #eff6ff;
-        }
-
-        .upload-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            color: #64748b;
-        }
-
-        .upload-text {
-            color: #64748b;
-            margin-bottom: 20px;
-        }
-
-        .upload-text h3 {
-            margin-bottom: 10px;
-            color: #1e293b;
-        }
-
-        .btn {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 5px;
-        }
-
-        .btn:hover {
-            background: #1d4ed8;
-            transform: translateY(-1px);
-        }
-
-        .btn-secondary {
-            background: #64748b;
-        }
-
-        .btn-secondary:hover {
-            background: #475569;
-        }
-
-        #fileInput {
-            display: none;
-        }
-
-        .preview-area {
-            margin-top: 20px;
-            display: none;
-        }
-
-        .preview-image {
-            max-width: 100%;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .processing {
-            text-align: center;
-            padding: 20px;
-            display: none;
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #2563eb;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .results {
-            margin-top: 20px;
-            display: none;
-        }
-
-        .result-item {
-            background: #f8fafc;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            border-left: 4px solid #2563eb;
-        }
-
-        .result-item strong {
-            color: #1e293b;
-        }
-
-        .status {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 10px 20px;
-            border-radius: 10px;
-            color: white;
-            display: none;
-            z-index: 1000;
-        }
-
-        .status.success {
-            background: #10b981;
-        }
-
-        .status.error {
-            background: #ef4444;
-        }
-
-        .status.warning {
-            background: #f59e0b;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 10px;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .main-content {
-                padding: 20px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header class="header">
-            <h1>📄 Receipt Scanner</h1>
-            <p>Snap, scan, and organize your receipts</p>
-        </header>
-
-        <main class="main-content">
-            <div class="ai-toggle-container">
-                <div class="ai-toggle">
-                    <div class="toggle-left">
-                        <div class="toggle-icon" id="basicIcon">📝</div>
-                        <span class="toggle-label" id="basicLabel">Basic Processing</span>
-                    </div>
-                    
-                    <div class="toggle-switch-wrapper" id="toggleWrapper">
-                        <div class="toggle-switch" id="aiToggle" onclick="toggleAI()">
-                            <div class="toggle-slider"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="toggle-right">
-                        <div class="toggle-icon" id="aiIcon">🤖</div>
-                        <span class="toggle-label" id="aiLabel">AI Enhanced</span>
-                    </div>
-                </div>
-                <div class="toggle-description" id="toggleDescription">
-                    AI provides better accuracy and automatic categorization
-                </div>
-            </div>
-
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">📷</div>
-                <div class="upload-text">
-                    <h3>Take a photo or upload receipt</h3>
-                    <p>Drag and drop an image here, or click to select</p>
-                    <small style="color: #9ca3af;">Supports HEIC/HEIF (iPhone photos), JPEG, PNG, and more</small>
-                </div>
-                <button class="btn" onclick="openCamera()">Take Photo</button>
-                <button class="btn btn-secondary" onclick="selectFile()">Choose File</button>
-            </div>
-
-            <input type="file" id="fileInput" accept="image/*" style="display: none;">
-
-            <div class="preview-area" id="previewArea">
-                <img id="previewImage" class="preview-image" alt="Receipt preview">
-                <div style="text-align: center; margin-top: 15px;">
-                    <button class="btn" onclick="processReceipt()">Process Receipt</button>
-                    <button class="btn btn-secondary" onclick="resetUpload()">Try Another</button>
-                </div>
-            </div>
-
-            <div class="processing" id="processing">
-                <div class="spinner"></div>
-                <p>Processing your receipt...</p>
-                <small>Extracting text and organizing data</small>
-            </div>
-
-            <div class="results" id="results">
-                <h3>Receipt Details</h3>
-                <div id="resultsContent"></div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <button class="btn" onclick="saveToSheet()">Save to Spreadsheet</button>
-                    <button class="btn btn-secondary" onclick="resetUpload()">Scan Another</button>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <div class="status" id="status"></div>
-
-    <script>
-        // Global variables
-        let currentImage = null;
-        let extractedData = null;
-        let extractedText = null;
-        let userApiKey = null;
-        let useAI = false; // Default to Basic Processing mode
-
-        // Define all functions in global scope first
-        function initializeApp() {
-            console.log('Receipt Scanner initialized');
-            useAI = true; // Default to AI mode since API key is server-side
-            
-            // Update toggle UI
-            updateToggleUI();
-            
-            showStatus('Receipt Scanner ready!', 'success');
-        }
-
-        function toggleAI() {
-            useAI = !useAI;
-            updateToggleUI();
-            
-            const status = useAI ? 'AI Enhanced mode enabled' : 'Basic processing mode enabled';
-            showStatus(status, 'success');
-        }
-
-        function updateToggleUI() {
-            const toggle = document.getElementById('aiToggle');
-            const description = document.getElementById('toggleDescription');
-            
-            if (useAI) {
-                toggle.classList.add('active');
-                description.textContent = '✨ AI provides better accuracy and automatic categorization';
-            } else {
-                toggle.classList.remove('active');
-                description.textContent = '📝 Basic text parsing - fast and free (no AI required)';
-            }
-        }
-
-        function openCamera() {
-            console.log('📷 Opening camera...');
-            const fileInput = document.getElementById('fileInput');
-            
-            // Reset and configure for camera
-            fileInput.value = '';
-            fileInput.setAttribute('capture', 'environment');
-            // Use more specific accept attribute for camera to encourage JPEG conversion
-            fileInput.setAttribute('accept', 'image/jpeg,image/jpg,image/png,image/webp,image/*');
-            
-            fileInput.click();
-        }
-
-        function selectFile() {
-            console.log('📁 Opening file selector...');
-            const fileInput = document.getElementById('fileInput');
-            
-            // Reset and configure for file selection
-            fileInput.value = '';
-            fileInput.removeAttribute('capture');
-            fileInput.setAttribute('accept', 'image/*');
-            
-            fileInput.click();
-        }
-
-        async function processReceipt() {
-            if (!currentImage) return;
-
-            // Show processing state
-            document.getElementById('previewArea').style.display = 'none';
-            document.getElementById('processing').style.display = 'block';
-
-            try {
-                // Step 1: Extract text using OCR
-                updateProcessingText('Extracting text from image...');
-                extractedText = await performOCR();
-                
-                // Step 2: Parse based on user's AI preference
-                if (useAI) {
-                    updateProcessingText('AI is organizing receipt data...');
-                    extractedData = await parseReceiptWithAI(extractedText);
-                } else {
-                    updateProcessingText('Organizing receipt data...');
-                    extractedData = parseReceiptText(extractedText);
-                }
-
-                displayResults();
-                
-            } catch (error) {
-                console.error('Processing error:', error);
-                
-                // Show error but offer fallback
-                showStatus('Processing failed: ' + error.message, 'error');
-                
-                // Try basic parsing as fallback
-                updateProcessingText('Trying basic parsing...');
-                try {
-                    extractedData = parseReceiptText(extractedText || 'No text extracted');
-                    displayResults();
-                } catch (fallbackError) {
-                    displayFallbackEntry(error.message);
-                }
-            }
-        }
-
-        function resetUpload() {
-            currentImage = null;
-            extractedData = null;
-            extractedText = null;
-            document.getElementById('fileInput').value = '';
-            document.getElementById('uploadArea').style.display = 'block';
-            document.getElementById('previewArea').style.display = 'none';
-            document.getElementById('processing').style.display = 'none';
-            document.getElementById('results').style.display = 'none';
-        }
-
-        function saveToSheet() {
-            // Placeholder for Google Sheets integration
-            showStatus('Google Sheets integration coming soon!', 'success');
-        }
-
-        function processManualEntry() {
-            const store = document.getElementById('manualStore').value || 'Unknown Store';
-            const date = document.getElementById('manualDate').value || new Date().toLocaleDateString();
-            const total = document.getElementById('manualTotal').value || 'N/A';
-            const itemsText = document.getElementById('manualItems').value;
-            
-            // Parse manual items
-            const items = [];
-            if (itemsText.trim()) {
-                const lines = itemsText.split('\n');
-                lines.forEach(line => {
-                    const trimmed = line.trim();
-                    if (trimmed) {
-                        const parts = trimmed.split(' - ');
-                        items.push({
-                            name: parts[0] || trimmed,
-                            price: parts[1] || 'N/A',
-                            category: 'General'
-                        });
-                    }
-                });
-            } else {
-                items.push({
-                    name: 'Manual entry - see total',
-                    price: total,
-                    category: 'General'
-                });
-            }
-
-            extractedData = {
-                store: store,
-                date: date,
-                total: total,
-                items: items,
-                rawText: 'Manual entry - OCR was not available'
-            };
-
-            displayResults();
-            showStatus('Manual entry saved successfully!', 'success');
-        }
-
-        function showStatus(message, type) {
-            const status = document.getElementById('status');
-            status.textContent = message;
-            status.className = `status ${type}`;
-            status.style.display = 'block';
-            
-            setTimeout(() => {
-                status.style.display = 'none';
-            }, 3000);
-        }
-
-        // Service Worker Registration and App Initialization
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', async () => {
-                try {
-                    console.log('PWA ready for service worker');
-                    initializeApp(); // Initialize app settings
-                    setupEventListeners(); // Setup event listeners
-                } catch (error) {
-                    console.log('Service worker registration failed');
-                    initializeApp(); // Still initialize app
-                    setupEventListeners(); // Setup event listeners
-                }
-            });
-        } else {
-            // Initialize app even if no service worker support
-            window.addEventListener('load', () => {
-                initializeApp();
-                setupEventListeners();
-            });
-        }
-
-        // Also initialize on DOM ready as backup
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeApp();
-            setupEventListeners();
-        });
-
-        // Make all functions globally available immediately
-        window.toggleAI = toggleAI;
-        window.openCamera = openCamera;
-        window.selectFile = selectFile;
-        window.processReceipt = processReceipt;
-        window.resetUpload = resetUpload;
-        window.saveToSheet = saveToSheet;
-        window.processManualEntry = processManualEntry;
-
-        // File input handling with better mobile support
-        function setupEventListeners() {
-            console.log('Setting up event listeners...');
-            
-            const fileInput = document.getElementById('fileInput');
-            const uploadArea = document.getElementById('uploadArea');
-            
-            if (!fileInput || !uploadArea) {
-                console.error('Required elements not found!');
-                return;
-            }
-            
-            // Universal change handler
-            fileInput.addEventListener('change', function(event) {
-                console.log('=== FILE INPUT CHANGE EVENT ===');
-                console.log('Event type:', event.type);
-                console.log('Files:', event.target.files);
-                console.log('Files length:', event.target.files.length);
-                
-                if (event.target.files.length > 0) {
-                    const file = event.target.files[0];
-                    console.log('File detected:', {
-                        name: file.name,
-                        type: file.type,
-                        size: file.size,
-                        lastModified: new Date(file.lastModified).toISOString()
-                    });
-                    
-                    handleFile(file);
-                } else {
-                    console.log('❌ No files in change event');
-                }
-            });
-            
-            // Drag and drop functionality
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.classList.add('dragover');
-            });
-
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.classList.remove('dragover');
-            });
-
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    handleFile(files[0]);
-                }
-            });
-
-            uploadArea.addEventListener('click', () => {
-                document.getElementById('fileInput').click();
-            });
-            
-            console.log('✅ Event listeners setup complete');
-        }
-
-
-
-        // Enhanced HEIC/HEIF detection and conversion
-        async function handleFile(file) {
-            console.log('File selected:', file.name, file.type, file.size);
-            
-            // Check file size first (increased for high-res phone photos)
-            if (file.size > 25 * 1024 * 1024) {
-                showStatus('Image too large. Please use an image smaller than 25MB.', 'error');
-                return;
-            }
-
-            // Detect HEIC/HEIF by file extension AND MIME type
-            const fileName = file.name.toLowerCase();
-            const isHeicByExtension = fileName.endsWith('.heic') || fileName.endsWith('.heif');
-            const isHeicByMime = file.type.toLowerCase().includes('heic') || file.type.toLowerCase().includes('heif');
-            
-            if (isHeicByExtension || isHeicByMime) {
-                console.log('🔄 HEIC/HEIF file detected, attempting conversion...');
-                await handleHeicFile(file);
-                return;
-            }
-
-            // Handle other image formats
-            if (!file.type.startsWith('image/') && file.type !== '') {
-                // Check file extension as fallback
-                const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff', '.tif'];
-                const hasImageExtension = imageExtensions.some(ext => fileName.endsWith(ext));
-                
-                if (!hasImageExtension) {
-                    showStatus('Please select an image file', 'error');
-                    return;
-                }
-                console.log('MIME type missing but file extension suggests image');
-            }
-
-            currentImage = file;
-            
-            // Use createImageBitmap for better format support if available
-            if (window.createImageBitmap) {
-                handleFileWithImageBitmap(file);
-            } else {
-                handleFileWithFileReader(file);
-            }
-        }
-
-        // Handle HEIC/HEIF files with conversion
-        async function handleHeicFile(file) {
-            try {
-                showStatus('Converting iPhone photo format...', 'warning');
-                
-                // Check if heic2any library is available
-                if (typeof heic2any === 'undefined') {
-                    console.log('heic2any library not available, trying browser conversion...');
-                    await tryBrowserHeicConversion(file);
-                    return;
-                }
-
-                console.log('Using heic2any library for conversion...');
-                
-                // Convert HEIC to JPEG using heic2any
-                const convertedBlob = await heic2any({
-                    blob: file,
-                    toType: "image/jpeg",
-                    quality: 0.8
-                });
-
-                console.log('✅ HEIC conversion successful');
-                
-                // Create a new File object from the converted blob
-                const convertedFile = new File([convertedBlob], 
-                    file.name.replace(/\.(heic|heif)$/i, '.jpg'), 
-                    { type: 'image/jpeg' }
-                );
-
-                currentImage = convertedFile;
-                
-                // Process the converted file
-                if (window.createImageBitmap) {
-                    handleFileWithImageBitmap(convertedFile);
-                } else {
-                    handleFileWithFileReader(convertedFile);
-                }
-                
                 showStatus('iPhone photo converted successfully!', 'success');
                 
             } catch (error) {
@@ -1475,8 +590,1550 @@
             const amounts = text.match(/\$\d+\.\d{2}/g);
             if (amounts && amounts.length > 0) {
                 const sortedAmounts = amounts.sort((a, b) => {
-                    const aVal = parseFloat(a.replace(', ''));
-                    const bVal = parseFloat(b.replace(', ''));
+                    const aVal = parseFloat(a.replace('('OCR library failed to load. Check internet connection.', 'error');
+            } else {
+                console.log('Tesseract.js loaded successfully');
+            }
+        });
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            color: #333;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Default Basic mode background */
+            background: linear-gradient(135deg, #2D3748 0%, #4A5568 40%, #2D3748 100%);
+            background-size: 400% 400%;
+            animation: gradientShiftBasic 10s ease infinite;
+        }
+
+        /* AI mode background (default) */
+        body.ai-mode {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 40%, #667eea 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        /* Basic mode background */
+        body.basic-mode {
+            background: linear-gradient(135deg, #2D3748 0%, #4A5568 40%, #2D3748 100%);
+            background-size: 400% 400%;
+            animation: gradientShiftBasic 10s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { 
+                background-position: 0% 50%;
+                filter: hue-rotate(0deg);
+            }
+            25% {
+                background-position: 100% 50%;
+                filter: hue-rotate(5deg);
+            }
+            50% { 
+                background-position: 100% 0%;
+                filter: hue-rotate(10deg);
+            }
+            75% {
+                background-position: 0% 0%;
+                filter: hue-rotate(5deg);
+            }
+            100% { 
+                background-position: 0% 50%;
+                filter: hue-rotate(0deg);
+            }
+        }
+
+        @keyframes gradientShiftBasic {
+            0% { 
+                background-position: 0% 50%;
+                filter: brightness(1);
+            }
+            50% { 
+                background-position: 100% 50%;
+                filter: brightness(1.1);
+            }
+            100% { 
+                background-position: 0% 50%;
+                filter: brightness(1);
+            }
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            flex-grow: 1;
+        }
+
+        .ai-toggle-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ai-toggle-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .ai-toggle {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .toggle-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            justify-self: end;
+        }
+
+        .toggle-right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            justify-self: start;
+        }
+
+        .toggle-switch-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(248, 250, 252, 0.8);
+            padding: 8px 16px;
+            border-radius: 25px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            justify-self: center;
+        }
+
+        .toggle-switch-wrapper.active {
+            background: rgba(37, 99, 235, 0.1);
+            border-color: rgba(37, 99, 235, 0.3);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 70px;
+            height: 35px;
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-switch.active {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 29px;
+            height: 29px;
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* When toggle is active (AI mode), slider moves to the right */
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(35px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Default state: slider on the left (Basic mode) */
+        .toggle-switch:not(.active) .toggle-slider {
+            transform: translateX(0px);
+        }
+
+        .toggle-icon {
+            font-size: 1.8rem;
+            margin-bottom: 4px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.7;
+            transform: scale(1);
+        }
+
+        .toggle-icon.active {
+            opacity: 1;
+            transform: scale(1.3);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .toggle-label {
+            font-weight: 500;
+            color: #374151;
+            font-size: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .toggle-label.active {
+            color: #2563eb;
+            font-weight: 700;
+            opacity: 1;
+        }
+
+        .toggle-description {
+            font-size: 0.9em;
+            color: #64748b;
+            text-align: center;
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(248, 250, 252, 0.6);
+            border-radius: 12px;
+            border-left: 4px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-description.ai-active {
+            border-left-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+            color: #1e40af;
+        }
+
+        @media (max-width: 600px) {
+            .ai-toggle {
+                display: grid;
+                grid-template-columns: 1fr auto 1fr;
+                align-items: center;
+                gap: 15px;
+                width: 100%;
+            }
+            
+            .toggle-left {
+                justify-self: end;
+                grid-column: 1;
+            }
+            
+            .toggle-switch-wrapper {
+                justify-self: center;
+                grid-column: 2;
+            }
+            
+            .toggle-right {
+                justify-self: start;
+                grid-column: 3;
+            }
+
+            .toggle-left, .toggle-right {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .toggle-icon {
+                font-size: 1.4rem;
+            }
+
+            .toggle-label {
+                font-size: 0.85rem;
+            }
+
+            .toggle-switch {
+                width: 60px;
+                height: 30px;
+            }
+
+            .toggle-slider {
+                width: 24px;
+                height: 24px;
+            }
+
+            .toggle-switch.active .toggle-slider {
+                transform: translateX(30px);
+            }
+        }
+
+        .upload-area {
+            border: 3px dashed #e2e8f0;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #2563eb;
+            background-color: #f8fafc;
+        }
+
+        .upload-area.dragover {
+            border-color: #2563eb;
+            background-color: #eff6ff;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #64748b;
+        }
+
+        .upload-text {
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .upload-text h3 {
+            margin-bottom: 10px;
+            color: #1e293b;
+        }
+
+        .btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #64748b;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .preview-area {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .processing {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-item {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .result-item strong {
+            color: #1e293b;
+        }
+
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: white;
+            display: none;
+            z-index: 1000;
+        }
+
+        .status.success {
+            background: #10b981;
+        }
+
+        .status.error {
+            background: #ef4444;
+        }
+
+        .status.warning {
+            background: #f59e0b;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📄 Receipt Scanner</h1>
+            <p>Snap, scan, and organize your receipts</p>
+        </header>
+
+        <main class="main-content">
+            <div class="ai-toggle-container">
+                <div class="ai-toggle">
+                    <div class="toggle-left">
+                        <div class="toggle-icon" id="basicIcon">📝</div>
+                        <span class="toggle-label" id="basicLabel">Basic Processing</span>
+                    </div>
+                    
+                    <div class="toggle-switch-wrapper" id="toggleWrapper">
+                        <div class="toggle-switch" id="aiToggle" onclick="toggleAI()">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="toggle-right">
+                        <div class="toggle-icon" id="aiIcon">🤖</div>
+                        <span class="toggle-label" id="aiLabel">AI Enhanced</span>
+                    </div>
+                </div>
+                <div class="toggle-description" id="toggleDescription">
+                    AI provides better accuracy and automatic categorization
+                </div>
+            </div>
+
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">
+                    <h3>Take a photo or upload receipt</h3>
+                    <p>Drag and drop an image here, or click to select</p>
+                    <small style="color: #9ca3af;">Supports HEIC/HEIF (iPhone photos), JPEG, PNG, and more</small>
+                </div>
+                <button class="btn" onclick="openCamera()">Take Photo</button>
+                <button class="btn btn-secondary" onclick="selectFile()">Choose File</button>
+            </div>
+
+            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+
+            <div class="preview-area" id="previewArea">
+                <img id="previewImage" class="preview-image" alt="Receipt preview">
+                <div style="text-align: center; margin-top: 15px;">
+                    <button class="btn" onclick="processReceipt()">Process Receipt</button>
+                    <button class="btn btn-secondary" onclick="resetUpload()">Try Another</button>
+                </div>
+            </div>
+
+            <div class="processing" id="processing">
+                <div class="spinner"></div>
+                <p>Processing your receipt...</p>
+                <small>Extracting text and organizing data</small>
+            </div>
+
+            <div class="results" id="results">
+                <h3>Receipt Details</h3>
+                <div id="resultsContent"></div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn" onclick="saveToSheet()">Save to Spreadsheet</button>
+                    <button class="btn btn-secondary" onclick="resetUpload()">Scan Another</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <script>
+        // Global variables
+        let currentImage = null;
+        let extractedData = null;
+        let extractedText = null;
+        let userApiKey = null;
+        let useAI = false; // Default to Basic Processing mode
+
+        // Initialize app settings
+        function initializeApp() {
+            console.log('Receipt Scanner initialized');
+            useAI = true; // Default to AI mode since API key is server-side
+            
+            // Update toggle UI
+            updateToggleUI();
+            
+            showStatus('Receipt Scanner ready!', 'success');
+        }
+
+        // Toggle AI processing on/off
+        function toggleAI() {
+            useAI = !useAI;
+            updateToggleUI();
+            
+            const status = useAI ? 'AI Enhanced mode enabled' : 'Basic processing mode enabled';
+            showStatus(status, 'success');
+        }
+
+        // Update toggle UI appearance
+        function updateToggleUI() {
+            const toggle = document.getElementById('aiToggle');
+            const description = document.getElementById('toggleDescription');
+            
+            if (useAI) {
+                toggle.classList.add('active');
+                description.textContent = '✨ AI provides better accuracy and automatic categorization';
+                description.classList.add('ai-active');
+            } else {
+                toggle.classList.remove('active');
+                description.textContent = '📝 Basic text parsing - fast and free (no AI required)';
+                description.classList.remove('ai-active');
+            }
+        }
+
+        // Service Worker Registration and App Initialization
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    console.log('PWA ready for service worker');
+                    initializeApp(); // Initialize app settings
+                } catch (error) {
+                    console.log('Service worker registration failed');
+                    initializeApp(); // Still initialize app
+                }
+            });
+        } else {
+            // Initialize app even if no service worker support
+            window.addEventListener('load', initializeApp);
+        }
+
+        // Also initialize on DOM ready as backup
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        // File input handling with better mobile support
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('fileInput');
+            
+            // Universal change handler
+            fileInput.addEventListener('change', function(event) {
+                console.log('=== FILE INPUT CHANGE EVENT ===');
+                console.log('Event type:', event.type);
+                console.log('Files:', event.target.files);
+                console.log('Files length:', event.target.files.length);
+                
+                if (event.target.files.length > 0) {
+                    const file = event.target.files[0];
+                    console.log('File detected:', {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        lastModified: new Date(file.lastModified).toISOString()
+                    });
+                    
+                    handleFile(file);
+                } else {
+                    console.log('❌ No files in change event');
+                }
+            });
+            
+            console.log('✅ Universal file input handler attached');
+        });
+
+        // Drag and drop functionality
+        const uploadArea = document.getElementById('uploadArea');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        uploadArea.addEventListener('click', () => {
+            document.getElementById('fileInput').click();
+        });
+
+        function openCamera() {
+            console.log('📷 Opening camera...');
+            const fileInput = document.getElementById('fileInput');
+            
+            // Reset and configure for camera
+            fileInput.value = '';
+            fileInput.setAttribute('capture', 'environment');
+            // Use more specific accept attribute for camera to encourage JPEG conversion
+            fileInput.setAttribute('accept', 'image/jpeg,image/jpg,image/png,image/webp,image/*');
+            
+            // Add change listener if not already added
+            fileInput.removeEventListener('change', handleFileSelect);
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            fileInput.click();
+        }
+
+        function selectFile() {
+            console.log('📁 Opening file selector...');
+            const fileInput = document.getElementById('fileInput');
+            
+            // Reset and configure for file selection
+            fileInput.value = '';
+            fileInput.removeAttribute('capture');
+            fileInput.setAttribute('accept', 'image/*');
+            
+            // Add change listener if not already added
+            fileInput.removeEventListener('change', handleFileSelect);
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            fileInput.click();
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        // Enhanced HEIC/HEIF detection and conversion
+        async function handleFile(file) {
+            console.log('File selected:', file.name, file.type, file.size);
+            
+            // Check file size first (increased for high-res phone photos)
+            if (file.size > 25 * 1024 * 1024) {
+                showStatus('Image too large. Please use an image smaller than 25MB.', 'error');
+                return;
+            }
+
+            // Detect HEIC/HEIF by file extension AND MIME type
+            const fileName = file.name.toLowerCase();
+            const isHeicByExtension = fileName.endsWith('.heic') || fileName.endsWith('.heif');
+            const isHeicByMime = file.type.toLowerCase().includes('heic') || file.type.toLowerCase().includes('heif');
+            
+            if (isHeicByExtension || isHeicByMime) {
+                console.log('🔄 HEIC/HEIF file detected, attempting conversion...');
+                await handleHeicFile(file);
+                return;
+            }
+
+            // Handle other image formats
+            if (!file.type.startsWith('image/') && file.type !== '') {
+                // Check file extension as fallback
+                const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff', '.tif'];
+                const hasImageExtension = imageExtensions.some(ext => fileName.endsWith(ext));
+                
+                if (!hasImageExtension) {
+                    showStatus('Please select an image file', 'error');
+                    return;
+                }
+                console.log('MIME type missing but file extension suggests image');
+            }
+
+            currentImage = file;
+            
+            // Use createImageBitmap for better format support if available
+            if (window.createImageBitmap) {
+                handleFileWithImageBitmap(file);
+            } else {
+                handleFileWithFileReader(file);
+            }
+        }
+
+        // Handle HEIC/HEIF files with conversion
+        async function handleHeicFile(file) {
+            try {
+                showStatus('Converting iPhone photo format...', 'warning');
+                
+                // Check if heic2any library is available
+                if (typeof heic2any === 'undefined') {
+                    console.log('heic2any library not available, trying browser conversion...');
+                    await tryBrowserHeicConversion(file);
+                    return;
+                }
+
+                console.log('Using heic2any library for conversion...');
+                
+                // Convert HEIC to JPEG using heic2any
+                const convertedBlob = await heic2any({
+                    blob: file,
+                    toType: "image/jpeg",
+                    quality: 0.8
+                });
+
+                console.log('✅ HEIC conversion successful');
+                
+                // Create a new File object from the converted blob
+                const convertedFile = new File([convertedBlob], 
+                    file.name.replace(/\.(heic|heif)$/i, '.jpg'), 
+                    { type: 'image/jpeg' }
+                );
+
+                currentImage = convertedFile;
+                
+                // Process the converted file
+                if (window.createImageBitmap) {
+                    handleFileWithImageBitmap(convertedFile);
+                } else {
+                    handleFileWithFileReader(convertedFile);
+                }
+                
+                showStatus, ''));
+                    const bVal = parseFloat(b.replace('('OCR library failed to load. Check internet connection.', 'error');
+            } else {
+                console.log('Tesseract.js loaded successfully');
+            }
+        });
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            color: #333;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Default Basic mode background */
+            background: linear-gradient(135deg, #2D3748 0%, #4A5568 40%, #2D3748 100%);
+            background-size: 400% 400%;
+            animation: gradientShiftBasic 10s ease infinite;
+        }
+
+        /* AI mode background (default) */
+        body.ai-mode {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 40%, #667eea 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        /* Basic mode background */
+        body.basic-mode {
+            background: linear-gradient(135deg, #2D3748 0%, #4A5568 40%, #2D3748 100%);
+            background-size: 400% 400%;
+            animation: gradientShiftBasic 10s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { 
+                background-position: 0% 50%;
+                filter: hue-rotate(0deg);
+            }
+            25% {
+                background-position: 100% 50%;
+                filter: hue-rotate(5deg);
+            }
+            50% { 
+                background-position: 100% 0%;
+                filter: hue-rotate(10deg);
+            }
+            75% {
+                background-position: 0% 0%;
+                filter: hue-rotate(5deg);
+            }
+            100% { 
+                background-position: 0% 50%;
+                filter: hue-rotate(0deg);
+            }
+        }
+
+        @keyframes gradientShiftBasic {
+            0% { 
+                background-position: 0% 50%;
+                filter: brightness(1);
+            }
+            50% { 
+                background-position: 100% 50%;
+                filter: brightness(1.1);
+            }
+            100% { 
+                background-position: 0% 50%;
+                filter: brightness(1);
+            }
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            flex-grow: 1;
+        }
+
+        .ai-toggle-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ai-toggle-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .ai-toggle {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .toggle-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            justify-self: end;
+        }
+
+        .toggle-right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            justify-self: start;
+        }
+
+        .toggle-switch-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(248, 250, 252, 0.8);
+            padding: 8px 16px;
+            border-radius: 25px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            justify-self: center;
+        }
+
+        .toggle-switch-wrapper.active {
+            background: rgba(37, 99, 235, 0.1);
+            border-color: rgba(37, 99, 235, 0.3);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 70px;
+            height: 35px;
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-switch.active {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 29px;
+            height: 29px;
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* When toggle is active (AI mode), slider moves to the right */
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(35px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Default state: slider on the left (Basic mode) */
+        .toggle-switch:not(.active) .toggle-slider {
+            transform: translateX(0px);
+        }
+
+        .toggle-icon {
+            font-size: 1.8rem;
+            margin-bottom: 4px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.7;
+            transform: scale(1);
+        }
+
+        .toggle-icon.active {
+            opacity: 1;
+            transform: scale(1.3);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .toggle-label {
+            font-weight: 500;
+            color: #374151;
+            font-size: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .toggle-label.active {
+            color: #2563eb;
+            font-weight: 700;
+            opacity: 1;
+        }
+
+        .toggle-description {
+            font-size: 0.9em;
+            color: #64748b;
+            text-align: center;
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(248, 250, 252, 0.6);
+            border-radius: 12px;
+            border-left: 4px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-description.ai-active {
+            border-left-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+            color: #1e40af;
+        }
+
+        @media (max-width: 600px) {
+            .ai-toggle {
+                display: grid;
+                grid-template-columns: 1fr auto 1fr;
+                align-items: center;
+                gap: 15px;
+                width: 100%;
+            }
+            
+            .toggle-left {
+                justify-self: end;
+                grid-column: 1;
+            }
+            
+            .toggle-switch-wrapper {
+                justify-self: center;
+                grid-column: 2;
+            }
+            
+            .toggle-right {
+                justify-self: start;
+                grid-column: 3;
+            }
+
+            .toggle-left, .toggle-right {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .toggle-icon {
+                font-size: 1.4rem;
+            }
+
+            .toggle-label {
+                font-size: 0.85rem;
+            }
+
+            .toggle-switch {
+                width: 60px;
+                height: 30px;
+            }
+
+            .toggle-slider {
+                width: 24px;
+                height: 24px;
+            }
+
+            .toggle-switch.active .toggle-slider {
+                transform: translateX(30px);
+            }
+        }
+
+        .upload-area {
+            border: 3px dashed #e2e8f0;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #2563eb;
+            background-color: #f8fafc;
+        }
+
+        .upload-area.dragover {
+            border-color: #2563eb;
+            background-color: #eff6ff;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #64748b;
+        }
+
+        .upload-text {
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .upload-text h3 {
+            margin-bottom: 10px;
+            color: #1e293b;
+        }
+
+        .btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #64748b;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .preview-area {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .processing {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-item {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .result-item strong {
+            color: #1e293b;
+        }
+
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: white;
+            display: none;
+            z-index: 1000;
+        }
+
+        .status.success {
+            background: #10b981;
+        }
+
+        .status.error {
+            background: #ef4444;
+        }
+
+        .status.warning {
+            background: #f59e0b;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📄 Receipt Scanner</h1>
+            <p>Snap, scan, and organize your receipts</p>
+        </header>
+
+        <main class="main-content">
+            <div class="ai-toggle-container">
+                <div class="ai-toggle">
+                    <div class="toggle-left">
+                        <div class="toggle-icon" id="basicIcon">📝</div>
+                        <span class="toggle-label" id="basicLabel">Basic Processing</span>
+                    </div>
+                    
+                    <div class="toggle-switch-wrapper" id="toggleWrapper">
+                        <div class="toggle-switch" id="aiToggle" onclick="toggleAI()">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="toggle-right">
+                        <div class="toggle-icon" id="aiIcon">🤖</div>
+                        <span class="toggle-label" id="aiLabel">AI Enhanced</span>
+                    </div>
+                </div>
+                <div class="toggle-description" id="toggleDescription">
+                    AI provides better accuracy and automatic categorization
+                </div>
+            </div>
+
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">
+                    <h3>Take a photo or upload receipt</h3>
+                    <p>Drag and drop an image here, or click to select</p>
+                    <small style="color: #9ca3af;">Supports HEIC/HEIF (iPhone photos), JPEG, PNG, and more</small>
+                </div>
+                <button class="btn" onclick="openCamera()">Take Photo</button>
+                <button class="btn btn-secondary" onclick="selectFile()">Choose File</button>
+            </div>
+
+            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+
+            <div class="preview-area" id="previewArea">
+                <img id="previewImage" class="preview-image" alt="Receipt preview">
+                <div style="text-align: center; margin-top: 15px;">
+                    <button class="btn" onclick="processReceipt()">Process Receipt</button>
+                    <button class="btn btn-secondary" onclick="resetUpload()">Try Another</button>
+                </div>
+            </div>
+
+            <div class="processing" id="processing">
+                <div class="spinner"></div>
+                <p>Processing your receipt...</p>
+                <small>Extracting text and organizing data</small>
+            </div>
+
+            <div class="results" id="results">
+                <h3>Receipt Details</h3>
+                <div id="resultsContent"></div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn" onclick="saveToSheet()">Save to Spreadsheet</button>
+                    <button class="btn btn-secondary" onclick="resetUpload()">Scan Another</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <script>
+        // Global variables
+        let currentImage = null;
+        let extractedData = null;
+        let extractedText = null;
+        let userApiKey = null;
+        let useAI = false; // Default to Basic Processing mode
+
+        // Initialize app settings
+        function initializeApp() {
+            console.log('Receipt Scanner initialized');
+            useAI = true; // Default to AI mode since API key is server-side
+            
+            // Update toggle UI
+            updateToggleUI();
+            
+            showStatus('Receipt Scanner ready!', 'success');
+        }
+
+        // Toggle AI processing on/off
+        function toggleAI() {
+            useAI = !useAI;
+            updateToggleUI();
+            
+            const status = useAI ? 'AI Enhanced mode enabled' : 'Basic processing mode enabled';
+            showStatus(status, 'success');
+        }
+
+        // Update toggle UI appearance
+        function updateToggleUI() {
+            const toggle = document.getElementById('aiToggle');
+            const description = document.getElementById('toggleDescription');
+            
+            if (useAI) {
+                toggle.classList.add('active');
+                description.textContent = '✨ AI provides better accuracy and automatic categorization';
+                description.classList.add('ai-active');
+            } else {
+                toggle.classList.remove('active');
+                description.textContent = '📝 Basic text parsing - fast and free (no AI required)';
+                description.classList.remove('ai-active');
+            }
+        }
+
+        // Service Worker Registration and App Initialization
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    console.log('PWA ready for service worker');
+                    initializeApp(); // Initialize app settings
+                } catch (error) {
+                    console.log('Service worker registration failed');
+                    initializeApp(); // Still initialize app
+                }
+            });
+        } else {
+            // Initialize app even if no service worker support
+            window.addEventListener('load', initializeApp);
+        }
+
+        // Also initialize on DOM ready as backup
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        // File input handling with better mobile support
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('fileInput');
+            
+            // Universal change handler
+            fileInput.addEventListener('change', function(event) {
+                console.log('=== FILE INPUT CHANGE EVENT ===');
+                console.log('Event type:', event.type);
+                console.log('Files:', event.target.files);
+                console.log('Files length:', event.target.files.length);
+                
+                if (event.target.files.length > 0) {
+                    const file = event.target.files[0];
+                    console.log('File detected:', {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        lastModified: new Date(file.lastModified).toISOString()
+                    });
+                    
+                    handleFile(file);
+                } else {
+                    console.log('❌ No files in change event');
+                }
+            });
+            
+            console.log('✅ Universal file input handler attached');
+        });
+
+        // Drag and drop functionality
+        const uploadArea = document.getElementById('uploadArea');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        uploadArea.addEventListener('click', () => {
+            document.getElementById('fileInput').click();
+        });
+
+        function openCamera() {
+            console.log('📷 Opening camera...');
+            const fileInput = document.getElementById('fileInput');
+            
+            // Reset and configure for camera
+            fileInput.value = '';
+            fileInput.setAttribute('capture', 'environment');
+            // Use more specific accept attribute for camera to encourage JPEG conversion
+            fileInput.setAttribute('accept', 'image/jpeg,image/jpg,image/png,image/webp,image/*');
+            
+            // Add change listener if not already added
+            fileInput.removeEventListener('change', handleFileSelect);
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            fileInput.click();
+        }
+
+        function selectFile() {
+            console.log('📁 Opening file selector...');
+            const fileInput = document.getElementById('fileInput');
+            
+            // Reset and configure for file selection
+            fileInput.value = '';
+            fileInput.removeAttribute('capture');
+            fileInput.setAttribute('accept', 'image/*');
+            
+            // Add change listener if not already added
+            fileInput.removeEventListener('change', handleFileSelect);
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            fileInput.click();
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        // Enhanced HEIC/HEIF detection and conversion
+        async function handleFile(file) {
+            console.log('File selected:', file.name, file.type, file.size);
+            
+            // Check file size first (increased for high-res phone photos)
+            if (file.size > 25 * 1024 * 1024) {
+                showStatus('Image too large. Please use an image smaller than 25MB.', 'error');
+                return;
+            }
+
+            // Detect HEIC/HEIF by file extension AND MIME type
+            const fileName = file.name.toLowerCase();
+            const isHeicByExtension = fileName.endsWith('.heic') || fileName.endsWith('.heif');
+            const isHeicByMime = file.type.toLowerCase().includes('heic') || file.type.toLowerCase().includes('heif');
+            
+            if (isHeicByExtension || isHeicByMime) {
+                console.log('🔄 HEIC/HEIF file detected, attempting conversion...');
+                await handleHeicFile(file);
+                return;
+            }
+
+            // Handle other image formats
+            if (!file.type.startsWith('image/') && file.type !== '') {
+                // Check file extension as fallback
+                const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff', '.tif'];
+                const hasImageExtension = imageExtensions.some(ext => fileName.endsWith(ext));
+                
+                if (!hasImageExtension) {
+                    showStatus('Please select an image file', 'error');
+                    return;
+                }
+                console.log('MIME type missing but file extension suggests image');
+            }
+
+            currentImage = file;
+            
+            // Use createImageBitmap for better format support if available
+            if (window.createImageBitmap) {
+                handleFileWithImageBitmap(file);
+            } else {
+                handleFileWithFileReader(file);
+            }
+        }
+
+        // Handle HEIC/HEIF files with conversion
+        async function handleHeicFile(file) {
+            try {
+                showStatus('Converting iPhone photo format...', 'warning');
+                
+                // Check if heic2any library is available
+                if (typeof heic2any === 'undefined') {
+                    console.log('heic2any library not available, trying browser conversion...');
+                    await tryBrowserHeicConversion(file);
+                    return;
+                }
+
+                console.log('Using heic2any library for conversion...');
+                
+                // Convert HEIC to JPEG using heic2any
+                const convertedBlob = await heic2any({
+                    blob: file,
+                    toType: "image/jpeg",
+                    quality: 0.8
+                });
+
+                console.log('✅ HEIC conversion successful');
+                
+                // Create a new File object from the converted blob
+                const convertedFile = new File([convertedBlob], 
+                    file.name.replace(/\.(heic|heif)$/i, '.jpg'), 
+                    { type: 'image/jpeg' }
+                );
+
+                currentImage = convertedFile;
+                
+                // Process the converted file
+                if (window.createImageBitmap) {
+                    handleFileWithImageBitmap(convertedFile);
+                } else {
+                    handleFileWithFileReader(convertedFile);
+                }
+                
+                showStatus, ''));
                     return bVal - aVal;
                 });
                 return sortedAmounts[0];
@@ -1607,4 +2264,775 @@
         });
     </script>
 </body>
-</html>
+</html>('OCR library failed to load. Check internet connection.', 'error');
+            } else {
+                console.log('Tesseract.js loaded successfully');
+            }
+        });
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            color: #333;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Default Basic mode background */
+            background: linear-gradient(135deg, #2D3748 0%, #4A5568 40%, #2D3748 100%);
+            background-size: 400% 400%;
+            animation: gradientShiftBasic 10s ease infinite;
+        }
+
+        /* AI mode background (default) */
+        body.ai-mode {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 40%, #667eea 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        /* Basic mode background */
+        body.basic-mode {
+            background: linear-gradient(135deg, #2D3748 0%, #4A5568 40%, #2D3748 100%);
+            background-size: 400% 400%;
+            animation: gradientShiftBasic 10s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { 
+                background-position: 0% 50%;
+                filter: hue-rotate(0deg);
+            }
+            25% {
+                background-position: 100% 50%;
+                filter: hue-rotate(5deg);
+            }
+            50% { 
+                background-position: 100% 0%;
+                filter: hue-rotate(10deg);
+            }
+            75% {
+                background-position: 0% 0%;
+                filter: hue-rotate(5deg);
+            }
+            100% { 
+                background-position: 0% 50%;
+                filter: hue-rotate(0deg);
+            }
+        }
+
+        @keyframes gradientShiftBasic {
+            0% { 
+                background-position: 0% 50%;
+                filter: brightness(1);
+            }
+            50% { 
+                background-position: 100% 50%;
+                filter: brightness(1.1);
+            }
+            100% { 
+                background-position: 0% 50%;
+                filter: brightness(1);
+            }
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            flex-grow: 1;
+        }
+
+        .ai-toggle-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ai-toggle-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .ai-toggle {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .toggle-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            justify-self: end;
+        }
+
+        .toggle-right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            justify-self: start;
+        }
+
+        .toggle-switch-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(248, 250, 252, 0.8);
+            padding: 8px 16px;
+            border-radius: 25px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            justify-self: center;
+        }
+
+        .toggle-switch-wrapper.active {
+            background: rgba(37, 99, 235, 0.1);
+            border-color: rgba(37, 99, 235, 0.3);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 70px;
+            height: 35px;
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-switch.active {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 29px;
+            height: 29px;
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* When toggle is active (AI mode), slider moves to the right */
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(35px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Default state: slider on the left (Basic mode) */
+        .toggle-switch:not(.active) .toggle-slider {
+            transform: translateX(0px);
+        }
+
+        .toggle-icon {
+            font-size: 1.8rem;
+            margin-bottom: 4px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.7;
+            transform: scale(1);
+        }
+
+        .toggle-icon.active {
+            opacity: 1;
+            transform: scale(1.3);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .toggle-label {
+            font-weight: 500;
+            color: #374151;
+            font-size: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .toggle-label.active {
+            color: #2563eb;
+            font-weight: 700;
+            opacity: 1;
+        }
+
+        .toggle-description {
+            font-size: 0.9em;
+            color: #64748b;
+            text-align: center;
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(248, 250, 252, 0.6);
+            border-radius: 12px;
+            border-left: 4px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-description.ai-active {
+            border-left-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+            color: #1e40af;
+        }
+
+        @media (max-width: 600px) {
+            .ai-toggle {
+                display: grid;
+                grid-template-columns: 1fr auto 1fr;
+                align-items: center;
+                gap: 15px;
+                width: 100%;
+            }
+            
+            .toggle-left {
+                justify-self: end;
+                grid-column: 1;
+            }
+            
+            .toggle-switch-wrapper {
+                justify-self: center;
+                grid-column: 2;
+            }
+            
+            .toggle-right {
+                justify-self: start;
+                grid-column: 3;
+            }
+
+            .toggle-left, .toggle-right {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .toggle-icon {
+                font-size: 1.4rem;
+            }
+
+            .toggle-label {
+                font-size: 0.85rem;
+            }
+
+            .toggle-switch {
+                width: 60px;
+                height: 30px;
+            }
+
+            .toggle-slider {
+                width: 24px;
+                height: 24px;
+            }
+
+            .toggle-switch.active .toggle-slider {
+                transform: translateX(30px);
+            }
+        }
+
+        .upload-area {
+            border: 3px dashed #e2e8f0;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #2563eb;
+            background-color: #f8fafc;
+        }
+
+        .upload-area.dragover {
+            border-color: #2563eb;
+            background-color: #eff6ff;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #64748b;
+        }
+
+        .upload-text {
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .upload-text h3 {
+            margin-bottom: 10px;
+            color: #1e293b;
+        }
+
+        .btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #64748b;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .preview-area {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .processing {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-item {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .result-item strong {
+            color: #1e293b;
+        }
+
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            color: white;
+            display: none;
+            z-index: 1000;
+        }
+
+        .status.success {
+            background: #10b981;
+        }
+
+        .status.error {
+            background: #ef4444;
+        }
+
+        .status.warning {
+            background: #f59e0b;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📄 Receipt Scanner</h1>
+            <p>Snap, scan, and organize your receipts</p>
+        </header>
+
+        <main class="main-content">
+            <div class="ai-toggle-container">
+                <div class="ai-toggle">
+                    <div class="toggle-left">
+                        <div class="toggle-icon" id="basicIcon">📝</div>
+                        <span class="toggle-label" id="basicLabel">Basic Processing</span>
+                    </div>
+                    
+                    <div class="toggle-switch-wrapper" id="toggleWrapper">
+                        <div class="toggle-switch" id="aiToggle" onclick="toggleAI()">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="toggle-right">
+                        <div class="toggle-icon" id="aiIcon">🤖</div>
+                        <span class="toggle-label" id="aiLabel">AI Enhanced</span>
+                    </div>
+                </div>
+                <div class="toggle-description" id="toggleDescription">
+                    AI provides better accuracy and automatic categorization
+                </div>
+            </div>
+
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">
+                    <h3>Take a photo or upload receipt</h3>
+                    <p>Drag and drop an image here, or click to select</p>
+                    <small style="color: #9ca3af;">Supports HEIC/HEIF (iPhone photos), JPEG, PNG, and more</small>
+                </div>
+                <button class="btn" onclick="openCamera()">Take Photo</button>
+                <button class="btn btn-secondary" onclick="selectFile()">Choose File</button>
+            </div>
+
+            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+
+            <div class="preview-area" id="previewArea">
+                <img id="previewImage" class="preview-image" alt="Receipt preview">
+                <div style="text-align: center; margin-top: 15px;">
+                    <button class="btn" onclick="processReceipt()">Process Receipt</button>
+                    <button class="btn btn-secondary" onclick="resetUpload()">Try Another</button>
+                </div>
+            </div>
+
+            <div class="processing" id="processing">
+                <div class="spinner"></div>
+                <p>Processing your receipt...</p>
+                <small>Extracting text and organizing data</small>
+            </div>
+
+            <div class="results" id="results">
+                <h3>Receipt Details</h3>
+                <div id="resultsContent"></div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn" onclick="saveToSheet()">Save to Spreadsheet</button>
+                    <button class="btn btn-secondary" onclick="resetUpload()">Scan Another</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <script>
+        // Global variables
+        let currentImage = null;
+        let extractedData = null;
+        let extractedText = null;
+        let userApiKey = null;
+        let useAI = false; // Default to Basic Processing mode
+
+        // Initialize app settings
+        function initializeApp() {
+            console.log('Receipt Scanner initialized');
+            useAI = true; // Default to AI mode since API key is server-side
+            
+            // Update toggle UI
+            updateToggleUI();
+            
+            showStatus('Receipt Scanner ready!', 'success');
+        }
+
+        // Toggle AI processing on/off
+        function toggleAI() {
+            useAI = !useAI;
+            updateToggleUI();
+            
+            const status = useAI ? 'AI Enhanced mode enabled' : 'Basic processing mode enabled';
+            showStatus(status, 'success');
+        }
+
+        // Update toggle UI appearance
+        function updateToggleUI() {
+            const toggle = document.getElementById('aiToggle');
+            const description = document.getElementById('toggleDescription');
+            
+            if (useAI) {
+                toggle.classList.add('active');
+                description.textContent = '✨ AI provides better accuracy and automatic categorization';
+                description.classList.add('ai-active');
+            } else {
+                toggle.classList.remove('active');
+                description.textContent = '📝 Basic text parsing - fast and free (no AI required)';
+                description.classList.remove('ai-active');
+            }
+        }
+
+        // Service Worker Registration and App Initialization
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    console.log('PWA ready for service worker');
+                    initializeApp(); // Initialize app settings
+                } catch (error) {
+                    console.log('Service worker registration failed');
+                    initializeApp(); // Still initialize app
+                }
+            });
+        } else {
+            // Initialize app even if no service worker support
+            window.addEventListener('load', initializeApp);
+        }
+
+        // Also initialize on DOM ready as backup
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        // File input handling with better mobile support
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('fileInput');
+            
+            // Universal change handler
+            fileInput.addEventListener('change', function(event) {
+                console.log('=== FILE INPUT CHANGE EVENT ===');
+                console.log('Event type:', event.type);
+                console.log('Files:', event.target.files);
+                console.log('Files length:', event.target.files.length);
+                
+                if (event.target.files.length > 0) {
+                    const file = event.target.files[0];
+                    console.log('File detected:', {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        lastModified: new Date(file.lastModified).toISOString()
+                    });
+                    
+                    handleFile(file);
+                } else {
+                    console.log('❌ No files in change event');
+                }
+            });
+            
+            console.log('✅ Universal file input handler attached');
+        });
+
+        // Drag and drop functionality
+        const uploadArea = document.getElementById('uploadArea');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        uploadArea.addEventListener('click', () => {
+            document.getElementById('fileInput').click();
+        });
+
+        function openCamera() {
+            console.log('📷 Opening camera...');
+            const fileInput = document.getElementById('fileInput');
+            
+            // Reset and configure for camera
+            fileInput.value = '';
+            fileInput.setAttribute('capture', 'environment');
+            // Use more specific accept attribute for camera to encourage JPEG conversion
+            fileInput.setAttribute('accept', 'image/jpeg,image/jpg,image/png,image/webp,image/*');
+            
+            // Add change listener if not already added
+            fileInput.removeEventListener('change', handleFileSelect);
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            fileInput.click();
+        }
+
+        function selectFile() {
+            console.log('📁 Opening file selector...');
+            const fileInput = document.getElementById('fileInput');
+            
+            // Reset and configure for file selection
+            fileInput.value = '';
+            fileInput.removeAttribute('capture');
+            fileInput.setAttribute('accept', 'image/*');
+            
+            // Add change listener if not already added
+            fileInput.removeEventListener('change', handleFileSelect);
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            fileInput.click();
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        // Enhanced HEIC/HEIF detection and conversion
+        async function handleFile(file) {
+            console.log('File selected:', file.name, file.type, file.size);
+            
+            // Check file size first (increased for high-res phone photos)
+            if (file.size > 25 * 1024 * 1024) {
+                showStatus('Image too large. Please use an image smaller than 25MB.', 'error');
+                return;
+            }
+
+            // Detect HEIC/HEIF by file extension AND MIME type
+            const fileName = file.name.toLowerCase();
+            const isHeicByExtension = fileName.endsWith('.heic') || fileName.endsWith('.heif');
+            const isHeicByMime = file.type.toLowerCase().includes('heic') || file.type.toLowerCase().includes('heif');
+            
+            if (isHeicByExtension || isHeicByMime) {
+                console.log('🔄 HEIC/HEIF file detected, attempting conversion...');
+                await handleHeicFile(file);
+                return;
+            }
+
+            // Handle other image formats
+            if (!file.type.startsWith('image/') && file.type !== '') {
+                // Check file extension as fallback
+                const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff', '.tif'];
+                const hasImageExtension = imageExtensions.some(ext => fileName.endsWith(ext));
+                
+                if (!hasImageExtension) {
+                    showStatus('Please select an image file', 'error');
+                    return;
+                }
+                console.log('MIME type missing but file extension suggests image');
+            }
+
+            currentImage = file;
+            
+            // Use createImageBitmap for better format support if available
+            if (window.createImageBitmap) {
+                handleFileWithImageBitmap(file);
+            } else {
+                handleFileWithFileReader(file);
+            }
+        }
+
+        // Handle HEIC/HEIF files with conversion
+        async function handleHeicFile(file) {
+            try {
+                showStatus('Converting iPhone photo format...', 'warning');
+                
+                // Check if heic2any library is available
+                if (typeof heic2any === 'undefined') {
+                    console.log('heic2any library not available, trying browser conversion...');
+                    await tryBrowserHeicConversion(file);
+                    return;
+                }
+
+                console.log('Using heic2any library for conversion...');
+                
+                // Convert HEIC to JPEG using heic2any
+                const convertedBlob = await heic2any({
+                    blob: file,
+                    toType: "image/jpeg",
+                    quality: 0.8
+                });
+
+                console.log('✅ HEIC conversion successful');
+                
+                // Create a new File object from the converted blob
+                const convertedFile = new File([convertedBlob], 
+                    file.name.replace(/\.(heic|heif)$/i, '.jpg'), 
+                    { type: 'image/jpeg' }
+                );
+
+                currentImage = convertedFile;
+                
+                // Process the converted file
+                if (window.createImageBitmap) {
+                    handleFileWithImageBitmap(convertedFile);
+                } else {
+                    handleFileWithFileReader(convertedFile);
+                }
+                
+                showStatus
