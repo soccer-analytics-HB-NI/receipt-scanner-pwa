@@ -55,20 +55,34 @@
             animation: gradientShiftBasic 10s ease infinite;
         }
 
-        /* AI mode background (default) */
-/* AI mode background: subtle grey */
+        /* AI Enhanced Mode — soft dynamic greys */
 body.ai-mode {
-    background: linear-gradient(135deg, #cbd5e1 0%, #e2e8f0 40%, #cbd5e1 100%);
-    background-size: 400% 400%;
-    animation: gradientShiftBasic 10s ease infinite;
+    background: linear-gradient(120deg, #f0f0f3, #e2e8f0, #f8fafc);
+    background-size: 600% 600%;
+    animation: gentleGreyShift 18s ease infinite;
 }
 
-/* Basic mode background: vivid blue */
+/* Basic Mode — muted dynamic blues */
 body.basic-mode {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 40%, #3b82f6 100%);
-    background-size: 400% 400%;
-    animation: gradientShift 8s ease infinite;
+    background: linear-gradient(120deg, #cfe0f5, #dbeafe, #bfdbfe);
+    background-size: 600% 600%;
+    animation: gentleBlueShift 16s ease infinite;
 }
+
+/* Animation for AI mode */
+@keyframes gentleGreyShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Animation for Basic mode */
+@keyframes gentleBlueShift {
+    0% { background-position: 100% 0%; }
+    50% { background-position: 0% 100%; }
+    100% { background-position: 100% 0%; }
+}
+
 
 
         @keyframes gradientShift {
