@@ -7,10 +7,13 @@
     <title>Receipt Scanner</title>
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVjZWlwdCBTY2FubmVyIiwic2hvcnRfbmFtZSI6IlJlY2VpcHRzIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmZmZmZmYiLCJ0aGVtZV9jb2xvciI6IiMyNTYzZWIiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCM2FXUjBhRDBpTVRJNElpQm9aV2xuYUhROUlqRXlPQ0lpSUhacFpYZENiM2c5SWpBZ01DQXhNamd1TURBZ01USTRMakF3SWlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpUGp4eVpXTjBJSGRwWkhSb1BTSXhNamd1TURBZ01USTRMakF3SWlCbWFXeHNQU0lqTWpVMk0yVmlJaUJ5ZUQwaU5pNHdJaUJ5ZVQwaU5pNHdJajQ4TDNKbFkzUStQSEJoZEdnZ1pEMGlUVFEwSURJMGJETTJJREE0YkRRNElETTJiRFE0SURBZ1drbzBOQ0F5TkNBM01pQXlOQ0IzTWlBME9DVXhNemN1TnpJZ05EZ2dNemN1TnpJZ05EZ2dOREFnTkRnZ05EQmFJaUJtYVd4c1BTSWpabVptWm1abUlpOCtQQzl6ZG1jKyIsInNpemVzIjoiMTI4eDEyOCIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVjZWlwdCBTY2FubmVyIiwic2hvcnRfbmFtZSI6IlJlY2VpcHRzIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmZmZmZmYiLCJ0aGVtZV9jb2xvciI6IiMyNTYzZWIiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yV25sQ2QybGtaR2cwUFNKTlZFbzRJaUJvWldsblNIUTlJakV5T0VsaUlIWnBaWGRDYjNnOVNWcEJaME5CZUZsd2FXZHVkRVZDYjNCeWVVaHNRbXhwYm10TmVVTjRUVUZqWldkVVNVdFNiMkpyWkVKRmJuTXZjMkZ1Y3kxelpYSnBaaUJZYlZ4NmVteHVabk5lYUhSMGNEb3ZMMGwxWkhSNGJTd3pWWFkwY0VSaFpGc2dhREZrWkRFOWFYNTJVblVpUUhNMFgzTmpQVGxrWVhSaE9tbHRZV2RsTHpOM1p5c2VTSGR4V0Rsa1lXUWFMazFsYlY5a1ltZHdYeVFsYVd0dGNsSnNPSE42TkJsVGMzb0VkM0Z0MU4ybE5sa1BTaWptVmxNMU0yVmlJaUJ5ZUQwaU5pNHdJaUJ5ZVQwaU5pNHdJajQ4TDNKbFkzUStQSEJoZEdnZ1pEMWlWVFEwU1VSSlFTQTBiRVEzU21sRU1EaHNSRkE4U1VSSlFUTTJZa3h4T0NKaGJXeDFjVlVpUkRBME9VazFSbUkzWG1kMklqQXdNRGN1TnpJZ05EbWFNemN1TnpKYU5EZ2dORUJnTkRna05EQmFaVUpOYVc5eGMzTWhSMVptV20xamVrNmJiR1ZZWkVjc1FRNHJaMjl6ZG1jcklROCtQQzkzZG1rKyIsInNpemVzIjoiMTI4eDEyOCIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
     
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOC4wMCAxMjguMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEyOC4wMCAxMjguMDAiIGZpbGw9IiMyNTYzZWIiIHJ4PSI2LjAiIHJ5PSI2LjAiPjwvcmVjdD48cGF0aCBkPSJNNDQgMjRsMzYgMDhsNDggMzZsNDggMCBWajQ0IDI0IDcyIDI0IDcyIDQ4JTEzNy43MiA0OCAzNy43MiA0OCA0MCA0OCA0MFoiIGZpbGw9IiNmZmZmZmYiLz48L3N2Zz4=">
+    
+    <!-- HEIC2Any library for HEIC conversion -->
+    <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
     
     <!-- Tesseract.js for OCR with fallback -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js" 
@@ -25,13 +28,19 @@
             document.head.appendChild(fallback);
         }
         
-        // Check if Tesseract loaded
+        // Check if libraries loaded
         window.addEventListener('load', () => {
             if (typeof Tesseract === 'undefined') {
                 console.error('Tesseract.js failed to load');
                 showStatus('OCR library failed to load. Check internet connection.', 'error');
             } else {
                 console.log('Tesseract.js loaded successfully');
+            }
+
+            if (typeof heic2any === 'undefined') {
+                console.warn('heic2any library failed to load - HEIC conversion may not work');
+            } else {
+                console.log('heic2any loaded successfully');
             }
         });
     </script>
@@ -284,6 +293,41 @@
             color: #1e40af;
         }
 
+        .format-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            z-index: 10;
+        }
+
+        .format-indicator.heic {
+            background: rgba(245, 158, 11, 0.9);
+        }
+
+        .format-indicator.converted {
+            background: rgba(16, 185, 129, 0.9);
+        }
+
+        .conversion-progress {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .conversion-progress .spinner {
+            width: 30px;
+            height: 30px;
+            border-width: 2px;
+        }
+
         @media (max-width: 600px) {
             .ai-toggle {
                 display: grid;
@@ -406,6 +450,7 @@
         .preview-area {
             margin-top: 20px;
             display: none;
+            position: relative;
         }
 
         .preview-image {
@@ -522,6 +567,7 @@
                 <div class="upload-text">
                     <h3>Take a photo or upload receipt</h3>
                     <p>Drag and drop an image here, or click to select</p>
+                    <small style="color: #10b981;">✅ Supports iPhone HEIC photos</small>
                 </div>
                 <button class="btn" onclick="openCamera()">Take Photo</button>
                 <button class="btn btn-secondary" onclick="selectFile()">Choose File</button>
@@ -587,14 +633,41 @@
         // Update toggle UI appearance
         function updateToggleUI() {
             const toggle = document.getElementById('aiToggle');
+            const toggleWrapper = document.getElementById('toggleWrapper');
             const description = document.getElementById('toggleDescription');
+            const basicIcon = document.getElementById('basicIcon');
+            const basicLabel = document.getElementById('basicLabel');
+            const aiIcon = document.getElementById('aiIcon');
+            const aiLabel = document.getElementById('aiLabel');
             
             if (useAI) {
                 toggle.classList.add('active');
+                toggleWrapper.classList.add('active');
+                description.classList.add('ai-active');
                 description.textContent = '✨ AI provides better accuracy and automatic categorization';
+                
+                // Update icons and labels
+                basicIcon.classList.remove('active');
+                basicLabel.classList.remove('active');
+                aiIcon.classList.add('active');
+                aiLabel.classList.add('active');
+                
+                // Update body class
+                document.body.className = 'ai-mode';
             } else {
                 toggle.classList.remove('active');
+                toggleWrapper.classList.remove('active');
+                description.classList.remove('ai-active');
                 description.textContent = '📝 Basic text parsing - fast and free (no AI required)';
+                
+                // Update icons and labels
+                basicIcon.classList.add('active');
+                basicLabel.classList.add('active');
+                aiIcon.classList.remove('active');
+                aiLabel.classList.remove('active');
+                
+                // Update body class
+                document.body.className = 'basic-mode';
             }
         }
 
@@ -668,7 +741,7 @@
         });
 
         uploadArea.addEventListener('click', () => {
-            document.getElementById('fileInput').click();
+            selectFile();
         });
 
         function openCamera() {
@@ -678,11 +751,7 @@
             // Reset and configure for camera
             fileInput.value = '';
             fileInput.setAttribute('capture', 'environment');
-            fileInput.setAttribute('accept', '*/*'); // Accept everything, filter later
-            
-            // Add change listener if not already added
-            fileInput.removeEventListener('change', handleFileSelect);
-            fileInput.addEventListener('change', handleFileSelect);
+            fileInput.setAttribute('accept', 'image/*'); // Accept all image formats
             
             fileInput.click();
         }
@@ -694,29 +763,90 @@
             // Reset and configure for file selection
             fileInput.value = '';
             fileInput.removeAttribute('capture');
-            fileInput.setAttribute('accept', '*/*'); // Accept everything, filter later
-            
-            // Add change listener if not already added
-            fileInput.removeEventListener('change', handleFileSelect);
-            fileInput.addEventListener('change', handleFileSelect);
+            fileInput.setAttribute('accept', 'image/*'); // Accept all image formats
             
             fileInput.click();
         }
 
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                handleFile(file);
+        // HEIC/HEIF conversion function
+        async function convertHeicToJpeg(file) {
+            try {
+                if (typeof heic2any === 'undefined') {
+                    throw new Error('HEIC conversion library not available');
+                }
+
+                console.log('🔄 Converting HEIC to JPEG...');
+                showConversionProgress('Converting iPhone photo format...');
+                
+                const convertedBlob = await heic2any({
+                    blob: file,
+                    toType: 'image/jpeg',
+                    quality: 0.8
+                });
+
+                // Create a new File object from the converted blob
+                const convertedFile = new File([convertedBlob], 
+                    file.name.replace(/\.(heic|heif)$/i, '.jpg'), 
+                    { type: 'image/jpeg' }
+                );
+
+                console.log('✅ HEIC conversion successful');
+                hideConversionProgress();
+                showStatus('iPhone photo converted successfully!', 'success');
+                
+                return convertedFile;
+            } catch (error) {
+                console.error('❌ HEIC conversion failed:', error);
+                hideConversionProgress();
+                throw new Error(`iPhone photo conversion failed: ${error.message}`);
             }
         }
 
-        function handleFile(file) {
+        function showConversionProgress(message) {
+            const progressDiv = document.createElement('div');
+            progressDiv.id = 'conversionProgress';
+            progressDiv.className = 'conversion-progress';
+            progressDiv.innerHTML = 
+                '<div class="spinner"></div>' +
+                '<p>' + message + '</p>' +
+                '<small>This may take a moment...</small>';
+            
+            const uploadArea = document.getElementById('uploadArea');
+            uploadArea.appendChild(progressDiv);
+        }
+
+        function hideConversionProgress() {
+            const progressDiv = document.getElementById('conversionProgress');
+            if (progressDiv) {
+                progressDiv.remove();
+            }
+        }
+
+        async function handleFile(file) {
             console.log('File selected:', file.name, file.type, file.size);
             
+            // Check if it's a HEIC/HEIF file (by extension or MIME type)
+            const isHeic = file.type.toLowerCase().includes('heic') || 
+                          file.type.toLowerCase().includes('heif') ||
+                          file.name.toLowerCase().endsWith('.heic') ||
+                          file.name.toLowerCase().endsWith('.heif');
+            
+            let processedFile = file;
+            
+            // Convert HEIC files to JPEG
+            if (isHeic) {
+                try {
+                    processedFile = await convertHeicToJpeg(file);
+                } catch (error) {
+                    showStatus(error.message, 'error');
+                    return;
+                }
+            }
+            
             // Be very permissive with image formats - let browser decide
-            if (!file.type.startsWith('image/')) {
+            if (!processedFile.type.startsWith('image/')) {
                 // Even if MIME type is missing, check file extension
-                const fileName = file.name.toLowerCase();
+                const fileName = processedFile.name.toLowerCase();
                 const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff', '.tif'];
                 const hasImageExtension = imageExtensions.some(ext => fileName.endsWith(ext));
                 
@@ -727,30 +857,23 @@
                 console.log('MIME type missing but file extension suggests image');
             }
 
-            // Only block known problematic formats
-            const problematicFormats = ['image/heic', 'image/heif'];
-            if (problematicFormats.includes(file.type.toLowerCase())) {
-                showStatus(`HEIC format not supported. Please convert to JPG first.`, 'error');
-                return;
-            }
-
             // Increase file size limit for high-res phone photos
-            if (file.size > 25 * 1024 * 1024) {
+            if (processedFile.size > 25 * 1024 * 1024) {
                 showStatus('Image too large. Please use an image smaller than 25MB.', 'error');
                 return;
             }
 
-            currentImage = file;
+            currentImage = processedFile;
             
             // Use createImageBitmap for better format support if available
             if (window.createImageBitmap) {
-                handleFileWithImageBitmap(file);
+                handleFileWithImageBitmap(processedFile, isHeic);
             } else {
-                handleFileWithFileReader(file);
+                handleFileWithFileReader(processedFile, isHeic);
             }
         }
 
-        function handleFileWithImageBitmap(file) {
+        function handleFileWithImageBitmap(file, wasHeic = false) {
             createImageBitmap(file)
                 .then(bitmap => {
                     console.log(`ImageBitmap created: ${bitmap.width}x${bitmap.height}`);
@@ -763,21 +886,21 @@
                     ctx.drawImage(bitmap, 0, 0);
                     
                     const dataURL = canvas.toDataURL('image/jpeg', 0.9);
-                    displayImage(dataURL);
+                    displayImage(dataURL, wasHeic);
                     bitmap.close(); // Free memory
                 })
                 .catch(error => {
                     console.log('ImageBitmap failed, falling back to FileReader:', error);
-                    handleFileWithFileReader(file);
+                    handleFileWithFileReader(file, wasHeic);
                 });
         }
 
-        function handleFileWithFileReader(file) {
+        function handleFileWithFileReader(file, wasHeic = false) {
             const reader = new FileReader();
             
             reader.onload = (e) => {
                 console.log('FileReader completed, processing image...');
-                displayImage(e.target.result);
+                displayImage(e.target.result, wasHeic);
             };
             
             reader.onerror = (error) => {
@@ -789,11 +912,12 @@
             reader.readAsDataURL(file);
         }
 
-        function displayImage(dataURL) {
+        function displayImage(dataURL, wasConverted = false) {
             console.log('🖼️ Attempting to display image...');
             console.log('Data URL preview:', dataURL.substring(0, 50) + '...');
             
             const img = document.getElementById('previewImage');
+            const previewArea = document.getElementById('previewArea');
             
             // Clear any previous error handlers
             img.onload = null;
@@ -807,10 +931,28 @@
                     displayHeight: img.height
                 });
                 
+                // Add format indicator if image was converted
+                let existingIndicator = previewArea.querySelector('.format-indicator');
+                if (existingIndicator) {
+                    existingIndicator.remove();
+                }
+                
+                if (wasConverted) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'format-indicator converted';
+                    indicator.textContent = '✅ HEIC Converted';
+                    previewArea.style.position = 'relative';
+                    previewArea.appendChild(indicator);
+                }
+                
                 // Hide upload area and show preview
                 document.getElementById('uploadArea').style.display = 'none';
                 document.getElementById('previewArea').style.display = 'block';
-                showStatus('Image loaded successfully!', 'success');
+                
+                const statusMessage = wasConverted ? 
+                    'iPhone photo converted and loaded!' : 
+                    'Image loaded successfully!';
+                showStatus(statusMessage, 'success');
             };
             
             img.onerror = function(error) {
@@ -951,31 +1093,30 @@
             document.getElementById('processing').style.display = 'none';
             
             const resultsContent = document.getElementById('resultsContent');
-            resultsContent.innerHTML = `
-                <div style="text-align: center; padding: 20px; background: #fef2f2; border-radius: 10px; border: 1px solid #fecaca;">
-                    <h4 style="color: #dc2626; margin-bottom: 15px;">OCR Processing Failed</h4>
-                    <p style="color: #7f1d1d; margin-bottom: 20px;">${errorMessage}</p>
+            resultsContent.innerHTML = 
+                '<div style="text-align: center; padding: 20px; background: #fef2f2; border-radius: 10px; border: 1px solid #fecaca;">' +
+                    '<h4 style="color: #dc2626; margin-bottom: 15px;">OCR Processing Failed</h4>' +
+                    '<p style="color: #7f1d1d; margin-bottom: 20px;">' + errorMessage + '</p>' +
                     
-                    <div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0;">
-                        <h5 style="margin-bottom: 15px;">Manual Entry (Temporary)</h5>
-                        <input type="text" id="manualStore" placeholder="Store Name" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
-                        <input type="date" id="manualDate" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
-                        <input type="text" id="manualTotal" placeholder="Total Amount (e.g., $12.34)" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
-                        <textarea id="manualItems" placeholder="Items (one per line, e.g., 'Milk - $3.99')" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px; height: 80px;"></textarea>
-                        <button class="btn" onclick="processManualEntry()" style="margin-top: 10px;">Save Manual Entry</button>
-                    </div>
+                    '<div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0;">' +
+                        '<h5 style="margin-bottom: 15px;">Manual Entry (Temporary)</h5>' +
+                        '<input type="text" id="manualStore" placeholder="Store Name" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">' +
+                        '<input type="date" id="manualDate" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">' +
+                        '<input type="text" id="manualTotal" placeholder="Total Amount (e.g., $12.34)" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">' +
+                        '<textarea id="manualItems" placeholder="Items (one per line, e.g., \'Milk - $3.99\')" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px; height: 80px;"></textarea>' +
+                        '<button class="btn" onclick="processManualEntry()" style="margin-top: 10px;">Save Manual Entry</button>' +
+                    '</div>' +
                     
-                    <div style="margin-top: 15px;">
-                        <h5>Troubleshooting Tips:</h5>
-                        <ul style="text-align: left; color: #374151;">
-                            <li>Ensure good internet connection</li>
-                            <li>Try a clearer, well-lit photo</li>
-                            <li>Make sure receipt is flat and straight</li>
-                            <li>Refresh the page and try again</li>
-                        </ul>
-                    </div>
-                </div>
-            `;
+                    '<div style="margin-top: 15px;">' +
+                        '<h5>Troubleshooting Tips:</h5>' +
+                        '<ul style="text-align: left; color: #374151;">' +
+                            '<li>Ensure good internet connection</li>' +
+                            '<li>Try a clearer, well-lit photo</li>' +
+                            '<li>Make sure receipt is flat and straight</li>' +
+                            '<li>Refresh the page and try again</li>' +
+                        '</ul>' +
+                    '</div>' +
+                '</div>';
             
             // Set today's date as default
             document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
@@ -1212,7 +1353,7 @@
             for (const pattern of totalPatterns) {
                 const match = text.match(pattern);
                 if (match) {
-                    return `$${match[1]}`;
+                    return `${match[1]}`;
                 }
             }
             
@@ -1220,8 +1361,8 @@
             const amounts = text.match(/\$\d+\.\d{2}/g);
             if (amounts && amounts.length > 0) {
                 const sortedAmounts = amounts.sort((a, b) => {
-                    const aVal = parseFloat(a.replace('$', ''));
-                    const bVal = parseFloat(b.replace('$', ''));
+                    const aVal = parseFloat(a.replace(', ''));
+                    const bVal = parseFloat(b.replace(', ''));
                     return bVal - aVal;
                 });
                 return sortedAmounts[0];
@@ -1237,7 +1378,7 @@
                 // Look for lines with prices
                 const priceMatch = line.match(/.*?\$(\d+\.\d{2})/);
                 if (priceMatch) {
-                    const price = `$${priceMatch[1]}`;
+                    const price = `${priceMatch[1]}`;
                     const name = line.replace(/\$\d+\.\d{2}.*/, '').trim();
                     
                     if (name.length > 2 && name.length < 100) {
@@ -1276,35 +1417,34 @@
                 '<span style="background: #f59e0b; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-left: 10px;">📝 Basic Parsing</span>';
             
             const resultsContent = document.getElementById('resultsContent');
-            resultsContent.innerHTML = `
-                <div style="margin-bottom: 15px;">
-                    <h3 style="display: inline;">Receipt Details</h3>
-                    ${aiIndicator}
-                </div>
-                <div class="result-item">
-                    <strong>Store:</strong> ${extractedData.store}
-                </div>
-                <div class="result-item">
-                    <strong>Date:</strong> ${extractedData.date}
-                </div>
-                <div class="result-item">
-                    <strong>Total:</strong> ${extractedData.total}
-                </div>
-                <div class="result-item">
-                    <strong>Items:</strong>
-                    <ul style="margin-top: 10px;">
-                        ${extractedData.items.map(item => 
-                            `<li>${item.name} - ${item.price} <em style="color: #64748b;">(${item.category})</em></li>`
-                        ).join('')}
-                    </ul>
-                </div>
-                <details style="margin-top: 15px;">
-                    <summary style="cursor: pointer; font-weight: bold; color: #64748b;">
-                        View Extracted Text
-                    </summary>
-                    <div style="background: #f1f5f9; padding: 10px; border-radius: 5px; margin-top: 10px; font-family: monospace; font-size: 0.9em; white-space: pre-wrap;">${extractedData.rawText}</div>
-                </details>
-            `;
+            resultsContent.innerHTML = 
+                '<div style="margin-bottom: 15px;">' +
+                    '<h3 style="display: inline;">Receipt Details</h3>' +
+                    aiIndicator +
+                '</div>' +
+                '<div class="result-item">' +
+                    '<strong>Store:</strong> ' + extractedData.store +
+                '</div>' +
+                '<div class="result-item">' +
+                    '<strong>Date:</strong> ' + extractedData.date +
+                '</div>' +
+                '<div class="result-item">' +
+                    '<strong>Total:</strong> ' + extractedData.total +
+                '</div>' +
+                '<div class="result-item">' +
+                    '<strong>Items:</strong>' +
+                    '<ul style="margin-top: 10px;">' +
+                        extractedData.items.map(function(item) {
+                            return '<li>' + item.name + ' - ' + item.price + ' <em style="color: #64748b;">(' + item.category + ')</em></li>';
+                        }).join('') +
+                    '</ul>' +
+                '</div>' +
+                '<details style="margin-top: 15px;">' +
+                    '<summary style="cursor: pointer; font-weight: bold; color: #64748b;">' +
+                        'View Extracted Text' +
+                    '</summary>' +
+                    '<div style="background: #f1f5f9; padding: 10px; border-radius: 5px; margin-top: 10px; font-family: monospace; font-size: 0.9em; white-space: pre-wrap;">' + extractedData.rawText + '</div>' +
+                '</details>';
             
             document.getElementById('results').style.display = 'block';
         }
@@ -1323,6 +1463,12 @@
             document.getElementById('previewArea').style.display = 'none';
             document.getElementById('processing').style.display = 'none';
             document.getElementById('results').style.display = 'none';
+            
+            // Remove any format indicators
+            const indicator = document.querySelector('.format-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
         }
 
         function showStatus(message, type) {
