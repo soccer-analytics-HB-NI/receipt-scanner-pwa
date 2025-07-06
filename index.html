@@ -56,18 +56,20 @@
         }
 
         /* AI mode background (default) */
-        body.ai-mode {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 40%, #667eea 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 8s ease infinite;
-        }
+/* AI mode background: subtle grey */
+body.ai-mode {
+    background: linear-gradient(135deg, #cbd5e1 0%, #e2e8f0 40%, #cbd5e1 100%);
+    background-size: 400% 400%;
+    animation: gradientShiftBasic 10s ease infinite;
+}
 
-        /* Basic mode background */
-        body.basic-mode {
-            background: linear-gradient(135deg, #2D3748 0%, #4A5568 40%, #2D3748 100%);
-            background-size: 400% 400%;
-            animation: gradientShiftBasic 10s ease infinite;
-        }
+/* Basic mode background: vivid blue */
+body.basic-mode {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 40%, #3b82f6 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+}
+
 
         @keyframes gradientShift {
             0% { 
@@ -556,17 +558,27 @@
 
         // Update toggle UI appearance
         function updateToggleUI() {
-            const toggle = document.getElementById('aiToggle');
-            const description = document.getElementById('toggleDescription');
-            
-            if (useAI) {
-                toggle.classList.add('active');
-                description.textContent = '✨ AI provides better accuracy and automatic categorization';
-            } else {
-                toggle.classList.remove('active');
-                description.textContent = '📝 Basic text parsing - fast and free (no AI required)';
-            }
-        }
+    const toggle = document.getElementById('aiToggle');
+    const description = document.getElementById('toggleDescription');
+    const body = document.body;
+
+    if (useAI) {
+        toggle.classList.add('active');
+        description.textContent = '✨ AI provides better accuracy and automatic categorization';
+
+        // Add AI mode class, remove Basic mode class
+        body.classList.add('ai-mode');
+        body.classList.remove('basic-mode');
+    } else {
+        toggle.classList.remove('active');
+        description.textContent = '📝 Basic text parsing - fast and free (no AI required)';
+
+        // Add Basic mode class, remove AI mode class
+        body.classList.add('basic-mode');
+        body.classList.remove('ai-mode');
+    }
+}
+
 
         // Service Worker Registration and App Initialization
         if ('serviceWorker' in navigator) {
