@@ -690,6 +690,150 @@
         // Also initialize on DOM ready as backup
         document.addEventListener('DOMContentLoaded', initializeApp);
 
+        // Toggle AI processing on/off
+        function toggleAI() {
+            useAI = !useAI;
+            updateToggleUI();
+            
+            const status = useAI ? 'AI Enhanced mode enabled' : 'Basic processing mode enabled';
+            showStatus(status, 'success');
+        }
+
+        // Camera and file selection functions
+        function openCamera() {
+            console.log('📷 Opening camera...');
+            const fileInput = document.getElementById('fileInput');
+            
+            // Reset and configure for camera
+            fileInput.value = '';
+            fileInput.setAttribute('capture', 'environment');
+            fileInput.setAttribute('accept', 'image/*');
+            
+            fileInput.click();
+        }
+
+        function selectFile() {
+            console.log('📁 Opening file selector...');
+            const fileInput = document.getElementById('fileInput');
+            
+            // Reset and configure for file selection
+            fileInput.value = '';
+            fileInput.removeAttribute('capture');
+            fileInput.setAttribute('accept', 'image/*');
+            
+            fileInput.click();
+        }
+
+        // Receipt processing functions
+        function processReceipt() {
+            if (!currentImage) return;
+
+            // Show processing state
+            document.getElementById('previewArea').style.display = 'none';
+            document.getElementById('processing').style.display = 'block';
+
+            // Start processing
+            performOCRAndParse();
+        }
+
+        function resetUpload() {
+            currentImage = null;
+            extractedData = null;
+            extractedText = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('uploadArea').style.display = 'block';
+            document.getElementById('previewArea').style.display = 'none';
+            document.getElementById('processing').style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+            
+            // Remove any format indicators
+            const indicator = document.querySelector('.format-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        function saveToSheet() {
+            // Placeholder for Google Sheets integration
+            showStatus('Google Sheets integration coming soon!', 'success');
+        }
+
+        function processManualEntry() {
+            const store = document.getElementById('manualStore').value || 'Unknown Store';
+            const date = document.getElementById('manualDate').value || new Date().toLocaleDateString();
+            const total = document.getElementById('manualTotal').value || 'N/A';
+            const itemsText = document.getElementById('manualItems').value;
+            
+            // Parse manual items
+            const items = [];
+            if (itemsText.trim()) {
+                const lines = itemsText.split('\n');
+                lines.forEach(function(line) {
+                    const trimmed = line.trim();
+                    if (trimmed) {
+                        const parts = trimmed.split(' - ');
+                        items.push({
+                            name: parts[0] || trimmed,
+                            price: parts[1] || 'N/A',
+                            category: 'General'
+                        });
+                    }
+                });
+            } else {
+                items.push({
+                    name: 'Manual entry - see total',
+                    price: total,
+                    category: 'General'
+                });
+            }
+
+            extractedData = {
+                store: store,
+                date: date,
+                total: total,
+                items: items,
+                rawText: 'Manual entry - OCR was not available'
+            };
+
+            displayResults();
+            showStatus('Manual entry saved successfully!', 'success');
+        }
+
+        // Main processing pipeline
+        async function performOCRAndParse() {
+            try {
+                // Step 1: Extract text using OCR
+                updateProcessingText('Extracting text from image...');
+                extractedText = await performOCR();
+                
+                // Step 2: Parse based on user's AI preference
+                if (useAI) {
+                    updateProcessingText('AI is organizing receipt data...');
+                    extractedData = await parseReceiptWithAI(extractedText);
+                } else {
+                    updateProcessingText('Organizing receipt data...');
+                    extractedData = parseReceiptText(extractedText);
+                }
+
+                displayResults();
+                
+            } catch (error) {
+                console.error('Processing error:', error);
+                
+                // Show error but offer fallback
+                showStatus('Processing failed: ' + error.message, 'error');
+                
+                // Try basic parsing as fallback
+                updateProcessingText('Trying basic parsing...');
+                try {
+                    extractedData = parseReceiptText(extractedText || 'No text extracted');
+                    displayResults();
+                } catch (fallbackError) {
+                    displayFallbackEntry(error.message);
+                }
+            }
+        }
+
         // File input handling with better mobile support
         document.addEventListener('DOMContentLoaded', function() {
             const fileInput = document.getElementById('fileInput');
@@ -740,33 +884,9 @@
             }
         });
 
-        uploadArea.addEventListener('click', () => {
+        uploadArea.addEventListener('click', function() {
             selectFile();
         });
-
-        function openCamera() {
-            console.log('📷 Opening camera...');
-            const fileInput = document.getElementById('fileInput');
-            
-            // Reset and configure for camera
-            fileInput.value = '';
-            fileInput.setAttribute('capture', 'environment');
-            fileInput.setAttribute('accept', 'image/*'); // Accept all image formats
-            
-            fileInput.click();
-        }
-
-        function selectFile() {
-            console.log('📁 Opening file selector...');
-            const fileInput = document.getElementById('fileInput');
-            
-            // Reset and configure for file selection
-            fileInput.value = '';
-            fileInput.removeAttribute('capture');
-            fileInput.setAttribute('accept', 'image/*'); // Accept all image formats
-            
-            fileInput.click();
-        }
 
         // HEIC/HEIF conversion function
         async function convertHeicToJpeg(file) {
@@ -1023,46 +1143,6 @@
             }
         }
 
-        async function processReceipt() {
-            if (!currentImage) return;
-
-            // Show processing state
-            document.getElementById('previewArea').style.display = 'none';
-            document.getElementById('processing').style.display = 'block';
-
-            try {
-                // Step 1: Extract text using OCR
-                updateProcessingText('Extracting text from image...');
-                extractedText = await performOCR();
-                
-                // Step 2: Parse based on user's AI preference
-                if (useAI) {
-                    updateProcessingText('AI is organizing receipt data...');
-                    extractedData = await parseReceiptWithAI(extractedText);
-                } else {
-                    updateProcessingText('Organizing receipt data...');
-                    extractedData = parseReceiptText(extractedText);
-                }
-
-                displayResults();
-                
-            } catch (error) {
-                console.error('Processing error:', error);
-                
-                // Show error but offer fallback
-                showStatus('Processing failed: ' + error.message, 'error');
-                
-                // Try basic parsing as fallback
-                updateProcessingText('Trying basic parsing...');
-                try {
-                    extractedData = parseReceiptText(extractedText || 'No text extracted');
-                    displayResults();
-                } catch (fallbackError) {
-                    displayFallbackEntry(error.message);
-                }
-            }
-        }
-
         async function parseReceiptWithAI(text) {
             try {
                 console.log('Using serverless API to parse receipt...');
@@ -1122,47 +1202,6 @@
             document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
             
             document.getElementById('results').style.display = 'block';
-        }
-
-        function processManualEntry() {
-            const store = document.getElementById('manualStore').value || 'Unknown Store';
-            const date = document.getElementById('manualDate').value || new Date().toLocaleDateString();
-            const total = document.getElementById('manualTotal').value || 'N/A';
-            const itemsText = document.getElementById('manualItems').value;
-            
-            // Parse manual items
-            const items = [];
-            if (itemsText.trim()) {
-                const lines = itemsText.split('\n');
-                lines.forEach(line => {
-                    const trimmed = line.trim();
-                    if (trimmed) {
-                        const parts = trimmed.split(' - ');
-                        items.push({
-                            name: parts[0] || trimmed,
-                            price: parts[1] || 'N/A',
-                            category: 'General'
-                        });
-                    }
-                });
-            } else {
-                items.push({
-                    name: 'Manual entry - see total',
-                    price: total,
-                    category: 'General'
-                });
-            }
-
-            extractedData = {
-                store: store,
-                date: date,
-                total: total,
-                items: items,
-                rawText: 'Manual entry - OCR was not available'
-            };
-
-            displayResults();
-            showStatus('Manual entry saved successfully!', 'success');
         }
 
         async function performOCR() {
@@ -1447,28 +1486,6 @@
                 '</details>';
             
             document.getElementById('results').style.display = 'block';
-        }
-
-        function saveToSheet() {
-            // Placeholder for Google Sheets integration
-            showStatus('Google Sheets integration coming soon!', 'success');
-        }
-
-        function resetUpload() {
-            currentImage = null;
-            extractedData = null;
-            extractedText = null;
-            document.getElementById('fileInput').value = '';
-            document.getElementById('uploadArea').style.display = 'block';
-            document.getElementById('previewArea').style.display = 'none';
-            document.getElementById('processing').style.display = 'none';
-            document.getElementById('results').style.display = 'none';
-            
-            // Remove any format indicators
-            const indicator = document.querySelector('.format-indicator');
-            if (indicator) {
-                indicator.remove();
-            }
         }
 
         function showStatus(message, type) {
