@@ -535,7 +535,7 @@
     <div class="container">
         <header class="header">
             <h1>📄 Receipt Scanner</h1>
-            <p>Snap, scan, and organize your receipts123</p>
+            <p>Snap, scan, and organize your receipts</p>
         </header>
 
         <main class="main-content">
@@ -864,28 +864,30 @@
         });
 
         // Drag and drop functionality
-        const uploadArea = document.getElementById('uploadArea');
-        
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('uploadArea');
+            
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
 
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
+            uploadArea.addEventListener('dragleave', function() {
+                uploadArea.classList.remove('dragover');
+            });
 
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
-            }
-        });
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
 
-        uploadArea.addEventListener('click', function() {
-            selectFile();
+            uploadArea.addEventListener('click', function() {
+                selectFile();
+            });
         });
 
         // HEIC/HEIF conversion function
@@ -1502,17 +1504,26 @@
         // Install prompt for PWA
         let deferredPrompt;
 
-        window.addEventListener('beforeinstallprompt', (e) => {
+        window.addEventListener('beforeinstallprompt', function(e) {
             e.preventDefault();
             deferredPrompt = e;
             
             // Show install button or notification
-            setTimeout(() => {
+            setTimeout(function() {
                 if (confirm('Install Receipt Scanner as an app?')) {
                     deferredPrompt.prompt();
                 }
             }, 5000);
         });
+
+        // Make functions globally available
+        window.toggleAI = toggleAI;
+        window.openCamera = openCamera;
+        window.selectFile = selectFile;
+        window.processReceipt = processReceipt;
+        window.resetUpload = resetUpload;
+        window.saveToSheet = saveToSheet;
+        window.processManualEntry = processManualEntry;
     </script>
 </body>
 </html>
