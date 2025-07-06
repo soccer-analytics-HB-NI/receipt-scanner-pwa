@@ -527,7 +527,7 @@
                 <button class="btn btn-secondary" onclick="selectFile()">Choose File</button>
             </div>
 
-            <input type="file" id="fileInput" accept="image/*" capture="environment">
+            <input type="file" id="fileInput" accept="*/*">
 
             <div class="preview-area" id="previewArea">
                 <img id="previewImage" class="preview-image" alt="Receipt preview">
@@ -646,18 +646,34 @@
         });
 
         function openCamera() {
+            console.log('📷 Opening camera...');
             const fileInput = document.getElementById('fileInput');
-            // Better mobile camera support with more permissive accept
-            fileInput.setAttribute('capture', 'environment'); // Use back camera
-            fileInput.setAttribute('accept', 'image/*'); // Accept all images
+            
+            // Reset and configure for camera
+            fileInput.value = '';
+            fileInput.setAttribute('capture', 'environment');
+            fileInput.setAttribute('accept', '*/*'); // Accept everything, filter later
+            
+            // Add change listener if not already added
+            fileInput.removeEventListener('change', handleFileSelect);
+            fileInput.addEventListener('change', handleFileSelect);
+            
             fileInput.click();
         }
 
         function selectFile() {
+            console.log('📁 Opening file selector...');
             const fileInput = document.getElementById('fileInput');
+            
+            // Reset and configure for file selection
+            fileInput.value = '';
             fileInput.removeAttribute('capture');
-            // Very permissive - accept all image types
-            fileInput.setAttribute('accept', 'image/*,image/jpeg,image/jpg,image/png,image/gif,image/webp,image/bmp,image/tiff'); 
+            fileInput.setAttribute('accept', '*/*'); // Accept everything, filter later
+            
+            // Add change listener if not already added
+            fileInput.removeEventListener('change', handleFileSelect);
+            fileInput.addEventListener('change', handleFileSelect);
+            
             fileInput.click();
         }
 
