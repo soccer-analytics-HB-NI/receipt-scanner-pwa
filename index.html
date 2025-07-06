@@ -527,7 +527,7 @@
                 <button class="btn btn-secondary" onclick="selectFile()">Choose File</button>
             </div>
 
-            <input type="file" id="fileInput" accept="image/*">
+            <input type="file" id="fileInput" accept="image/*" style="display: none;">
 
             <div class="preview-area" id="previewArea">
                 <img id="previewImage" class="preview-image" alt="Receipt preview">
@@ -617,8 +617,34 @@
         // Also initialize on DOM ready as backup
         document.addEventListener('DOMContentLoaded', initializeApp);
 
-        // File input handling
-        document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+        // File input handling with better mobile support
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('fileInput');
+            
+            // Universal change handler
+            fileInput.addEventListener('change', function(event) {
+                console.log('=== FILE INPUT CHANGE EVENT ===');
+                console.log('Event type:', event.type);
+                console.log('Files:', event.target.files);
+                console.log('Files length:', event.target.files.length);
+                
+                if (event.target.files.length > 0) {
+                    const file = event.target.files[0];
+                    console.log('File detected:', {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        lastModified: new Date(file.lastModified).toISOString()
+                    });
+                    
+                    handleFile(file);
+                } else {
+                    console.log('❌ No files in change event');
+                }
+            });
+            
+            console.log('✅ Universal file input handler attached');
+        });
 
         // Drag and drop functionality
         const uploadArea = document.getElementById('uploadArea');
