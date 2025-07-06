@@ -572,7 +572,7 @@
         let userApiKey = null;
         let useAI = false; // Default to Basic Processing mode
 
-        // Initialize app settings
+        // Define all functions in global scope first
         function initializeApp() {
             console.log('Receipt Scanner initialized');
             useAI = true; // Default to AI mode since API key is server-side
@@ -583,7 +583,6 @@
             showStatus('Receipt Scanner ready!', 'success');
         }
 
-        // Toggle AI processing on/off
         function toggleAI() {
             useAI = !useAI;
             updateToggleUI();
@@ -592,7 +591,6 @@
             showStatus(status, 'success');
         }
 
-        // Update toggle UI appearance
         function updateToggleUI() {
             const toggle = document.getElementById('aiToggle');
             const description = document.getElementById('toggleDescription');
@@ -604,6 +602,139 @@
                 toggle.classList.remove('active');
                 description.textContent = '📝 Basic text parsing - fast and free (no AI required)';
             }
+        }
+
+        function openCamera() {
+            console.log('📷 Opening camera...');
+            const fileInput = document.getElementById('fileInput');
+            
+            // Reset and configure for camera
+            fileInput.value = '';
+            fileInput.setAttribute('capture', 'environment');
+            // Use more specific accept attribute for camera to encourage JPEG conversion
+            fileInput.setAttribute('accept', 'image/jpeg,image/jpg,image/png,image/webp,image/*');
+            
+            fileInput.click();
+        }
+
+        function selectFile() {
+            console.log('📁 Opening file selector...');
+            const fileInput = document.getElementById('fileInput');
+            
+            // Reset and configure for file selection
+            fileInput.value = '';
+            fileInput.removeAttribute('capture');
+            fileInput.setAttribute('accept', 'image/*');
+            
+            fileInput.click();
+        }
+
+        async function processReceipt() {
+            if (!currentImage) return;
+
+            // Show processing state
+            document.getElementById('previewArea').style.display = 'none';
+            document.getElementById('processing').style.display = 'block';
+
+            try {
+                // Step 1: Extract text using OCR
+                updateProcessingText('Extracting text from image...');
+                extractedText = await performOCR();
+                
+                // Step 2: Parse based on user's AI preference
+                if (useAI) {
+                    updateProcessingText('AI is organizing receipt data...');
+                    extractedData = await parseReceiptWithAI(extractedText);
+                } else {
+                    updateProcessingText('Organizing receipt data...');
+                    extractedData = parseReceiptText(extractedText);
+                }
+
+                displayResults();
+                
+            } catch (error) {
+                console.error('Processing error:', error);
+                
+                // Show error but offer fallback
+                showStatus('Processing failed: ' + error.message, 'error');
+                
+                // Try basic parsing as fallback
+                updateProcessingText('Trying basic parsing...');
+                try {
+                    extractedData = parseReceiptText(extractedText || 'No text extracted');
+                    displayResults();
+                } catch (fallbackError) {
+                    displayFallbackEntry(error.message);
+                }
+            }
+        }
+
+        function resetUpload() {
+            currentImage = null;
+            extractedData = null;
+            extractedText = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('uploadArea').style.display = 'block';
+            document.getElementById('previewArea').style.display = 'none';
+            document.getElementById('processing').style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+        }
+
+        function saveToSheet() {
+            // Placeholder for Google Sheets integration
+            showStatus('Google Sheets integration coming soon!', 'success');
+        }
+
+        function processManualEntry() {
+            const store = document.getElementById('manualStore').value || 'Unknown Store';
+            const date = document.getElementById('manualDate').value || new Date().toLocaleDateString();
+            const total = document.getElementById('manualTotal').value || 'N/A';
+            const itemsText = document.getElementById('manualItems').value;
+            
+            // Parse manual items
+            const items = [];
+            if (itemsText.trim()) {
+                const lines = itemsText.split('\n');
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (trimmed) {
+                        const parts = trimmed.split(' - ');
+                        items.push({
+                            name: parts[0] || trimmed,
+                            price: parts[1] || 'N/A',
+                            category: 'General'
+                        });
+                    }
+                });
+            } else {
+                items.push({
+                    name: 'Manual entry - see total',
+                    price: total,
+                    category: 'General'
+                });
+            }
+
+            extractedData = {
+                store: store,
+                date: date,
+                total: total,
+                items: items,
+                rawText: 'Manual entry - OCR was not available'
+            };
+
+            displayResults();
+            showStatus('Manual entry saved successfully!', 'success');
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+            
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 3000);
         }
 
         // Service Worker Registration and App Initialization
@@ -633,12 +764,26 @@
             setupEventListeners();
         });
 
+        // Make all functions globally available immediately
+        window.toggleAI = toggleAI;
+        window.openCamera = openCamera;
+        window.selectFile = selectFile;
+        window.processReceipt = processReceipt;
+        window.resetUpload = resetUpload;
+        window.saveToSheet = saveToSheet;
+        window.processManualEntry = processManualEntry;
+
         // File input handling with better mobile support
         function setupEventListeners() {
             console.log('Setting up event listeners...');
             
             const fileInput = document.getElementById('fileInput');
             const uploadArea = document.getElementById('uploadArea');
+            
+            if (!fileInput || !uploadArea) {
+                console.error('Required elements not found!');
+                return;
+            }
             
             // Universal change handler
             fileInput.addEventListener('change', function(event) {
@@ -688,39 +833,7 @@
             console.log('✅ Event listeners setup complete');
         }
 
-        // Make functions globally available
-        window.openCamera = openCamera;
-        window.selectFile = selectFile;
-        window.toggleAI = toggleAI;
-        window.processReceipt = processReceipt;
-        window.resetUpload = resetUpload;
-        window.saveToSheet = saveToSheet;
-        window.processManualEntry = processManualEntry;
 
-        function openCamera() {
-            console.log('📷 Opening camera...');
-            const fileInput = document.getElementById('fileInput');
-            
-            // Reset and configure for camera
-            fileInput.value = '';
-            fileInput.setAttribute('capture', 'environment');
-            // Use more specific accept attribute for camera to encourage JPEG conversion
-            fileInput.setAttribute('accept', 'image/jpeg,image/jpg,image/png,image/webp,image/*');
-            
-            fileInput.click();
-        }
-
-        function selectFile() {
-            console.log('📁 Opening file selector...');
-            const fileInput = document.getElementById('fileInput');
-            
-            // Reset and configure for file selection
-            fileInput.value = '';
-            fileInput.removeAttribute('capture');
-            fileInput.setAttribute('accept', 'image/*');
-            
-            fileInput.click();
-        }
 
         // Enhanced HEIC/HEIF detection and conversion
         async function handleFile(file) {
