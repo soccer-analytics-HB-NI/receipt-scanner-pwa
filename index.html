@@ -535,7 +535,7 @@
     <div class="container">
         <header class="header">
             <h1>📄 Receipt Scanner</h1>
-            <p>Snap, scan, and organize your receipts123</p>
+            <p>Snap, scan, and organize your receipts</p>
         </header>
 
         <main class="main-content">
@@ -633,14 +633,41 @@
         // Update toggle UI appearance
         function updateToggleUI() {
             const toggle = document.getElementById('aiToggle');
+            const toggleWrapper = document.getElementById('toggleWrapper');
             const description = document.getElementById('toggleDescription');
+            const basicIcon = document.getElementById('basicIcon');
+            const basicLabel = document.getElementById('basicLabel');
+            const aiIcon = document.getElementById('aiIcon');
+            const aiLabel = document.getElementById('aiLabel');
             
             if (useAI) {
                 toggle.classList.add('active');
+                toggleWrapper.classList.add('active');
+                description.classList.add('ai-active');
                 description.textContent = '✨ AI provides better accuracy and automatic categorization';
+                
+                // Update icons and labels
+                basicIcon.classList.remove('active');
+                basicLabel.classList.remove('active');
+                aiIcon.classList.add('active');
+                aiLabel.classList.add('active');
+                
+                // Update body class
+                document.body.className = 'ai-mode';
             } else {
                 toggle.classList.remove('active');
+                toggleWrapper.classList.remove('active');
+                description.classList.remove('ai-active');
                 description.textContent = '📝 Basic text parsing - fast and free (no AI required)';
+                
+                // Update icons and labels
+                basicIcon.classList.add('active');
+                basicLabel.classList.add('active');
+                aiIcon.classList.remove('active');
+                aiLabel.classList.remove('active');
+                
+                // Update body class
+                document.body.className = 'basic-mode';
             }
         }
 
@@ -714,7 +741,7 @@
         });
 
         uploadArea.addEventListener('click', () => {
-            document.getElementById('fileInput').click();
+            selectFile();
         });
 
         function openCamera() {
@@ -726,10 +753,7 @@
             fileInput.setAttribute('capture', 'environment');
             fileInput.setAttribute('accept', 'image/*'); // Accept all image formats
             
-            // Add change listener if not already added
-            fileInput.removeEventListener('change', handleFileSelect);
-            fileInput.addEventListener('change', handleFileSelect);
-            
+            // Trigger file input
             fileInput.click();
         }
 
@@ -742,19 +766,11 @@
             fileInput.removeAttribute('capture');
             fileInput.setAttribute('accept', 'image/*'); // Accept all image formats
             
-            // Add change listener if not already added
-            fileInput.removeEventListener('change', handleFileSelect);
-            fileInput.addEventListener('change', handleFileSelect);
-            
+            // Trigger file input
             fileInput.click();
         }
 
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                handleFile(file);
-            }
-        }
+
 
         // HEIC/HEIF conversion function
         async function convertHeicToJpeg(file) {
