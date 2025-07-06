@@ -55,35 +55,19 @@
             animation: gradientShiftBasic 10s ease infinite;
         }
 
-        /* AI Enhanced Mode — soft dynamic greys */
-body.ai-mode {
-    background: linear-gradient(120deg, #f0f0f3, #e2e8f0, #f8fafc);
-    background-size: 600% 600%;
-    animation: gentleGreyShift 18s ease infinite;
-}
+        /* AI mode background (default) */
+        body.ai-mode {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 40%, #667eea 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+        }
 
-/* Basic Mode — muted dynamic blues */
-body.basic-mode {
-    background: linear-gradient(120deg, #cfe0f5, #dbeafe, #bfdbfe);
-    background-size: 600% 600%;
-    animation: gentleBlueShift 16s ease infinite;
-}
-
-/* Animation for AI mode */
-@keyframes gentleGreyShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-/* Animation for Basic mode */
-@keyframes gentleBlueShift {
-    0% { background-position: 100% 0%; }
-    50% { background-position: 0% 100%; }
-    100% { background-position: 100% 0%; }
-}
-
-
+        /* Basic mode background */
+        body.basic-mode {
+            background: linear-gradient(135deg, #2D3748 0%, #4A5568 40%, #2D3748 100%);
+            background-size: 400% 400%;
+            animation: gradientShiftBasic 10s ease infinite;
+        }
 
         @keyframes gradientShift {
             0% { 
@@ -572,27 +556,17 @@ body.basic-mode {
 
         // Update toggle UI appearance
         function updateToggleUI() {
-    const toggle = document.getElementById('aiToggle');
-    const description = document.getElementById('toggleDescription');
-    const body = document.body;
-
-    if (useAI) {
-        toggle.classList.add('active');
-        description.textContent = '✨ AI provides better accuracy and automatic categorization';
-
-        // Add AI mode class, remove Basic mode class
-        body.classList.add('ai-mode');
-        body.classList.remove('basic-mode');
-    } else {
-        toggle.classList.remove('active');
-        description.textContent = '📝 Basic text parsing - fast and free (no AI required)';
-
-        // Add Basic mode class, remove AI mode class
-        body.classList.add('basic-mode');
-        body.classList.remove('ai-mode');
-    }
-}
-
+            const toggle = document.getElementById('aiToggle');
+            const description = document.getElementById('toggleDescription');
+            
+            if (useAI) {
+                toggle.classList.add('active');
+                description.textContent = '✨ AI provides better accuracy and automatic categorization';
+            } else {
+                toggle.classList.remove('active');
+                description.textContent = '📝 Basic text parsing - fast and free (no AI required)';
+            }
+        }
 
         // Service Worker Registration and App Initialization
         if ('serviceWorker' in navigator) {
