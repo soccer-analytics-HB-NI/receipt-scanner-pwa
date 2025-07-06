@@ -12,6 +12,9 @@
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOC4wMCAxMjguMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEyOC4wMCAxMjguMDAiIGZpbGw9IiMyNTYzZWIiIHJ4PSI2LjAiIHJ5PSI2LjAiPjwvcmVjdD48cGF0aCBkPSJNNDQgMjRsMzYgMDhsNDggMzZsNDggMCBWajQ0IDI0IDcyIDI0IDcyIDQ4JTEzNy43MiA0OCAzNy43MiA0OCA0MCA0OCA0MFoiIGZpbGw9IiNmZmZmZmYiLz48L3N2Zz4=">
     
+    <!-- HEIC2ANY library for HEIC conversion -->
+    <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+    
     <!-- Tesseract.js for OCR with fallback -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js" 
             onerror="console.error('Primary Tesseract CDN failed'); loadTesseractFallback();"></script>
@@ -471,6 +474,10 @@
             background: #ef4444;
         }
 
+        .status.warning {
+            background: #f59e0b;
+        }
+
         @media (max-width: 600px) {
             .container {
                 padding: 10px;
@@ -522,6 +529,7 @@
                 <div class="upload-text">
                     <h3>Take a photo or upload receipt</h3>
                     <p>Drag and drop an image here, or click to select</p>
+                    <small style="color: #9ca3af;">Supports HEIC/HEIF (iPhone photos), JPEG, PNG, and more</small>
                 </div>
                 <button class="btn" onclick="openCamera()">Take Photo</button>
                 <button class="btn btn-secondary" onclick="selectFile()">Choose File</button>
@@ -678,7 +686,8 @@
             // Reset and configure for camera
             fileInput.value = '';
             fileInput.setAttribute('capture', 'environment');
-            fileInput.setAttribute('accept', '*/*'); // Accept everything, filter later
+            // Use more specific accept attribute for camera to encourage JPEG conversion
+            fileInput.setAttribute('accept', 'image/jpeg,image/jpg,image/png,image/webp,image/*');
             
             // Add change listener if not already added
             fileInput.removeEventListener('change', handleFileSelect);
@@ -694,7 +703,7 @@
             // Reset and configure for file selection
             fileInput.value = '';
             fileInput.removeAttribute('capture');
-            fileInput.setAttribute('accept', '*/*'); // Accept everything, filter later
+            fileInput.setAttribute('accept', 'image/*');
             
             // Add change listener if not already added
             fileInput.removeEventListener('change', handleFileSelect);
@@ -710,13 +719,30 @@
             }
         }
 
-        function handleFile(file) {
+        // Enhanced HEIC/HEIF detection and conversion
+        async function handleFile(file) {
             console.log('File selected:', file.name, file.type, file.size);
             
-            // Be very permissive with image formats - let browser decide
-            if (!file.type.startsWith('image/')) {
-                // Even if MIME type is missing, check file extension
-                const fileName = file.name.toLowerCase();
+            // Check file size first (increased for high-res phone photos)
+            if (file.size > 25 * 1024 * 1024) {
+                showStatus('Image too large. Please use an image smaller than 25MB.', 'error');
+                return;
+            }
+
+            // Detect HEIC/HEIF by file extension AND MIME type
+            const fileName = file.name.toLowerCase();
+            const isHeicByExtension = fileName.endsWith('.heic') || fileName.endsWith('.heif');
+            const isHeicByMime = file.type.toLowerCase().includes('heic') || file.type.toLowerCase().includes('heif');
+            
+            if (isHeicByExtension || isHeicByMime) {
+                console.log('🔄 HEIC/HEIF file detected, attempting conversion...');
+                await handleHeicFile(file);
+                return;
+            }
+
+            // Handle other image formats
+            if (!file.type.startsWith('image/') && file.type !== '') {
+                // Check file extension as fallback
                 const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff', '.tif'];
                 const hasImageExtension = imageExtensions.some(ext => fileName.endsWith(ext));
                 
@@ -727,19 +753,6 @@
                 console.log('MIME type missing but file extension suggests image');
             }
 
-            // Only block known problematic formats
-            const problematicFormats = ['image/heic', 'image/heif'];
-            if (problematicFormats.includes(file.type.toLowerCase())) {
-                showStatus(`HEIC format not supported. Please convert to JPG first.`, 'error');
-                return;
-            }
-
-            // Increase file size limit for high-res phone photos
-            if (file.size > 25 * 1024 * 1024) {
-                showStatus('Image too large. Please use an image smaller than 25MB.', 'error');
-                return;
-            }
-
             currentImage = file;
             
             // Use createImageBitmap for better format support if available
@@ -748,6 +761,132 @@
             } else {
                 handleFileWithFileReader(file);
             }
+        }
+
+        // Handle HEIC/HEIF files with conversion
+        async function handleHeicFile(file) {
+            try {
+                showStatus('Converting iPhone photo format...', 'warning');
+                
+                // Check if heic2any library is available
+                if (typeof heic2any === 'undefined') {
+                    console.log('heic2any library not available, trying browser conversion...');
+                    await tryBrowserHeicConversion(file);
+                    return;
+                }
+
+                console.log('Using heic2any library for conversion...');
+                
+                // Convert HEIC to JPEG using heic2any
+                const convertedBlob = await heic2any({
+                    blob: file,
+                    toType: "image/jpeg",
+                    quality: 0.8
+                });
+
+                console.log('✅ HEIC conversion successful');
+                
+                // Create a new File object from the converted blob
+                const convertedFile = new File([convertedBlob], 
+                    file.name.replace(/\.(heic|heif)$/i, '.jpg'), 
+                    { type: 'image/jpeg' }
+                );
+
+                currentImage = convertedFile;
+                
+                // Process the converted file
+                if (window.createImageBitmap) {
+                    handleFileWithImageBitmap(convertedFile);
+                } else {
+                    handleFileWithFileReader(convertedFile);
+                }
+                
+                showStatus('iPhone photo converted successfully!', 'success');
+                
+            } catch (error) {
+                console.error('HEIC conversion failed:', error);
+                console.log('Trying alternative conversion methods...');
+                
+                // Fallback: try browser-based conversion
+                await tryBrowserHeicConversion(file);
+            }
+        }
+
+        // Alternative HEIC conversion using browser APIs
+        async function tryBrowserHeicConversion(file) {
+            try {
+                console.log('Attempting browser-based HEIC conversion...');
+                
+                // Try createImageBitmap which sometimes works with HEIC on newer browsers
+                if (window.createImageBitmap) {
+                    showStatus('Trying browser conversion...', 'warning');
+                    
+                    const bitmap = await createImageBitmap(file);
+                    console.log('✅ Browser HEIC conversion successful');
+                    
+                    // Convert to canvas and then to JPEG
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = bitmap.width;
+                    canvas.height = bitmap.height;
+                    ctx.drawImage(bitmap, 0, 0);
+                    
+                    const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+                    bitmap.close();
+                    
+                    // Convert dataURL back to file
+                    const response = await fetch(dataURL);
+                    const blob = await response.blob();
+                    const convertedFile = new File([blob], 
+                        file.name.replace(/\.(heic|heif)$/i, '.jpg'), 
+                        { type: 'image/jpeg' }
+                    );
+                    
+                    currentImage = convertedFile;
+                    displayImage(dataURL);
+                    showStatus('Photo converted using browser!', 'success');
+                    return;
+                }
+                
+                throw new Error('Browser conversion not supported');
+                
+            } catch (error) {
+                console.error('Browser HEIC conversion failed:', error);
+                
+                // Final fallback: show helpful error message
+                showHeicError();
+            }
+        }
+
+        // Show HEIC conversion error with helpful instructions
+        function showHeicError() {
+            showStatus('iPhone HEIC format needs conversion', 'error');
+            
+            const resultsContent = document.getElementById('resultsContent');
+            resultsContent.innerHTML = `
+                <div style="text-align: center; padding: 20px; background: #fef2f2; border-radius: 10px; border: 1px solid #fecaca;">
+                    <h4 style="color: #dc2626; margin-bottom: 15px;">📱 iPhone Photo Format Issue</h4>
+                    <p style="color: #7f1d1d; margin-bottom: 20px;">Your iPhone photo is in HEIC format which needs conversion.</p>
+                    
+                    <div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: left;">
+                        <h5 style="margin-bottom: 15px; color: #1f2937;">🔧 Solutions:</h5>
+                        <ul style="color: #374151; line-height: 1.6;">
+                            <li><strong>Option 1:</strong> Change iPhone camera settings to "Most Compatible" (Settings → Camera → Formats)</li>
+                            <li><strong>Option 2:</strong> Use the built-in camera button above instead of uploading from photos</li>
+                            <li><strong>Option 3:</strong> Share the photo via Messages/Email first (auto-converts to JPEG)</li>
+                            <li><strong>Option 4:</strong> Use a HEIC converter app before uploading</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
+                        <button class="btn" onclick="resetUpload()">Try Again</button>
+                        <button class="btn btn-secondary" onclick="openCamera()">Use Camera Instead</button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('uploadArea').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
         }
 
         function handleFileWithImageBitmap(file) {
@@ -1212,7 +1351,7 @@
             for (const pattern of totalPatterns) {
                 const match = text.match(pattern);
                 if (match) {
-                    return `$${match[1]}`;
+                    return `${match[1]}`;
                 }
             }
             
@@ -1220,8 +1359,8 @@
             const amounts = text.match(/\$\d+\.\d{2}/g);
             if (amounts && amounts.length > 0) {
                 const sortedAmounts = amounts.sort((a, b) => {
-                    const aVal = parseFloat(a.replace('$', ''));
-                    const bVal = parseFloat(b.replace('$', ''));
+                    const aVal = parseFloat(a.replace(', ''));
+                    const bVal = parseFloat(b.replace(', ''));
                     return bVal - aVal;
                 });
                 return sortedAmounts[0];
@@ -1237,7 +1376,7 @@
                 // Look for lines with prices
                 const priceMatch = line.match(/.*?\$(\d+\.\d{2})/);
                 if (priceMatch) {
-                    const price = `$${priceMatch[1]}`;
+                    const price = `${priceMatch[1]}`;
                     const name = line.replace(/\$\d+\.\d{2}.*/, '').trim();
                     
                     if (name.length > 2 && name.length < 100) {
