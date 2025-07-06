@@ -490,7 +490,7 @@
     <div class="container">
         <header class="header">
             <h1>📄 Receipt Scanner</h1>
-            <p>Snap, scan, and organize your receipts</p>
+            <p>Snap, scan, and organize your receipts123</p>
         </header>
 
         <main class="main-content">
@@ -764,21 +764,95 @@
         }
 
         function displayImage(dataURL) {
+            console.log('🖼️ Attempting to display image...');
+            console.log('Data URL preview:', dataURL.substring(0, 50) + '...');
+            
             const img = document.getElementById('previewImage');
             
-            img.onload = () => {
-                console.log(`Image displayed: ${img.naturalWidth}x${img.naturalHeight}`);
+            // Clear any previous error handlers
+            img.onload = null;
+            img.onerror = null;
+            
+            img.onload = function() {
+                console.log('✅ Image displayed successfully:', {
+                    width: img.naturalWidth,
+                    height: img.naturalHeight,
+                    displayWidth: img.width,
+                    displayHeight: img.height
+                });
+                
+                // Hide upload area and show preview
                 document.getElementById('uploadArea').style.display = 'none';
                 document.getElementById('previewArea').style.display = 'block';
                 showStatus('Image loaded successfully!', 'success');
             };
             
-            img.onerror = (error) => {
-                console.error('Image display error:', error);
-                showStatus('Failed to display image. Please try a different file.', 'error');
+            img.onerror = function(error) {
+                console.error('❌ Image display failed:', error);
+                console.error('Failed data URL:', dataURL.substring(0, 100) + '...');
+                
+                // Try to recover by converting to a different format
+                if (dataURL.startsWith('data:image/') && !dataURL.startsWith('data:image/jpeg')) {
+                    console.log('🔄 Trying to convert to JPEG...');
+                    convertToJPEG(dataURL);
+                } else {
+                    showStatus('Failed to display image. Please try a different image file.', 'error');
+                    resetUpload();
+                }
             };
             
+            // Set the source to trigger loading
+            console.log('🔄 Setting image source...');
             img.src = dataURL;
+        }
+
+        function convertToJPEG(dataURL) {
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const tempImg = new Image();
+                
+                tempImg.onload = function() {
+                    console.log('✅ Temp image loaded for conversion');
+                    canvas.width = tempImg.width;
+                    canvas.height = tempImg.height;
+                    
+                    // Draw on white background (in case of transparency)
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(tempImg, 0, 0);
+                    
+                    const jpegDataURL = canvas.toDataURL('image/jpeg', 0.8);
+                    console.log('🔄 Converted to JPEG, trying to display...');
+                    
+                    const img = document.getElementById('previewImage');
+                    img.onload = function() {
+                        console.log('✅ Converted image displayed successfully');
+                        document.getElementById('uploadArea').style.display = 'none';
+                        document.getElementById('previewArea').style.display = 'block';
+                        showStatus('Image loaded successfully!', 'success');
+                    };
+                    img.onerror = function() {
+                        console.error('❌ Even JPEG conversion failed');
+                        showStatus('Unable to display this image format.', 'error');
+                        resetUpload();
+                    };
+                    img.src = jpegDataURL;
+                };
+                
+                tempImg.onerror = function() {
+                    console.error('❌ Temp image failed to load for conversion');
+                    showStatus('Unable to process this image format.', 'error');
+                    resetUpload();
+                };
+                
+                tempImg.src = dataURL;
+                
+            } catch (error) {
+                console.error('❌ Conversion process failed:', error);
+                showStatus('Unable to process this image.', 'error');
+                resetUpload();
+            }
         }
 
         async function processReceipt() {
