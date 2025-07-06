@@ -405,36 +405,52 @@
                 .then(function(response) { return response.json(); })
                 .then(function(data) {
                     if (data.authUrl) {
-                        // Open Google OAuth in a popup
-                        var popup = window.open(data.authUrl, 'google-auth', 'width=500,height=600,scrollbars=yes,resizable=yes');
+                        // For debugging, let's try direct redirect instead of popup
+                        console.log('Auth URL:', data.authUrl);
                         
-                        // Listen for messages from the popup
-                        window.addEventListener('message', function(event) {
-                            if (event.origin !== window.location.origin) return;
-                            
-                            if (event.data.type === 'GOOGLE_AUTH_SUCCESS' && event.data.code) {
-                                handleAuthCode(event.data.code);
-                            }
-                        });
+                        // Save current state before redirect
+                        localStorage.setItem('authInProgress', 'true');
                         
-                        // Check if popup was closed without auth
-                        var checkClosed = setInterval(function() {
-                            if (popup.closed) {
-                                clearInterval(checkClosed);
-                                // Small delay to allow message processing
-                                setTimeout(function() {
-                                    if (!googleAuth) {
-                                        showStatus('Google sign-in was cancelled', 'error');
-                                    }
-                                }, 500);
-                            }
-                        }, 1000);
+                        // Redirect to Google OAuth (this will come back to our callback)
+                        window.location.href = data.authUrl;
                     }
                 })
                 .catch(function(error) {
                     console.error('Auth error:', error);
                     showStatus('Failed to start Google authentication', 'error');
                 });
+        }
+
+        // Check if we're returning from auth on page load
+        function checkForAuthReturn() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var code = urlParams.get('code');
+            var error = urlParams.get('error');
+            var authInProgress = localStorage.getItem('authInProgress');
+            
+            if (error) {
+                localStorage.removeItem('authInProgress');
+                showStatus('Google sign-in failed: ' + error, 'error');
+                // Clean up URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+                return;
+            }
+            
+            if (code && authInProgress) {
+                localStorage.removeItem('authInProgress');
+                showStatus('Processing Google sign-in...', 'success');
+                handleAuthCode(code);
+                
+                // Clean up URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (code) {
+                // Handle case where we have a code but no authInProgress flag
+                showStatus('Processing Google sign-in...', 'success');
+                handleAuthCode(code);
+                
+                // Clean up URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
         }
 
         function handleAuthCode(code) {
@@ -1172,6 +1188,9 @@
             
             // Load saved authentication state
             loadSavedAuth();
+            
+            // Check if returning from Google OAuth
+            checkForAuthReturn();
         });
     </script>
 </body>
