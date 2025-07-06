@@ -45,35 +45,66 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: #333;
-            transition: background 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Dynamic backgrounds based on AI toggle state */
-        body.ai-mode {
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Default AI mode background */
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             background-size: 400% 400%;
             animation: gradientShift 8s ease infinite;
         }
 
+        /* AI mode background (default) */
+        body.ai-mode {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 40%, #667eea 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+        }
+
+        /* Basic mode background */
         body.basic-mode {
-            background: linear-gradient(135deg, #2D3748 0%, #4A5568 100%);
+            background: linear-gradient(135deg, #2D3748 0%, #4A5568 40%, #2D3748 100%);
             background-size: 400% 400%;
             animation: gradientShiftBasic 10s ease infinite;
         }
 
         @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% { 
+                background-position: 0% 50%;
+                filter: hue-rotate(0deg);
+            }
+            25% {
+                background-position: 100% 50%;
+                filter: hue-rotate(5deg);
+            }
+            50% { 
+                background-position: 100% 0%;
+                filter: hue-rotate(10deg);
+            }
+            75% {
+                background-position: 0% 0%;
+                filter: hue-rotate(5deg);
+            }
+            100% { 
+                background-position: 0% 50%;
+                filter: hue-rotate(0deg);
+            }
         }
 
         @keyframes gradientShiftBasic {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% { 
+                background-position: 0% 50%;
+                filter: brightness(1);
+            }
+            50% { 
+                background-position: 100% 50%;
+                filter: brightness(1.1);
+            }
+            100% { 
+                background-position: 0% 50%;
+                filter: brightness(1);
+            }
         }
 
         .container {
@@ -192,27 +223,32 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
+        .toggle-icon {
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.5;
+            transform: scale(1);
+        }
+
+        .toggle-icon.active {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
         .toggle-label {
-            font-weight: 600;
+            font-weight: 500;
             color: #374151;
             font-size: 1rem;
             text-align: center;
             transition: all 0.3s ease;
+            opacity: 0.6;
         }
 
         .toggle-label.active {
             color: #2563eb;
-            transform: scale(1.05);
-        }
-
-        .toggle-icon {
-            font-size: 1.5rem;
-            margin-bottom: 4px;
-            transition: all 0.3s ease;
-        }
-
-        .toggle-icon.active {
-            transform: scale(1.2);
+            font-weight: 700;
+            opacity: 1;
         }
 
         .toggle-description {
@@ -524,6 +560,9 @@
             // Initialize app even if no service worker support
             window.addEventListener('load', initializeApp);
         }
+
+        // Also initialize on DOM ready as backup
+        document.addEventListener('DOMContentLoaded', initializeApp);
 
         // File input handling
         document.getElementById('fileInput').addEventListener('change', handleFileSelect);
