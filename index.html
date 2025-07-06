@@ -406,14 +406,27 @@
                 .then(function(data) {
                     if (data.authUrl) {
                         // Open Google OAuth in a popup
-                        var popup = window.open(data.authUrl, 'google-auth', 'width=500,height=600');
+                        var popup = window.open(data.authUrl, 'google-auth', 'width=500,height=600,scrollbars=yes,resizable=yes');
                         
-                        // Listen for the popup to close
+                        // Listen for messages from the popup
+                        window.addEventListener('message', function(event) {
+                            if (event.origin !== window.location.origin) return;
+                            
+                            if (event.data.type === 'GOOGLE_AUTH_SUCCESS' && event.data.code) {
+                                handleAuthCode(event.data.code);
+                            }
+                        });
+                        
+                        // Check if popup was closed without auth
                         var checkClosed = setInterval(function() {
                             if (popup.closed) {
                                 clearInterval(checkClosed);
-                                // Check if auth was successful by looking for hash params
-                                checkAuthCallback();
+                                // Small delay to allow message processing
+                                setTimeout(function() {
+                                    if (!googleAuth) {
+                                        showStatus('Google sign-in was cancelled', 'error');
+                                    }
+                                }, 500);
                             }
                         }, 1000);
                     }
@@ -424,39 +437,34 @@
                 });
         }
 
-        function checkAuthCallback() {
-            // This is a simplified approach - in production you'd handle the callback more securely
-            var urlParams = new URLSearchParams(window.location.search);
-            var code = urlParams.get('code');
-            
-            if (code) {
-                // Exchange code for tokens
-                fetch('/api/google-callback', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ code: code })
-                })
-                .then(function(response) { return response.json(); })
-                .then(function(data) {
-                    if (data.access_token) {
-                        googleAuth = {
-                            access_token: data.access_token,
-                            refresh_token: data.refresh_token,
-                            expires_at: Date.now() + (data.expires_in * 1000)
-                        };
-                        
-                        saveAuthState();
-                        updateGoogleAuthUI(true);
-                        showSheetSelection();
-                        loadUserSheets();
-                        showStatus('Successfully connected to Google!', 'success');
-                    }
-                })
-                .catch(function(error) {
-                    console.error('Token exchange error:', error);
-                    showStatus('Failed to complete Google authentication', 'error');
-                });
-            }
+        function handleAuthCode(code) {
+            fetch('/api/google-callback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: code })
+            })
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (data.access_token) {
+                    googleAuth = {
+                        access_token: data.access_token,
+                        refresh_token: data.refresh_token,
+                        expires_at: Date.now() + (data.expires_in * 1000)
+                    };
+                    
+                    saveAuthState();
+                    updateGoogleAuthUI(true);
+                    showSheetSelection();
+                    loadUserSheets();
+                    showStatus('Successfully connected to Google!', 'success');
+                } else {
+                    throw new Error(data.error || 'Failed to get access token');
+                }
+            })
+            .catch(function(error) {
+                console.error('Token exchange error:', error);
+                showStatus('Failed to complete Google authentication', 'error');
+            });
         }
 
         function disconnectGoogle() {
