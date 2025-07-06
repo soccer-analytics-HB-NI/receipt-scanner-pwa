@@ -169,7 +169,7 @@
     <div class="container">
         <header class="header">
             <h1>📄 Receipt Scanner</h1>
-            <p>Snap, scan, and organize your receipts123</p>
+            <p>Snap, scan, and organize your receipts</p>
         </header>
 
         <main class="main-content">
@@ -239,8 +239,64 @@
                     <p id="collectionCount" style="margin-bottom: 15px; color: #0c4a6e;">0 receipts collected</p>
                     <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                         <button class="btn" onclick="exportCSV()">📥 Download CSV</button>
+                        <button class="btn" onclick="exportToGoogleSheets()" style="background: #10b981;">📊 Export to Google Sheets</button>
                         <button class="btn btn-secondary" onclick="viewCollection()">👁️ View All</button>
                         <button class="btn" style="background: #dc2626;" onclick="clearCollection()">🗑️ Clear All</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Google Sheets Modal -->
+            <div id="googleSheetsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 15px; padding: 30px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                    <h3 style="margin-bottom: 20px; text-align: center;">📊 Export to Google Sheets</h3>
+                    
+                    <!-- Auth Status -->
+                    <div id="authStatus" style="margin-bottom: 20px; padding: 15px; border-radius: 10px; text-align: center;">
+                        <div id="notAuthenticatedView">
+                            <p style="margin-bottom: 15px; color: #64748b;">Connect your Google account to export receipts to Google Sheets</p>
+                            <button class="btn" onclick="authenticateGoogle()" style="background: #4285f4;">
+                                🔐 Sign in with Google
+                            </button>
+                        </div>
+                        
+                        <div id="authenticatedView" style="display: none;">
+                            <p style="margin-bottom: 10px; color: #10b981;">✅ Connected to Google Sheets</p>
+                            <button class="btn btn-secondary" onclick="disconnectGoogle()" style="font-size: 0.85rem; padding: 6px 12px;">
+                                Disconnect
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Sheet Selection -->
+                    <div id="sheetSelection" style="display: none;">
+                        <h4 style="margin-bottom: 15px;">Select a Google Sheet:</h4>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <button class="btn btn-secondary" onclick="loadUserSheets()" style="width: 100%;">
+                                🔄 Refresh Sheets List
+                            </button>
+                        </div>
+                        
+                        <div id="sheetsList" style="max-height: 200px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px;">
+                            <!-- Sheets will be loaded here -->
+                        </div>
+                        
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
+                            <label style="display: block; margin-bottom: 10px;">
+                                <input type="checkbox" id="rememberSheet" style="margin-right: 8px;">
+                                Remember this sheet for future exports
+                            </label>
+                            
+                            <div style="display: flex; gap: 10px; justify-content: center;">
+                                <button class="btn" onclick="confirmExportToSheets()" id="exportButton" disabled style="background: #10b981;">
+                                    📊 Export Receipts
+                                </button>
+                                <button class="btn btn-secondary" onclick="closeGoogleSheetsModal()">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -265,6 +321,302 @@
         var extractedData = null;
         var useAI = false; // Start with basic mode
         var allReceipts = []; // Store multiple receipts
+        var googleAuth = null; // Store Google auth state
+        var userSheets = []; // Store user's Google Sheets
+        var preferredSheetId = null; // Store preferred sheet ID
+
+        // Check for saved auth and preferences on load
+        function loadSavedAuth() {
+            var savedAuth = localStorage.getItem('googleAuth');
+            var savedSheetId = localStorage.getItem('preferredSheetId');
+            
+            if (savedAuth) {
+                try {
+                    googleAuth = JSON.parse(savedAuth);
+                    // Check if token is still valid (simple expiry check)
+                    var expiryTime = googleAuth.expires_at || 0;
+                    if (Date.now() < expiryTime) {
+                        updateGoogleAuthUI(true);
+                    } else {
+                        // Token expired, clear it
+                        localStorage.removeItem('googleAuth');
+                        googleAuth = null;
+                    }
+                } catch (e) {
+                    localStorage.removeItem('googleAuth');
+                }
+            }
+            
+            if (savedSheetId) {
+                preferredSheetId = savedSheetId;
+            }
+        }
+
+        // Google Sheets Integration Functions
+        function exportToGoogleSheets() {
+            if (allReceipts.length === 0) {
+                showStatus('No receipts to export', 'error');
+                return;
+            }
+
+            // Check if user has a preferred sheet and is authenticated
+            if (googleAuth && preferredSheetId) {
+                // Skip selection and export directly
+                confirmExportToSheets();
+                return;
+            }
+
+            // Show the Google Sheets modal
+            document.getElementById('googleSheetsModal').style.display = 'block';
+            
+            if (googleAuth) {
+                updateGoogleAuthUI(true);
+                showSheetSelection();
+                loadUserSheets();
+            } else {
+                updateGoogleAuthUI(false);
+            }
+        }
+
+        function closeGoogleSheetsModal() {
+            document.getElementById('googleSheetsModal').style.display = 'none';
+        }
+
+        function updateGoogleAuthUI(isAuthenticated) {
+            var notAuthView = document.getElementById('notAuthenticatedView');
+            var authView = document.getElementById('authenticatedView');
+            var sheetSelection = document.getElementById('sheetSelection');
+            
+            if (isAuthenticated) {
+                notAuthView.style.display = 'none';
+                authView.style.display = 'block';
+                sheetSelection.style.display = 'block';
+            } else {
+                notAuthView.style.display = 'block';
+                authView.style.display = 'none';
+                sheetSelection.style.display = 'none';
+            }
+        }
+
+        function authenticateGoogle() {
+            showStatus('Redirecting to Google...', 'success');
+            
+            fetch('/api/google-auth')
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    if (data.authUrl) {
+                        // Open Google OAuth in a popup
+                        var popup = window.open(data.authUrl, 'google-auth', 'width=500,height=600');
+                        
+                        // Listen for the popup to close
+                        var checkClosed = setInterval(function() {
+                            if (popup.closed) {
+                                clearInterval(checkClosed);
+                                // Check if auth was successful by looking for hash params
+                                checkAuthCallback();
+                            }
+                        }, 1000);
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Auth error:', error);
+                    showStatus('Failed to start Google authentication', 'error');
+                });
+        }
+
+        function checkAuthCallback() {
+            // This is a simplified approach - in production you'd handle the callback more securely
+            var urlParams = new URLSearchParams(window.location.search);
+            var code = urlParams.get('code');
+            
+            if (code) {
+                // Exchange code for tokens
+                fetch('/api/google-callback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: code })
+                })
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    if (data.access_token) {
+                        googleAuth = {
+                            access_token: data.access_token,
+                            refresh_token: data.refresh_token,
+                            expires_at: Date.now() + (data.expires_in * 1000)
+                        };
+                        
+                        saveAuthState();
+                        updateGoogleAuthUI(true);
+                        showSheetSelection();
+                        loadUserSheets();
+                        showStatus('Successfully connected to Google!', 'success');
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Token exchange error:', error);
+                    showStatus('Failed to complete Google authentication', 'error');
+                });
+            }
+        }
+
+        function disconnectGoogle() {
+            googleAuth = null;
+            preferredSheetId = null;
+            localStorage.removeItem('googleAuth');
+            localStorage.removeItem('preferredSheetId');
+            updateGoogleAuthUI(false);
+            showStatus('Disconnected from Google', 'success');
+        }
+
+        function showSheetSelection() {
+            document.getElementById('sheetSelection').style.display = 'block';
+        }
+
+        function loadUserSheets() {
+            if (!googleAuth) {
+                showStatus('Please authenticate with Google first', 'error');
+                return;
+            }
+
+            var sheetsList = document.getElementById('sheetsList');
+            sheetsList.innerHTML = '<p style="text-align: center; color: #64748b;">Loading your Google Sheets...</p>';
+
+            fetch('/api/google-sheets-list', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ access_token: googleAuth.access_token })
+            })
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (data.sheets) {
+                    userSheets = data.sheets;
+                    displaySheetsList(data.sheets);
+                } else {
+                    throw new Error('No sheets found');
+                }
+            })
+            .catch(function(error) {
+                console.error('Load sheets error:', error);
+                sheetsList.innerHTML = '<p style="text-align: center; color: #dc2626;">Failed to load sheets. Try refreshing.</p>';
+            });
+        }
+
+        function displaySheetsList(sheets) {
+            var sheetsList = document.getElementById('sheetsList');
+            var html = '';
+
+            if (sheets.length === 0) {
+                html = '<p style="text-align: center; color: #64748b;">No Google Sheets found. Create one first!</p>';
+            } else {
+                sheets.forEach(function(sheet) {
+                    var isPreferred = sheet.id === preferredSheetId;
+                    html += '<div class="sheet-item" data-sheet-id="' + sheet.id + '" onclick="selectSheet(\'' + sheet.id + '\', \'' + sheet.name + '\')" style="' +
+                        'padding: 10px; margin: 5px 0; border: 1px solid ' + (isPreferred ? '#10b981' : '#e5e7eb') + '; ' +
+                        'border-radius: 8px; cursor: pointer; transition: all 0.2s ease; ' +
+                        'background: ' + (isPreferred ? '#f0fdf4' : '#ffffff') + ';">' +
+                        '<div style="font-weight: bold; color: #1f2937;">' + sheet.name + '</div>' +
+                        '<div style="font-size: 0.8rem; color: #64748b;">Modified: ' + new Date(sheet.modifiedTime).toLocaleDateString() + '</div>' +
+                        (isPreferred ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 4px;">✓ Preferred Sheet</div>' : '') +
+                    '</div>';
+                });
+            }
+
+            sheetsList.innerHTML = html;
+        }
+
+        var selectedSheetId = null;
+        var selectedSheetName = null;
+
+        function selectSheet(sheetId, sheetName) {
+            selectedSheetId = sheetId;
+            selectedSheetName = sheetName;
+
+            // Update UI to show selection
+            var items = document.querySelectorAll('.sheet-item');
+            items.forEach(function(item) {
+                if (item.getAttribute('data-sheet-id') === sheetId) {
+                    item.style.background = '#eff6ff';
+                    item.style.borderColor = '#3b82f6';
+                } else {
+                    item.style.background = '#ffffff';
+                    item.style.borderColor = '#e5e7eb';
+                }
+            });
+
+            // Enable export button
+            document.getElementById('exportButton').disabled = false;
+        }
+
+        function confirmExportToSheets() {
+            var targetSheetId = selectedSheetId || preferredSheetId;
+            var targetSheetName = selectedSheetName || 'Selected Sheet';
+
+            if (!targetSheetId) {
+                showStatus('Please select a Google Sheet first', 'error');
+                return;
+            }
+
+            if (!googleAuth) {
+                showStatus('Please authenticate with Google first', 'error');
+                return;
+            }
+
+            // Save preference if checkbox is checked
+            var rememberCheckbox = document.getElementById('rememberSheet');
+            if (rememberCheckbox && rememberCheckbox.checked && selectedSheetId) {
+                preferredSheetId = selectedSheetId;
+                saveAuthState();
+            }
+
+            // Show loading state
+            var exportButton = document.getElementById('exportButton');
+            exportButton.textContent = 'Exporting...';
+            exportButton.disabled = true;
+
+            // Export to Google Sheets
+            fetch('/api/google-sheets-export', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    access_token: googleAuth.access_token,
+                    sheet_id: targetSheetId,
+                    receipts: allReceipts
+                })
+            })
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    showStatus('Successfully exported ' + allReceipts.length + ' receipts to Google Sheets!', 'success');
+                    closeGoogleSheetsModal();
+                    
+                    // Show link to open the sheet
+                    setTimeout(function() {
+                        if (confirm('Export successful! Would you like to open the Google Sheet?')) {
+                            window.open(data.spreadsheetUrl, '_blank');
+                        }
+                    }, 1000);
+                } else {
+                    throw new Error(data.error || 'Export failed');
+                }
+            })
+            .catch(function(error) {
+                console.error('Export error:', error);
+                showStatus('Failed to export to Google Sheets: ' + error.message, 'error');
+            })
+            .finally(function() {
+                exportButton.textContent = '📊 Export Receipts';
+                exportButton.disabled = false;
+            });
+        }
+
+        function saveAuthState() {
+            if (googleAuth) {
+                localStorage.setItem('googleAuth', JSON.stringify(googleAuth));
+            }
+            if (preferredSheetId) {
+                localStorage.setItem('preferredSheetId', preferredSheetId);
+            }
+        }
 
         function showStatus(message, type) {
             var status = document.getElementById('status');
@@ -809,6 +1161,9 @@
             
             // Initialize toggle UI
             updateToggleUI();
+            
+            // Load saved authentication state
+            loadSavedAuth();
         });
     </script>
 </body>
