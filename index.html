@@ -7,7 +7,7 @@
     <title>Receipt Scanner</title>
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVjZWlwdCBTY2FubmVyIiwic2hvcnRfbmFtZSI6IlJlY2VpcHRzIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmZmZmZmYiLCJ0aGVtZV9jb2xvciI6IiMyNTYzZWIiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCM2FXUjBhRDBpTVRJNElpQm9aV2xuYUhROUlqRXlPQ0lpSUhacFpYZENiM2c5SWpBZ01DQXhNamd1TURBZ01USTRMakF3SWlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpUGp4eVpXTjBJSGRwWkhSb1BTSXhNamd1TURBZ01USTRMakF3SWlCbWFXeHNQU0lqTWpVMk0yVmlJaUJ5ZUQwaU5pNHdJaUJ5ZVQwaU5pNHdJajQ4TDNKbFkzUStQSEJoZEdnZ1pEMGlUVFEwSURJMGJETTJJREE0YkRRNElETTJiRFE0SURBZ1drbzBOQ0F5TkNBM01pQXlOQ0IzTWlBME9DVXhNemN1TnpJZ05EZ2dNemN1TnpJZ05EZ2dOREFnTkRnZ05EQmFJaUJtYVd4c1BTSWpabVptWm1abUlpOCtQQzl6ZG1jKyIsInNpemVzIjoiMTI4eDEyOCIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVjZWlwdCBTY2FubmVyIiwic2hvcnRfbmFtZSI6IlJlY2VpcHRzIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmZmZmZmYiLCJ0aGVtZV9jb2xvciI6IiMyNTYzZWIiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCM2FXUjBhRDBpTVRJNElpQm9aV2xuYUhROUlqRXlPQ0lpSUhacFpYZENiM2c5SWpBZ01DQXhNamd1TURBZ01USTRMakF3SWlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpUGp4eVpXTjBJSGRwWkhSb1BTSXhNamd1TURBZ01USTRMakF3SWlCbWFXeHNQU0lqTWpVMk0yVmlJaUJ5ZUQwaU5pNHdJaUJ5ZVQwaU5pNHdJajQ4TDNKbFkzUStQSEJoZEdnZ1pEMGlUVFEwSURJMGJETTJJREE0YkRRNElETTJiRFE4SURBZ1drbzBOQ0F5TkNBM01pQXlOQ0IzTWlBME9DVXhNemN1TnpJZ05EZ2dNemN1TnpJZ05EZ2dOREFnTkRnZ05EQmFJaUJtYVd4c1BTSWpabVptWm1abUlpOCtQQzl6ZG1jKyIsInNpemVzIjoiMTI4eDEyOCIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
     
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOC4wMCAxMjguMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEyOC4wMCAxMjguMDAiIGZpbGw9IiMyNTYzZWIiIHJ4PSI2LjAiIHJ5PSI2LjAiPjwvcmVjdD48cGF0aCBkPSJNNDQgMjRsMzYgMDhsNDggMzZsNDggMCBWajQ0IDI0IDcyIDI0IDcyIDQ4JTEzNy43MiA0OCAzNy43MiA0OCA0MCA0OCA0MFoiIGZpbGw9IiNmZmZmZmYiLz48L3N2Zz4=">
@@ -33,70 +33,7 @@
             if (typeof Tesseract === 'undefined') {
                 console.error('Tesseract.js failed to load');
                 showStatus('OCR library failed to load. Check internet connection.', 'error');
-            }
-        }
-
-        async function parseReceiptWithAI(text) {
-            try {
-                console.log('Using serverless API to parse receipt...');
-                
-                const response = await fetch('/api/parse-receipt', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ text: text })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`API error: ${response.status}`);
-                }
-
-                const parsedData = await response.json();
-                return parsedData;
-                
-            } catch (error) {
-                console.error('AI parsing failed:', error);
-                showStatus('AI parsing failed, using basic parsing', 'error');
-                return parseReceiptText(text);
-            }
-        }
-
-        function displayFallbackEntry(errorMessage) {
-            document.getElementById('processing').style.display = 'none';
-            
-            const resultsContent = document.getElementById('resultsContent');
-            resultsContent.innerHTML = `
-                <div style="text-align: center; padding: 20px; background: #fef2f2; border-radius: 10px; border: 1px solid #fecaca;">
-                    <h4 style="color: #dc2626; margin-bottom: 15px;">OCR Processing Failed</h4>
-                    <p style="color: #7f1d1d; margin-bottom: 20px;">${errorMessage}</p>
-                    
-                    <div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0;">
-                        <h5 style="margin-bottom: 15px;">Manual Entry (Temporary)</h5>
-                        <input type="text" id="manualStore" placeholder="Store Name" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
-                        <input type="date" id="manualDate" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
-                        <input type="text" id="manualTotal" placeholder="Total Amount (e.g., $12.34)" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
-                        <textarea id="manualItems" placeholder="Items (one per line, e.g., 'Milk - $3.99')" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px; height: 80px;"></textarea>
-                        <button class="btn" onclick="processManualEntry()" style="margin-top: 10px;">Save Manual Entry</button>
-                    </div>
-                    
-                    <div style="margin-top: 15px;">
-                        <h5>Troubleshooting Tips:</h5>
-                        <ul style="text-align: left; color: #374151;">
-                            <li>Ensure good internet connection</li>
-                            <li>Try a clearer, well-lit photo</li>
-                            <li>Make sure receipt is flat and straight</li>
-                            <li>Refresh the page and try again</li>
-                        </ul>
-                    </div>
-                </div>
-            `;
-            
-            // Set today's date as default
-            document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
-            
-            document.getElementById('results').style.display = 'block';
-        } else {
+            } else {
                 console.log('Tesseract.js loaded successfully');
             }
 
@@ -376,6 +313,21 @@
             background: rgba(16, 185, 129, 0.9);
         }
 
+        .conversion-progress {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .conversion-progress .spinner {
+            width: 30px;
+            height: 30px;
+            border-width: 2px;
+        }
+
         @media (max-width: 600px) {
             .ai-toggle {
                 display: grid;
@@ -564,21 +516,6 @@
             background: #ef4444;
         }
 
-        .conversion-progress {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
-            text-align: center;
-        }
-
-        .conversion-progress .spinner {
-            width: 30px;
-            height: 30px;
-            border-width: 2px;
-        }
-
         @media (max-width: 600px) {
             .container {
                 padding: 10px;
@@ -753,42 +690,6 @@
         // Also initialize on DOM ready as backup
         document.addEventListener('DOMContentLoaded', initializeApp);
 
-        // Toggle AI processing on/off
-        function toggleAI() {
-            useAI = !useAI;
-            updateToggleUI();
-            
-            const status = useAI ? 'AI Enhanced mode enabled' : 'Basic processing mode enabled';
-            showStatus(status, 'success');
-        }
-
-        // Camera and file selection functions
-        function openCamera() {
-            console.log('📷 Opening camera...');
-            const fileInput = document.getElementById('fileInput');
-            
-            // Reset and configure for camera
-            fileInput.value = '';
-            fileInput.setAttribute('capture', 'environment');
-            fileInput.setAttribute('accept', 'image/*');
-            
-            // Trigger file input
-            fileInput.click();
-        }
-
-        function selectFile() {
-            console.log('📁 Opening file selector...');
-            const fileInput = document.getElementById('fileInput');
-            
-            // Reset and configure for file selection
-            fileInput.value = '';
-            fileInput.removeAttribute('capture');
-            fileInput.setAttribute('accept', 'image/*');
-            
-            // Trigger file input
-            fileInput.click();
-        }
-
         // File input handling with better mobile support
         document.addEventListener('DOMContentLoaded', function() {
             const fileInput = document.getElementById('fileInput');
@@ -843,117 +744,29 @@
             selectFile();
         });
 
-        // Additional core functions for receipt processing
-        function processReceipt() {
-            if (!currentImage) return;
-
-            // Show processing state
-            document.getElementById('previewArea').style.display = 'none';
-            document.getElementById('processing').style.display = 'block';
-
-            // Process the receipt
-            performOCRAndParse();
-        }
-
-        function resetUpload() {
-            currentImage = null;
-            extractedData = null;
-            extractedText = null;
-            document.getElementById('fileInput').value = '';
-            document.getElementById('uploadArea').style.display = 'block';
-            document.getElementById('previewArea').style.display = 'none';
-            document.getElementById('processing').style.display = 'none';
-            document.getElementById('results').style.display = 'none';
+        function openCamera() {
+            console.log('📷 Opening camera...');
+            const fileInput = document.getElementById('fileInput');
             
-            // Remove any format indicators
-            const indicator = document.querySelector('.format-indicator');
-            if (indicator) {
-                indicator.remove();
-            }
-        }
-
-        function saveToSheet() {
-            // Placeholder for Google Sheets integration
-            showStatus('Google Sheets integration coming soon!', 'success');
-        }
-
-        function processManualEntry() {
-            const store = document.getElementById('manualStore').value || 'Unknown Store';
-            const date = document.getElementById('manualDate').value || new Date().toLocaleDateString();
-            const total = document.getElementById('manualTotal').value || 'N/A';
-            const itemsText = document.getElementById('manualItems').value;
+            // Reset and configure for camera
+            fileInput.value = '';
+            fileInput.setAttribute('capture', 'environment');
+            fileInput.setAttribute('accept', 'image/*'); // Accept all image formats
             
-            // Parse manual items
-            const items = [];
-            if (itemsText.trim()) {
-                const lines = itemsText.split('\n');
-                lines.forEach(line => {
-                    const trimmed = line.trim();
-                    if (trimmed) {
-                        const parts = trimmed.split(' - ');
-                        items.push({
-                            name: parts[0] || trimmed,
-                            price: parts[1] || 'N/A',
-                            category: 'General'
-                        });
-                    }
-                });
-            } else {
-                items.push({
-                    name: 'Manual entry - see total',
-                    price: total,
-                    category: 'General'
-                });
-            }
-
-            extractedData = {
-                store: store,
-                date: date,
-                total: total,
-                items: items,
-                rawText: 'Manual entry - OCR was not available'
-            };
-
-            displayResults();
-            showStatus('Manual entry saved successfully!', 'success');
+            fileInput.click();
         }
 
-        // Main processing function
-        async function performOCRAndParse() {
-            try {
-                // Step 1: Extract text using OCR
-                updateProcessingText('Extracting text from image...');
-                extractedText = await performOCR();
-                
-                // Step 2: Parse based on user's AI preference
-                if (useAI) {
-                    updateProcessingText('AI is organizing receipt data...');
-                    extractedData = await parseReceiptWithAI(extractedText);
-                } else {
-                    updateProcessingText('Organizing receipt data...');
-                    extractedData = parseReceiptText(extractedText);
-                }
-
-                displayResults();
-                
-            } catch (error) {
-                console.error('Processing error:', error);
-                
-                // Show error but offer fallback
-                showStatus('Processing failed: ' + error.message, 'error');
-                
-                // Try basic parsing as fallback
-                updateProcessingText('Trying basic parsing...');
-                try {
-                    extractedData = parseReceiptText(extractedText || 'No text extracted');
-                    displayResults();
-                } catch (fallbackError) {
-                    displayFallbackEntry(error.message);
-                }
-            }
+        function selectFile() {
+            console.log('📁 Opening file selector...');
+            const fileInput = document.getElementById('fileInput');
+            
+            // Reset and configure for file selection
+            fileInput.value = '';
+            fileInput.removeAttribute('capture');
+            fileInput.setAttribute('accept', 'image/*'); // Accept all image formats
+            
+            fileInput.click();
         }
-
-
 
         // HEIC/HEIF conversion function
         async function convertHeicToJpeg(file) {
@@ -1031,7 +844,7 @@
                 }
             }
             
-            // Validate the processed file
+            // Be very permissive with image formats - let browser decide
             if (!processedFile.type.startsWith('image/')) {
                 // Even if MIME type is missing, check file extension
                 const fileName = processedFile.name.toLowerCase();
@@ -1209,6 +1022,149 @@
                 showStatus('Unable to process this image.', 'error');
                 resetUpload();
             }
+        }
+
+        async function processReceipt() {
+            if (!currentImage) return;
+
+            // Show processing state
+            document.getElementById('previewArea').style.display = 'none';
+            document.getElementById('processing').style.display = 'block';
+
+            try {
+                // Step 1: Extract text using OCR
+                updateProcessingText('Extracting text from image...');
+                extractedText = await performOCR();
+                
+                // Step 2: Parse based on user's AI preference
+                if (useAI) {
+                    updateProcessingText('AI is organizing receipt data...');
+                    extractedData = await parseReceiptWithAI(extractedText);
+                } else {
+                    updateProcessingText('Organizing receipt data...');
+                    extractedData = parseReceiptText(extractedText);
+                }
+
+                displayResults();
+                
+            } catch (error) {
+                console.error('Processing error:', error);
+                
+                // Show error but offer fallback
+                showStatus('Processing failed: ' + error.message, 'error');
+                
+                // Try basic parsing as fallback
+                updateProcessingText('Trying basic parsing...');
+                try {
+                    extractedData = parseReceiptText(extractedText || 'No text extracted');
+                    displayResults();
+                } catch (fallbackError) {
+                    displayFallbackEntry(error.message);
+                }
+            }
+        }
+
+        async function parseReceiptWithAI(text) {
+            try {
+                console.log('Using serverless API to parse receipt...');
+                
+                const response = await fetch('/api/parse-receipt', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+
+                const parsedData = await response.json();
+                return parsedData;
+                
+            } catch (error) {
+                console.error('AI parsing failed:', error);
+                showStatus('AI parsing failed, using basic parsing', 'error');
+                return parseReceiptText(text);
+            }
+        }
+
+        function displayFallbackEntry(errorMessage) {
+            document.getElementById('processing').style.display = 'none';
+            
+            const resultsContent = document.getElementById('resultsContent');
+            resultsContent.innerHTML = `
+                <div style="text-align: center; padding: 20px; background: #fef2f2; border-radius: 10px; border: 1px solid #fecaca;">
+                    <h4 style="color: #dc2626; margin-bottom: 15px;">OCR Processing Failed</h4>
+                    <p style="color: #7f1d1d; margin-bottom: 20px;">${errorMessage}</p>
+                    
+                    <div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                        <h5 style="margin-bottom: 15px;">Manual Entry (Temporary)</h5>
+                        <input type="text" id="manualStore" placeholder="Store Name" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+                        <input type="date" id="manualDate" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+                        <input type="text" id="manualTotal" placeholder="Total Amount (e.g., $12.34)" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
+                        <textarea id="manualItems" placeholder="Items (one per line, e.g., 'Milk - $3.99')" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px; height: 80px;"></textarea>
+                        <button class="btn" onclick="processManualEntry()" style="margin-top: 10px;">Save Manual Entry</button>
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
+                        <h5>Troubleshooting Tips:</h5>
+                        <ul style="text-align: left; color: #374151;">
+                            <li>Ensure good internet connection</li>
+                            <li>Try a clearer, well-lit photo</li>
+                            <li>Make sure receipt is flat and straight</li>
+                            <li>Refresh the page and try again</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            // Set today's date as default
+            document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
+            
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function processManualEntry() {
+            const store = document.getElementById('manualStore').value || 'Unknown Store';
+            const date = document.getElementById('manualDate').value || new Date().toLocaleDateString();
+            const total = document.getElementById('manualTotal').value || 'N/A';
+            const itemsText = document.getElementById('manualItems').value;
+            
+            // Parse manual items
+            const items = [];
+            if (itemsText.trim()) {
+                const lines = itemsText.split('\n');
+                lines.forEach(line => {
+                    const trimmed = line.trim();
+                    if (trimmed) {
+                        const parts = trimmed.split(' - ');
+                        items.push({
+                            name: parts[0] || trimmed,
+                            price: parts[1] || 'N/A',
+                            category: 'General'
+                        });
+                    }
+                });
+            } else {
+                items.push({
+                    name: 'Manual entry - see total',
+                    price: total,
+                    category: 'General'
+                });
+            }
+
+            extractedData = {
+                store: store,
+                date: date,
+                total: total,
+                items: items,
+                rawText: 'Manual entry - OCR was not available'
+            };
+
+            displayResults();
+            showStatus('Manual entry saved successfully!', 'success');
         }
 
         async function performOCR() {
@@ -1494,6 +1450,28 @@
             `;
             
             document.getElementById('results').style.display = 'block';
+        }
+
+        function saveToSheet() {
+            // Placeholder for Google Sheets integration
+            showStatus('Google Sheets integration coming soon!', 'success');
+        }
+
+        function resetUpload() {
+            currentImage = null;
+            extractedData = null;
+            extractedText = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('uploadArea').style.display = 'block';
+            document.getElementById('previewArea').style.display = 'none';
+            document.getElementById('processing').style.display = 'none';
+            document.getElementById('results').style.display = 'none';
+            
+            // Remove any format indicators
+            const indicator = document.querySelector('.format-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
         }
 
         function showStatus(message, type) {
