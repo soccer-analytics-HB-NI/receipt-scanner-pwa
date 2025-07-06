@@ -226,9 +226,15 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
+        /* When toggle is active (AI mode), slider moves to the right */
         .toggle-switch.active .toggle-slider {
             transform: translateX(35px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Default state: slider on the left (Basic mode) */
+        .toggle-switch:not(.active) .toggle-slider {
+            transform: translateX(0px);
         }
 
         .toggle-icon {
