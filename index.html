@@ -7,7 +7,7 @@
     <title>Receipt Scanner</title>
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVjZWlwdCBTY2FubmVyIiwic2hvcnRfbmFtZSI6IlJlY2VpcHRzIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmZmZmZmYiLCJ0aGVtZV9jb2xvciI6IiMyNTYzZWIiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCM2FXUjBhRDBpTVRJNElpQm9aV2xuYUhROUlqRXlPQ0lpSUhacFpYZENiM2c5SWpBZ01DQXhNamd1TURBZ01USTRMakF3SWlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpUGp4eVpXTjBJSGRwWkhSb1BTSXhNamd1TURBZ01USTRMakF3SWlCbWFXeHNQU0lqTWpVMk0yVmlJaUJ5ZUQwaU5pNHdJaUJ5ZVQwaU5pNHdJajQ4TDNKbFkzUStQSEJoZEdnZ1pEMGlUVFEwSURJMGJETTJJREE0YkRRNElETTJiRFE4SURBZ1drbzBOQ0F5TkNBM01pQXlOQ0IzTWlBME9DVXhNemN1TnpJZ05EZ2dNemN1TnpJZ05EZ2dOREFnTkRnZ05EQmFJaUJtYVd4c1BTSWpabVptWm1abUlpOCtQQzl6ZG1jKyIsInNpemVzIjoiMTI4eDEyOCIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVjZWlwdCBTY2FubmVyIiwic2hvcnRfbmFtZSI6IlJlY2VpcHRzIiwic3RhcnRfdXJsIjoiLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmZmZmZmYiLCJ0aGVtZV9jb2xvciI6IiMyNTYzZWIiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yV25sQ2QybGtaR2cwUFNKTlZFbzRJaUJvWldsblNIUTlJakV5T0VsaUlIWnBaWGRDYjNnOVNWcEJaME5CZUZsd2FXZHVkRVZDYjNCeWVVaHNRbXhwYm10TmVVTjRUVUZqWldkVVNVdFNiMkpyWkVKRmJuTXZjMkZ1Y3kxelpYSnBaaUJZYlZ4NmVteHVabk5lYUhSMGNEb3ZMMGwxWkhSNGJTd3pWWFkwY0VSaFpGc2dhREZrWkRFOWFYNTJVblVpUUhNMFgzTmpQVGxrWVhSaE9tbHRZV2RsTHpOM1p5c2VTSGR4V0Rsa1lXUWFMazFsYlY5a1ltZHdYeVFsYVd0dGNsSnNPSE42TkJsVGMzb0VkM0Z0MU4ybE5sa1BTaWptVmxNMU0yVmlJaUJ5ZUQwaU5pNHdJaUJ5ZVQwaU5pNHdJajQ4TDNKbFkzUStQSEJoZEdnZ1pEMWlWVFEwU1VSSlFTQTBiRVEzU21sRU1EaHNSRkE4U1VSSlFUTTJZa3h4T0NKaGJXeDFjVlVpUkRBME9VazFSbUkzWG1kMklqQXdNRGN1TnpJZ05EbWFNemN1TnpKYU5EZ2dORUJnTkRna05EQmFaVUpOYVc5eGMzTWhSMVptV20xamVrNmJiR1ZZWkVjc1FRNHJaMjl6ZG1jcklROCtQQzkzZG1rKyIsInNpemVzIjoiMTI4eDEyOCIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
     
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOC4wMCAxMjguMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEyOC4wMCAxMjguMDAiIGZpbGw9IiMyNTYzZWIiIHJ4PSI2LjAiIHJ5PSI2LjAiPjwvcmVjdD48cGF0aCBkPSJNNDQgMjRsMzYgMDhsNDggMzZsNDggMCBWajQ0IDI0IDcyIDI0IDcyIDQ4JTEzNy43MiA0OCAzNy43MiA0OCA0MCA0OCA0MFoiIGZpbGw9IiNmZmZmZmYiLz48L3N2Zz4=">
@@ -806,11 +806,10 @@
             const progressDiv = document.createElement('div');
             progressDiv.id = 'conversionProgress';
             progressDiv.className = 'conversion-progress';
-            progressDiv.innerHTML = `
-                <div class="spinner"></div>
-                <p>${message}</p>
-                <small>This may take a moment...</small>
-            `;
+            progressDiv.innerHTML = 
+                '<div class="spinner"></div>' +
+                '<p>' + message + '</p>' +
+                '<small>This may take a moment...</small>';
             
             const uploadArea = document.getElementById('uploadArea');
             uploadArea.appendChild(progressDiv);
@@ -1094,31 +1093,30 @@
             document.getElementById('processing').style.display = 'none';
             
             const resultsContent = document.getElementById('resultsContent');
-            resultsContent.innerHTML = `
-                <div style="text-align: center; padding: 20px; background: #fef2f2; border-radius: 10px; border: 1px solid #fecaca;">
-                    <h4 style="color: #dc2626; margin-bottom: 15px;">OCR Processing Failed</h4>
-                    <p style="color: #7f1d1d; margin-bottom: 20px;">${errorMessage}</p>
+            resultsContent.innerHTML = 
+                '<div style="text-align: center; padding: 20px; background: #fef2f2; border-radius: 10px; border: 1px solid #fecaca;">' +
+                    '<h4 style="color: #dc2626; margin-bottom: 15px;">OCR Processing Failed</h4>' +
+                    '<p style="color: #7f1d1d; margin-bottom: 20px;">' + errorMessage + '</p>' +
                     
-                    <div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0;">
-                        <h5 style="margin-bottom: 15px;">Manual Entry (Temporary)</h5>
-                        <input type="text" id="manualStore" placeholder="Store Name" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
-                        <input type="date" id="manualDate" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
-                        <input type="text" id="manualTotal" placeholder="Total Amount (e.g., $12.34)" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">
-                        <textarea id="manualItems" placeholder="Items (one per line, e.g., 'Milk - $3.99')" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px; height: 80px;"></textarea>
-                        <button class="btn" onclick="processManualEntry()" style="margin-top: 10px;">Save Manual Entry</button>
-                    </div>
+                    '<div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0;">' +
+                        '<h5 style="margin-bottom: 15px;">Manual Entry (Temporary)</h5>' +
+                        '<input type="text" id="manualStore" placeholder="Store Name" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">' +
+                        '<input type="date" id="manualDate" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">' +
+                        '<input type="text" id="manualTotal" placeholder="Total Amount (e.g., $12.34)" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px;">' +
+                        '<textarea id="manualItems" placeholder="Items (one per line, e.g., \'Milk - $3.99\')" style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px; height: 80px;"></textarea>' +
+                        '<button class="btn" onclick="processManualEntry()" style="margin-top: 10px;">Save Manual Entry</button>' +
+                    '</div>' +
                     
-                    <div style="margin-top: 15px;">
-                        <h5>Troubleshooting Tips:</h5>
-                        <ul style="text-align: left; color: #374151;">
-                            <li>Ensure good internet connection</li>
-                            <li>Try a clearer, well-lit photo</li>
-                            <li>Make sure receipt is flat and straight</li>
-                            <li>Refresh the page and try again</li>
-                        </ul>
-                    </div>
-                </div>
-            `;
+                    '<div style="margin-top: 15px;">' +
+                        '<h5>Troubleshooting Tips:</h5>' +
+                        '<ul style="text-align: left; color: #374151;">' +
+                            '<li>Ensure good internet connection</li>' +
+                            '<li>Try a clearer, well-lit photo</li>' +
+                            '<li>Make sure receipt is flat and straight</li>' +
+                            '<li>Refresh the page and try again</li>' +
+                        '</ul>' +
+                    '</div>' +
+                '</div>';
             
             // Set today's date as default
             document.getElementById('manualDate').value = new Date().toISOString().split('T')[0];
@@ -1419,35 +1417,34 @@
                 '<span style="background: #f59e0b; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-left: 10px;">📝 Basic Parsing</span>';
             
             const resultsContent = document.getElementById('resultsContent');
-            resultsContent.innerHTML = `
-                <div style="margin-bottom: 15px;">
-                    <h3 style="display: inline;">Receipt Details</h3>
-                    ${aiIndicator}
-                </div>
-                <div class="result-item">
-                    <strong>Store:</strong> ${extractedData.store}
-                </div>
-                <div class="result-item">
-                    <strong>Date:</strong> ${extractedData.date}
-                </div>
-                <div class="result-item">
-                    <strong>Total:</strong> ${extractedData.total}
-                </div>
-                <div class="result-item">
-                    <strong>Items:</strong>
-                    <ul style="margin-top: 10px;">
-                        ${extractedData.items.map(item => 
-                            `<li>${item.name} - ${item.price} <em style="color: #64748b;">(${item.category})</em></li>`
-                        ).join('')}
-                    </ul>
-                </div>
-                <details style="margin-top: 15px;">
-                    <summary style="cursor: pointer; font-weight: bold; color: #64748b;">
-                        View Extracted Text
-                    </summary>
-                    <div style="background: #f1f5f9; padding: 10px; border-radius: 5px; margin-top: 10px; font-family: monospace; font-size: 0.9em; white-space: pre-wrap;">${extractedData.rawText}</div>
-                </details>
-            `;
+            resultsContent.innerHTML = 
+                '<div style="margin-bottom: 15px;">' +
+                    '<h3 style="display: inline;">Receipt Details</h3>' +
+                    aiIndicator +
+                '</div>' +
+                '<div class="result-item">' +
+                    '<strong>Store:</strong> ' + extractedData.store +
+                '</div>' +
+                '<div class="result-item">' +
+                    '<strong>Date:</strong> ' + extractedData.date +
+                '</div>' +
+                '<div class="result-item">' +
+                    '<strong>Total:</strong> ' + extractedData.total +
+                '</div>' +
+                '<div class="result-item">' +
+                    '<strong>Items:</strong>' +
+                    '<ul style="margin-top: 10px;">' +
+                        extractedData.items.map(function(item) {
+                            return '<li>' + item.name + ' - ' + item.price + ' <em style="color: #64748b;">(' + item.category + ')</em></li>';
+                        }).join('') +
+                    '</ul>' +
+                '</div>' +
+                '<details style="margin-top: 15px;">' +
+                    '<summary style="cursor: pointer; font-weight: bold; color: #64748b;">' +
+                        'View Extracted Text' +
+                    '</summary>' +
+                    '<div style="background: #f1f5f9; padding: 10px; border-radius: 5px; margin-top: 10px; font-family: monospace; font-size: 0.9em; white-space: pre-wrap;">' + extractedData.rawText + '</div>' +
+                '</details>';
             
             document.getElementById('results').style.display = 'block';
         }
