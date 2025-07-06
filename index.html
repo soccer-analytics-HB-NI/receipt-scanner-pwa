@@ -16,9 +16,6 @@
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js" 
             onerror="console.error('Primary Tesseract CDN failed'); loadTesseractFallback();"></script>
     
-    <!-- Load config file if available -->
-    <script src="config.js" onerror="console.log('Config file not found - using manual API key entry')"></script>
-    
     <script>
         // Fallback CDN loader
         function loadTesseractFallback() {
@@ -346,7 +343,6 @@
                 <div style="text-align: center; margin-top: 20px;">
                     <button class="btn" onclick="saveToSheet()">Save to Spreadsheet</button>
                     <button class="btn btn-secondary" onclick="resetUpload()">Scan Another</button>
-                    <button class="btn btn-secondary" onclick="showSettings()" style="background: #6b7280;">⚙️ Settings</button>
                 </div>
             </div>
         </main>
@@ -362,26 +358,15 @@
         let userApiKey = null;
         let useAI = true; // Default AI setting
 
-        // Initialize app settings from config
+        // Initialize app settings
         function initializeApp() {
-            // Load settings from config file if available
-            if (typeof window.APP_CONFIG !== 'undefined') {
-                console.log('Config file loaded successfully');
-                userApiKey = window.APP_CONFIG.OPENAI_API_KEY;
-                useAI = window.APP_CONFIG.USE_AI_BY_DEFAULT !== false; // Default to true
-                console.log('API key loaded from config:', userApiKey ? 'Yes' : 'No');
-            } else {
-                console.log('No config file found, using defaults');
-                useAI = true; // Default to AI mode
-            }
+            console.log('Receipt Scanner initialized');
+            useAI = true; // Default to AI mode since API key is server-side
             
             // Update toggle UI
             updateToggleUI();
             
-            // Show status if API key is loaded
-            if (userApiKey) {
-                showStatus('API key loaded from config file', 'success');
-            }
+            showStatus('Receipt Scanner ready!', 'success');
         }
 
         // Toggle AI processing on/off
@@ -400,11 +385,7 @@
             
             if (useAI) {
                 toggle.classList.add('active');
-                if (userApiKey) {
-                    description.textContent = '✨ AI provides better accuracy and automatic categorization';
-                } else {
-                    description.textContent = '⚠️ AI mode selected but no API key configured. Will prompt for key.';
-                }
+                description.textContent = '✨ AI provides better accuracy and automatic categorization';
             } else {
                 toggle.classList.remove('active');
                 description.textContent = '📝 Basic text parsing - fast and free (no AI required)';
@@ -615,81 +596,22 @@
         }
 
         async function parseReceiptWithAI(text) {
-            // Check if user has provided API key (from config or manual entry)
-            if (!userApiKey) {
-                const apiKey = prompt(
-                    "AI mode requires an OpenAI API key:\n\n" +
-                    "Get one at https://platform.openai.com/api-keys\n\n" +
-                    "Enter your API key (or Cancel for basic parsing):"
-                );
-                
-                if (apiKey && apiKey.trim()) {
-                    userApiKey = apiKey.trim();
-                    showStatus('API key saved for this session', 'success');
-                } else {
-                    showStatus('No API key provided, using basic parsing', 'error');
-                    return parseReceiptText(text);
-                }
-            }
-
-            return await parseWithOpenAI(text, userApiKey);
-        }
-
-        async function parseWithOpenAI(text, apiKey) {
             try {
-                console.log('Using AI to parse receipt...');
+                console.log('Using serverless API to parse receipt...');
                 
-                const prompt = `Parse this receipt text and extract structured data. Return ONLY valid JSON with this exact format:
-
-{
-  "store": "store name",
-  "date": "MM/DD/YYYY",
-  "total": "$XX.XX",
-  "items": [
-    {"name": "item name", "price": "$XX.XX", "category": "category"}
-  ]
-}
-
-Categories should be: Groceries, Electronics, Clothing, Restaurant, Gas, Pharmacy, Home, Entertainment, or Other.
-
-Receipt text:
-${text}`;
-
-                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                const response = await fetch('/api/parse-receipt', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${apiKey}`,
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        model: 'gpt-3.5-turbo',
-                        messages: [
-                            {
-                                role: 'user',
-                                content: prompt
-                            }
-                        ],
-                        max_tokens: 1000,
-                        temperature: 0.1
-                    })
+                    body: JSON.stringify({ text: text })
                 });
 
                 if (!response.ok) {
-                    throw new Error(`OpenAI API error: ${response.status}`);
+                    throw new Error(`API error: ${response.status}`);
                 }
 
-                const data = await response.json();
-                const aiResponse = data.choices[0].message.content.trim();
-                
-                console.log('AI Response:', aiResponse);
-                
-                // Try to parse the JSON response
-                const parsedData = JSON.parse(aiResponse);
-                
-                // Add raw text for debugging
-                parsedData.rawText = text;
-                parsedData.aiParsed = true;
-                
+                const parsedData = await response.json();
                 return parsedData;
                 
             } catch (error) {
@@ -1050,14 +972,6 @@ ${text}`;
                         ).join('')}
                     </ul>
                 </div>
-                ${!extractedData.aiParsed && useAI ? `
-                <div style="background: #fffbeb; border: 1px solid #fbbf24; padding: 15px; border-radius: 10px; margin: 15px 0;">
-                    <strong>💡 Tip:</strong> AI mode is enabled but no API key was provided. Add your OpenAI API key via Settings for better accuracy!
-                </div>` : ''}
-                ${!useAI ? `
-                <div style="background: #f0f9ff; border: 1px solid #0ea5e9; padding: 15px; border-radius: 10px; margin: 15px 0;">
-                    <strong>ℹ️ Info:</strong> Basic processing mode is active. Toggle AI mode above for improved accuracy and categorization.
-                </div>` : ''}
                 <details style="margin-top: 15px;">
                     <summary style="cursor: pointer; font-weight: bold; color: #64748b;">
                         View Extracted Text
@@ -1067,67 +981,6 @@ ${text}`;
             `;
             
             document.getElementById('results').style.display = 'block';
-        }
-
-        function showSettings() {
-            const maskedKey = userApiKey ? userApiKey.substring(0, 8) + '...' : 'Not set';
-            
-            const modal = document.createElement('div');
-            modal.style.cssText = `
-                position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
-                background: rgba(0,0,0,0.5); z-index: 10000; 
-                display: flex; align-items: center; justify-content: center;
-            `;
-            
-            modal.innerHTML = `
-                <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%;">
-                    <h2 style="margin-bottom: 20px;">⚙️ Settings</h2>
-                    
-                    <div style="margin-bottom: 20px;">
-                        <h3>OpenAI API Key</h3>
-                        <p style="color: #64748b; margin: 10px 0;">For improved accuracy and automatic categorization</p>
-                        <input type="password" id="apiKeyInput" placeholder="sk-..." 
-                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin: 10px 0;">
-                        <small style="color: #64748b;">Current: ${maskedKey}</small>
-                        <p style="font-size: 0.9em; color: #64748b; margin-top: 10px;">
-                            Get your API key at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a><br>
-                            Cost: ~$0.01-0.03 per receipt<br>
-                            <em>Note: API key is stored in memory only (not saved between sessions)</em>
-                        </p>
-                    </div>
-                    
-                    <div style="text-align: center;">
-                        <button class="btn" onclick="saveSettings()">Save Settings</button>
-                        <button class="btn btn-secondary" onclick="closeSettings()">Cancel</button>
-                        <button class="btn" style="background: #dc2626;" onclick="clearSettings()">Clear API Key</button>
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            window.settingsModal = modal;
-        }
-
-        function saveSettings() {
-            const apiKey = document.getElementById('apiKeyInput').value.trim();
-            if (apiKey) {
-                userApiKey = apiKey;
-                showStatus('API key saved for this session!', 'success');
-            }
-            closeSettings();
-        }
-
-        function clearSettings() {
-            userApiKey = null;
-            showStatus('API key cleared', 'success');
-            closeSettings();
-        }
-
-        function closeSettings() {
-            if (window.settingsModal) {
-                document.body.removeChild(window.settingsModal);
-                window.settingsModal = null;
-            }
         }
 
         function saveToSheet() {
@@ -1144,11 +997,6 @@ ${text}`;
             document.getElementById('previewArea').style.display = 'none';
             document.getElementById('processing').style.display = 'none';
             document.getElementById('results').style.display = 'none';
-            
-            // Close settings if open
-            if (window.settingsModal) {
-                closeSettings();
-            }
         }
 
         function showStatus(message, type) {
