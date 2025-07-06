@@ -32,6 +32,9 @@ function selectFile() {
 <!-- Apple Touch Icon -->
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOC4wMCAxMjguMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEyOC4wMCAxMjguMDAiIGZpbGw9IiMyNTYzZWIiIHJ4PSI2LjAiIHJ5PSI2LjAiPjwvcmVjdD48cGF0aCBkPSJNNDQgMjRsMzYgMDhsNDggMzZsNDggMCBWajQ0IDI0IDcyIDI0IDcyIDQ4JTEzNy43MiA0OCAzNy43MiA0OCA0MCA0OCA0MFoiIGZpbGw9IiNmZmZmZmYiLz48L3N2Zz4=">
 
+<!-- HEIC to JPEG converter -->
+<script src="https://unpkg.com/heic2any"></script>
+
 <!-- Tesseract.js for OCR with fallback -->
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js" 
     onerror="console.error('Primary Tesseract CDN failed'); loadTesseractFallback();"></script>
@@ -670,34 +673,32 @@ uploadArea.addEventListener('click', () => {
 function openCamera() {
     console.log('📷 Opening camera...');
     const fileInput = document.getElementById('fileInput');
-    
-    // Reset and configure for camera
+
     fileInput.value = '';
     fileInput.setAttribute('capture', 'environment');
-    fileInput.setAttribute('accept', '*/*'); // Accept everything, filter later
-    
-    // Add change listener if not already added
+    fileInput.setAttribute('accept', 'image/jpeg,image/jpg,image/png,image/*');
+
     fileInput.removeEventListener('change', handleFileSelect);
     fileInput.addEventListener('change', handleFileSelect);
-    
+
     fileInput.click();
 }
+
 
 function selectFile() {
     console.log('📁 Opening file selector...');
     const fileInput = document.getElementById('fileInput');
-    
-    // Reset and configure for file selection
+
     fileInput.value = '';
     fileInput.removeAttribute('capture');
-    fileInput.setAttribute('accept', '*/*'); // Accept everything, filter later
-    
-    // Add change listener if not already added
+    fileInput.setAttribute('accept', 'image/jpeg,image/jpg,image/png,image/*');
+
     fileInput.removeEventListener('change', handleFileSelect);
     fileInput.addEventListener('change', handleFileSelect);
-    
+
     fileInput.click();
 }
+
 
 function handleFileSelect(event) {
     const file = event.target.files[0];
@@ -708,43 +709,55 @@ function handleFileSelect(event) {
 
 function handleFile(file) {
     console.log('File selected:', file.name, file.type, file.size);
-    
-    // Be very permissive with image formats - let browser decide
-    if (!file.type.startsWith('image/')) {
-        // Even if MIME type is missing, check file extension
-        const fileName = file.name.toLowerCase();
-        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff', '.tif'];
-        const hasImageExtension = imageExtensions.some(ext => fileName.endsWith(ext));
-        
-        if (!hasImageExtension) {
-            showStatus('Please select an image file', 'error');
-            return;
-        }
-        console.log('MIME type missing but file extension suggests image');
-    }
 
-    // Only block known problematic formats
-    const problematicFormats = ['image/heic', 'image/heif'];
-    if (problematicFormats.includes(file.type.toLowerCase())) {
-        showStatus(`HEIC format not supported. Please convert to JPG first.`, 'error');
+    const lowerName = file.name.toLowerCase();
+
+    // Check for HEIC by MIME or file extension
+    const isHEIC = file.type === 'image/heic' || file.type === 'image/heif' ||
+                   lowerName.endsWith('.heic') || lowerName.endsWith('.heif');
+
+    if (isHEIC) {
+        showStatus('Converting HEIC to JPEG...', 'success');
+        heic2any({
+            blob: file,
+            toType: 'image/jpeg',
+            quality: 0.9
+        }).then(jpegBlob => {
+            console.log('✅ HEIC converted to JPEG');
+            const convertedFile = new File([jpegBlob], 'converted.jpg', { type: 'image/jpeg' });
+            handleFile(convertedFile); // Re-run handler
+        }).catch(err => {
+            console.error('❌ HEIC conversion failed:', err);
+            showStatus('Failed to convert HEIC file. Try using JPG/PNG.', 'error');
+        });
         return;
     }
 
-    // Increase file size limit for high-res phone photos
+    // Check for valid image types
+    if (!file.type.startsWith('image/')) {
+        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff', '.tif'];
+        const hasImageExtension = imageExtensions.some(ext => lowerName.endsWith(ext));
+        if (!hasImageExtension) {
+            showStatus('Please select a valid image file.', 'error');
+            return;
+        }
+    }
+
+    // Size check (25MB limit)
     if (file.size > 25 * 1024 * 1024) {
-        showStatus('Image too large. Please use an image smaller than 25MB.', 'error');
+        showStatus('Image too large. Use one under 25MB.', 'error');
         return;
     }
 
     currentImage = file;
-    
-    // Use createImageBitmap for better format support if available
+
     if (window.createImageBitmap) {
         handleFileWithImageBitmap(file);
     } else {
         handleFileWithFileReader(file);
     }
 }
+
 
 function handleFileWithImageBitmap(file) {
     createImageBitmap(file)
