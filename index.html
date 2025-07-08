@@ -428,7 +428,10 @@
             <!-- Navigation Tabs -->
             <div class="nav-tabs">
                 <button class="nav-tab active" onclick="showTab('scanner')">🔍 Scanner</button>
-                <button class="nav-tab" onclick="showTab('documentation')">📚 Docs</button>
+                <button class="nav-tab" onclick="showTab('documentation')">
+                    <img src="media/notes.jpg" alt="Docs" style="width: 16px; height: 16px; margin-right: 5px; border-radius: 3px;">
+                    Docs
+                </button>
             </div>
         </header>
 
@@ -439,7 +442,7 @@
                 <div class="setup-section">
                     <div class="setup-header" onclick="toggleSetupSection()">
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="font-size: 1.5rem;">📊</span>
+                            <img src="media/gsheet.jpg" alt="Google Sheets" style="width: 24px; height: 24px; border-radius: 4px;">
                             <h3>Google Sheets Setup</h3>
                         </div>
                         <span id="setupToggleIcon" style="font-size: 1.2rem; color: #64748b;">▼</span>
@@ -526,7 +529,7 @@
                         </div>
                         
                         <div style="text-align: center; flex: 1;">
-                            <div style="font-size: 1.5rem; margin-bottom: 5px;">🤖</div>
+                            <img src="media/OpenAI.jpg" alt="AI" style="width: 24px; height: 24px; border-radius: 4px; margin-bottom: 5px; display: block; margin-left: auto; margin-right: auto;">
                             <span style="font-size: 0.9rem; color: #64748b;">AI Enhanced</span>
                         </div>
                     </div>
@@ -577,7 +580,10 @@
                         <p id="collectionCount" style="margin-bottom: 15px; color: #0c4a6e;">0 receipts collected</p>
                         <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                             <button class="btn" onclick="exportCSV()">📥 Download CSV</button>
-                            <button class="btn" onclick="exportToGoogleSheets()" style="background: #10b981;">📊 Export to Google Sheets</button>
+                            <button class="btn" onclick="exportToGoogleSheets()" style="background: #10b981;">
+                                <img src="media/gsheet.jpg" alt="Export" style="width: 16px; height: 16px; margin-right: 5px; border-radius: 2px;">
+                                Export to Google Sheets
+                            </button>
                             <button class="btn btn-secondary" onclick="viewCollection()">👁️ View All</button>
                             <button class="btn" style="background: #dc2626;" onclick="clearCollection()">🗑️ Clear All</button>
                         </div>
@@ -599,11 +605,17 @@
             <!-- Documentation Tab Content -->
             <div id="documentation" class="tab-content docs-section">
                 <div class="docs-card">
-                    <h3>🏗️ System Architecture</h3>
+                    <h3>
+                        <img src="media/notes.jpg" alt="Architecture" style="width: 24px; height: 24px; margin-right: 8px; border-radius: 4px; vertical-align: middle;">
+                        System Architecture
+                    </h3>
                     <p>Receipt Scanner uses a modern cloud-based architecture for scalable and reliable receipt processing.</p>
                     
                     <div class="architecture-diagram">
-                        <h4>📊 Cloud Infrastructure Flow</h4>
+                        <h4>
+                            <img src="media/gsheet.jpg" alt="Cloud" style="width: 20px; height: 20px; margin-right: 6px; border-radius: 3px; vertical-align: middle;">
+                            Cloud Infrastructure Flow
+                        </h4>
                         
                         <div class="architecture-flow">
                             <div class="arch-box">📱 Frontend</div>
@@ -628,7 +640,10 @@
                 </div>
 
                 <div class="docs-card">
-                    <h3>🚀 Technology Stack</h3>
+                    <h3>
+                        <img src="media/OpenAI.jpg" alt="Technology" style="width: 24px; height: 24px; margin-right: 8px; border-radius: 4px; vertical-align: middle;">
+                        Technology Stack
+                    </h3>
                     <h4>Frontend Components</h4>
                     <ul>
                         <li><strong>Tesseract.js 4.1.1:</strong> Client-side OCR processing for text extraction</li>
@@ -647,7 +662,10 @@
                 </div>
 
                 <div class="docs-card">
-                    <h3>🔧 API Endpoints</h3>
+                    <h3>
+                        <img src="media/notes.jpg" alt="API" style="width: 24px; height: 24px; margin-right: 8px; border-radius: 4px; vertical-align: middle;">
+                        API Endpoints
+                    </h3>
                     <h4>Core Processing</h4>
                     <ul>
                         <li><code>/api/parse-receipt</code> - AI-powered receipt text parsing and categorization</li>
@@ -655,7 +673,10 @@
                         <li><code>/api/google-callback</code> - Handle OAuth callback and token exchange</li>
                     </ul>
                     
-                    <h4>Google Sheets Integration</h4>
+                    <h4>
+                        <img src="media/gsheet.jpg" alt="Google Sheets" style="width: 20px; height: 20px; margin-right: 6px; border-radius: 3px; vertical-align: middle;">
+                        Google Sheets Integration
+                    </h4>
                     <ul>
                         <li><code>/api/google-sheets-list</code> - Retrieve user's Google Sheets list</li>
                         <li><code>/api/google-sheets-export</code> - Export receipt data to selected sheet</li>
@@ -663,7 +684,10 @@
                 </div>
 
                 <div class="docs-card">
-                    <h3>📊 Data Processing Pipeline</h3>
+                    <h3>
+                        <img src="media/OpenAI.jpg" alt="Processing" style="width: 24px; height: 24px; margin-right: 8px; border-radius: 4px; vertical-align: middle;">
+                        Data Processing Pipeline
+                    </h3>
                     <h4>Stage 1: Image Processing</h4>
                     <p>Images are processed client-side for privacy. HEIC photos from iPhones are automatically converted to JPEG format for compatibility.</p>
                     
@@ -682,7 +706,10 @@
                 </div>
 
                 <div class="docs-card">
-                    <h3>🛡️ Security & Privacy</h3>
+                    <h3>
+                        <img src="media/notes.jpg" alt="Security" style="width: 24px; height: 24px; margin-right: 8px; border-radius: 4px; vertical-align: middle;">
+                        Security & Privacy
+                    </h3>
                     <h4>Data Protection</h4>
                     <ul>
                         <li><strong>Local Processing:</strong> OCR runs entirely in your browser</li>
@@ -691,12 +718,18 @@
                         <li><strong>OAuth 2.0:</strong> Secure Google account integration</li>
                     </ul>
                     
-                    <h4>Google Sheets Access</h4>
+                    <h4>
+                        <img src="media/gsheet.jpg" alt="Google Sheets" style="width: 20px; height: 20px; margin-right: 6px; border-radius: 3px; vertical-align: middle;">
+                        Google Sheets Access
+                    </h4>
                     <p>The application only requests the minimum necessary permissions to read your sheets list and write receipt data. Your Google account credentials are never stored.</p>
                 </div>
 
                 <div class="docs-card">
-                    <h3>📱 Browser Compatibility</h3>
+                    <h3>
+                        <img src="media/notes.jpg" alt="Browser" style="width: 24px; height: 24px; margin-right: 8px; border-radius: 4px; vertical-align: middle;">
+                        Browser Compatibility
+                    </h3>
                     <h4>Supported Browsers</h4>
                     <ul>
                         <li><strong>Chrome 80+:</strong> Full feature support including camera access</li>
@@ -710,7 +743,10 @@
                 </div>
 
                 <div class="docs-card">
-                    <h3>🔄 Deployment Architecture</h3>
+                    <h3>
+                        <img src="media/notes.jpg" alt="Deployment" style="width: 24px; height: 24px; margin-right: 8px; border-radius: 4px; vertical-align: middle;">
+                        Deployment Architecture
+                    </h3>
                     <h4>Hosting & CDN</h4>
                     <ul>
                         <li><strong>Vercel Edge Network:</strong> Global CDN for fast loading times</li>
@@ -730,10 +766,10 @@
             </div>
             
             <div class="footer-links">
-                <a href="https://github.com/yourusername/receipt-scanner" target="_blank" class="footer-link">
+                <a href="https://github.com/soccer-analytics-HB-NI/receipt-scanner" target="_blank" class="footer-link">
                     ⭐ GitHub
                 </a>
-                <a href="https://github.com/yourusername/receipt-scanner/issues" target="_blank" class="footer-link">
+                <a href="https://github.com/soccer-analytics-HB-NI/receipt-scanner/issues" target="_blank" class="footer-link">
                     🐛 Issues
                 </a>
                 <a href="mailto:developer@example.com" class="footer-link">
@@ -742,7 +778,7 @@
             </div>
             
             <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 10px;">
-                <p>Created by <a href="https://github.com/yourusername" target="_blank" style="color: #93c5fd; text-decoration: none;">@YourUsername</a></p>
+                <p>Created by <a href="https://github.com/soccer-analytics-HB-NI" target="_blank" style="color: #93c5fd; text-decoration: none;">@Navido97</a></p>
                 <p>MIT License • Version 2.1.0</p>
             </div>
         </footer>
@@ -750,7 +786,10 @@
         <!-- Google Sheets Modal -->
         <div id="googleSheetsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 15px; padding: 30px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
-                <h3 style="margin-bottom: 20px; text-align: center;">📊 Export to Google Sheets</h3>
+                <h3 style="margin-bottom: 20px; text-align: center;">
+                    <img src="media/gsheet.jpg" alt="Export" style="width: 20px; height: 20px; margin-right: 6px; border-radius: 3px; vertical-align: middle;">
+                    Export to Google Sheets
+                </h3>
                 
                 <!-- Auth Status -->
                 <div id="authStatus" style="margin-bottom: 20px; padding: 15px; border-radius: 10px; text-align: center;">
@@ -791,7 +830,8 @@
                         
                         <div style="display: flex; gap: 10px; justify-content: center;">
                             <button class="btn" onclick="confirmExportToSheets()" id="exportButton" disabled style="background: #10b981;">
-                                📊 Export Receipts
+                                <img src="media/gsheet.jpg" alt="Export" style="width: 16px; height: 16px; margin-right: 5px; border-radius: 2px;">
+                                Export Receipts
                             </button>
                             <button class="btn btn-secondary" onclick="closeGoogleSheetsModal()">
                                 Cancel
@@ -1344,7 +1384,7 @@
             })
             .finally(function() {
                 if (exportButton) {
-                    exportButton.textContent = '📊 Export Receipts';
+                    exportButton.innerHTML = '<img src="media/gsheet.jpg" alt="Export" style="width: 16px; height: 16px; margin-right: 5px; border-radius: 2px;"> Export Receipts';
                     exportButton.disabled = false;
                 }
             });
