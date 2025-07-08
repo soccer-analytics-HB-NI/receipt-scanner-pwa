@@ -69,18 +69,6 @@ vercel env add OPENAI_API_KEY
 - File size: Up to 50MB
 - Mobile photos from iPhone and Android devices
 
-## Project Structure
-
-```
-receipt-scanner-pwa/
-├── index.html              # Main application
-├── api/
-│   └── parse-receipt.js     # AI parsing function
-├── config.example.js        # Configuration template
-├── manifest.json           # PWA manifest
-└── README.md              # Documentation
-```
-
 ## Contributing
 
 1. Fork the repository
@@ -88,12 +76,3 @@ receipt-scanner-pwa/
 3. Commit changes: `git commit -m 'Add feature'`
 4. Push to branch: `git push origin feature-name`
 5. Create Pull Request
-
-## License
-
-MIT License - see LICENSE file for details.
-
-## Support
-
-- Issues: [GitHub Issues](https://github.com/your-username/receipt-scanner-pwa/issues)
-- Email: your-email@example.com
