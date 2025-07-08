@@ -465,7 +465,7 @@
                 <div class="setup-section">
                     <div class="setup-header" onclick="toggleSetupSection()">
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <img src="media/gsheet.jpg" alt="Google Sheets" style="width: 24px; height: 24px; border-radius: 4px;">
+                            <img src="media/gsheet.png" alt="Google Sheets" style="width: 24px; height: 24px; border-radius: 4px;">
                             <h3>Google Sheets Setup</h3>
                         </div>
                         <span id="setupToggleIcon" style="font-size: 1.2rem; color: #64748b;">▼</span>
@@ -552,7 +552,7 @@
                         </div>
                         
                         <div style="text-align: center; flex: 1;">
-                            <img src="media/OpenAI.jpg" alt="AI" style="width: 24px; height: 24px; border-radius: 4px; margin-bottom: 5px; display: block; margin-left: auto; margin-right: auto;">
+                            <img src="media/OpenAI_Logo.svg.png" alt="AI" style="width: 24px; height: 24px; border-radius: 4px; margin-bottom: 5px; display: block; margin-left: auto; margin-right: auto;">
                             <span style="font-size: 0.9rem; color: #64748b;">AI Enhanced</span>
                         </div>
                     </div>
@@ -772,7 +772,7 @@
                     <img src="media/gmail-logo.png" alt="Email" style="width: 16px; height: 16px; margin-right: 5px;"> Contact
                 </span>
                 <a href="https://navidistanbullu.com" target="_blank" class="footer-link">
-                    <img src="media/globe.png" alt="Globe" style="width: 16px; height: 16px; margin-right: 5px;"> Website
+                    <img src="media/globe.png" alt="Globe" style="width: 16px; height: 16px; margin-right: 5px;"> Portfolio
                 </a>
             </div>
             
@@ -1720,8 +1720,8 @@
             document.getElementById('processing').style.display = 'none';
             
             var aiIndicator = data.aiParsed ? 
-                '<span style="background: #10b981; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 10px;"><img src="media/placeholder.png" alt="Sparkles" style="width: 12px; height: 12px; margin-right: 3px;"> AI Enhanced</span>' :
-                '<span style="background: #f59e0b; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 10px;"><img src="media/placeholder.png" alt="Basic" style="width: 12px; height: 12px; margin-right: 3px;"> Basic Parsing</span>';
+                '<span style="background: #10b981; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 10px;"><img src="media/OpenAI_Logo.svg.png" alt="Sparkles" style="width: 12px; height: 12px; margin-right: 3px;"> AI Enhanced</span>' :
+                '<span style="background: #f59e0b; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 10px;"><img src="media/parsing.png" alt="Basic" style="width: 12px; height: 12px; margin-right: 3px;"> Basic Parsing</span>';
             
             var html = '';
             html += '<div style="margin-bottom: 15px;"><h3 style="display: inline;">Receipt Details</h3>' + aiIndicator + '</div>';
