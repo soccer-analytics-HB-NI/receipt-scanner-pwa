@@ -59,10 +59,11 @@ vercel env add OPENAI_API_KEY
 
 ## Usage
 
-1. Choose processing mode (AI Enhanced or Basic)
-2. Capture receipt using camera or upload image
-3. Review extracted data
-4. Export or copy information
+1. Connect to Google Drive and select Goggle Sheet
+2. Choose processing mode (AI Enhanced or Basic)
+3. Capture receipt using camera or upload image
+4. Review extracted data
+5. Export or copy information
 
 ## Supported Formats
 
