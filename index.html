@@ -400,6 +400,29 @@
             transform: translateY(-2px);
         }
 
+        /* Popup notification styles */
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .popup.show {
+            opacity: 1;
+        }
+
         @media (max-width: 600px) {
             .nav-tabs {
                 flex-wrap: wrap;
@@ -772,10 +795,10 @@
                 <a href="https://github.com/soccer-analytics-HB-NI/receipt-scanner-pwa/issues" target="_blank" class="footer-link">
                     🐛 Issues
                 </a>
-                <a href="navido972@gmail.com" class="footer-link">
+                <span class="footer-link" onclick="copyEmail()" style="cursor: pointer;">
                     📧 Contact
-                </a>
-                <a href="navidistanbullu.com" class="footer-link">
+                </span>
+                <a href="https://navidistanbullu.com" target="_blank" class="footer-link">
                      🌐 Website
                 </a>
             </div>
@@ -847,6 +870,11 @@
     </div>
 
     <div class="status" id="status"></div>
+    
+    <!-- Popup notification -->
+    <div id="popup" class="popup">
+        Email copied!
+    </div>
 
     <script>
         var currentImage = null;
@@ -1411,6 +1439,27 @@
             setTimeout(function() {
                 status.style.display = 'none';
             }, 3000);
+        }
+
+        function copyEmail() {
+            const email = 'navido972@gmail.com';
+            
+            // Create a temporary textarea element to copy the email
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = email;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+            
+            // Show popup notification
+            const popup = document.getElementById('popup');
+            popup.classList.add('show');
+            
+            // Hide popup after 2 seconds
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 2000);
         }
 
         function toggleAI() {
