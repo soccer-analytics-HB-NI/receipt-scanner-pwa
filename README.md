@@ -15,7 +15,8 @@ A Progressive Web App for scanning and processing receipts using OCR and AI tech
 
 ## Live Demo
 
-[https://your-app-name.vercel.app](https://your-app-name.vercel.app)
+[https://receipt-scanner-pwa.vercel.app/](https://receipt-scanner-pwa.vercel.app/)
+
 
 ## Tech Stack
 
