@@ -473,7 +473,7 @@
                     <div id="setupContent" class="setup-content">
                         <!-- Connection Status -->
                         <div id="connectionStatus" class="connection-status disconnected">
-                            <span id="connectionIcon"><img src="media/placeholder.png" alt="Status" style="width: 16px; height: 16px;"></span>
+                            <span id="connectionIcon">
                             <div>
                                 <div id="connectionText">Not connected to Google Sheets</div>
                                 <div style="font-size: 0.85rem; opacity: 0.8;" id="connectionSubtext">Connect now to streamline your receipt exports later</div>
@@ -598,16 +598,16 @@
                 <!-- Collection Summary -->
                 <div id="collectionSummary" style="margin-top: 20px; display: none;">
                     <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 10px; padding: 15px; text-align: center;">
-                        <h4 style="color: #0c4a6e; margin-bottom: 10px;"><img src="media/placeholder.png" alt="Collection" style="width: 20px; height: 20px; margin-right: 5px;"> Receipt Collection</h4>
+                        <h4 style="color: #0c4a6e; margin-bottom: 10px;"> Receipt Collection</h4>
                         <p id="collectionCount" style="margin-bottom: 15px; color: #0c4a6e;">0 receipts collected</p>
                         <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                            <button class="btn" onclick="exportCSV()"><img src="media/placeholder.png" alt="Download" style="width: 16px; height: 16px; margin-right: 5px;"> Download CSV</button>
+                            <button class="btn" onclick="exportCSV()"> Download CSV</button>
                             <button class="btn" onclick="exportToGoogleSheets()" style="background: #10b981;">
                                 <img src="media/gsheet.jpg" alt="Export" style="width: 16px; height: 16px; margin-right: 5px; border-radius: 2px;">
                                 Export to Google Sheets
                             </button>
-                            <button class="btn btn-secondary" onclick="viewCollection()"><img src="media/placeholder.png" alt="View" style="width: 16px; height: 16px; margin-right: 5px;"> View All</button>
-                            <button class="btn" style="background: #dc2626;" onclick="clearCollection()"><img src="media/placeholder.png" alt="Delete" style="width: 16px; height: 16px; margin-right: 5px;"> Clear All</button>
+                            <button class="btn btn-secondary" onclick="viewCollection()"> View All</button>
+                            <button class="btn" style="background: #dc2626;" onclick="clearCollection()"> Clear All</button>
                         </div>
                     </div>
                 </div>
@@ -615,7 +615,7 @@
                 <!-- Collection Viewer -->
                 <div id="collectionViewer" style="margin-top: 20px; display: none;">
                     <div style="background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px;">
-                        <h4 style="margin-bottom: 15px;"><img src="media/placeholder.png" alt="Collection" style="width: 20px; height: 20px; margin-right: 5px;"> All Collected Receipts</h4>
+                        <h4 style="margin-bottom: 15px;"> All Collected Receipts</h4>
                         <div id="collectionList"></div>
                         <div style="text-align: center; margin-top: 15px;">
                             <button class="btn btn-secondary" onclick="hideCollection()">Close View</button>
@@ -974,7 +974,7 @@
                         'background: ' + (isPreferred ? '#eff6ff' : '#ffffff') + ';">' +
                         '<div style="font-weight: bold; color: #1f2937; margin-bottom: 4px;">' + sheet.name + '</div>' +
                         '<div style="font-size: 0.8rem; color: #64748b;">Modified: ' + formattedDate + '</div>' +
-                        (isPreferred ? '<div style="font-size: 0.75rem; color: #3b82f6; margin-top: 4px;"><img src="media/placeholder.png" alt="Check" style="width: 12px; height: 12px; margin-right: 3px;"> Currently Selected</div>' : '') +
+                        (isPreferred ? '<div style="font-size: 0.75rem; color: #3b82f6; margin-top: 4px;"> Currently Selected</div>' : '') +
                     '</div>';
                 });
             }
