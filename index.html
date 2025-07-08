@@ -474,7 +474,7 @@
                     <div id="setupContent" class="setup-content">
                         <!-- Connection Status -->
                         <div id="connectionStatus" class="connection-status disconnected">
-                            <span id="connectionIcon">❌</span>
+                            <span id="connectionIcon"><img src="media/placeholder.png" alt="Status" style="width: 16px; height: 16px;"></span>
                             <div>
                                 <div id="connectionText">Not connected to Google Sheets</div>
                                 <div style="font-size: 0.85rem; opacity: 0.8;" id="connectionSubtext">Connect now to streamline your receipt exports later</div>
@@ -490,7 +490,7 @@
                                         Set up Google Sheets integration now to make exporting receipts faster and easier later.
                                     </p>
                                     <button class="btn btn-google" onclick="authenticateGoogle()">
-                                        🔐 Connect Google Sheets
+                                        <img src="media/placeholder.png" alt="Lock" style="width: 16px; height: 16px; margin-right: 5px;"> Connect Google Sheets
                                     </button>
                                 </div>
                             </div>
@@ -503,7 +503,7 @@
                                     
                                     <div style="margin-bottom: 15px;">
                                         <button class="btn btn-secondary" onclick="loadUserSheets()" style="width: 100%;">
-                                            🔄 Load My Google Sheets
+                                            <img src="media/placeholder.png" alt="Refresh" style="width: 16px; height: 16px; margin-right: 5px;"> Load My Google Sheets
                                         </button>
                                     </div>
                                     
@@ -526,10 +526,10 @@
                                 <!-- Quick Actions -->
                                 <div class="quick-setup-actions">
                                     <button class="btn btn-secondary" onclick="disconnectGoogle()" style="font-size: 0.9rem;">
-                                        🔌 Disconnect
+                                        <img src="media/placeholder.png" alt="Disconnect" style="width: 16px; height: 16px; margin-right: 5px;"> Disconnect
                                     </button>
                                     <button class="btn btn-success" onclick="testConnection()" style="font-size: 0.9rem;">
-                                        🧪 Test Connection
+                                        <img src="media/placeholder.png" alt="Test" style="width: 16px; height: 16px; margin-right: 5px;"> Test Connection
                                     </button>
                                 </div>
                             </div>
@@ -541,7 +541,7 @@
                 <div style="background: rgba(255, 255, 255, 0.95); border-radius: 15px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
                         <div style="text-align: center; flex: 1;">
-                            <div style="font-size: 1.5rem; margin-bottom: 5px;">📝</div>
+                            <div style="font-size: 1.5rem; margin-bottom: 5px;"><img src="media/placeholder.png" alt="Basic" style="width: 24px; height: 24px;"></div>
                             <span style="font-size: 0.9rem; color: #64748b;">Basic</span>
                         </div>
                         
@@ -566,7 +566,7 @@
                     <div style="font-size: 3rem; margin-bottom: 15px;">📷</div>
                     <h3>Take a photo or upload receipt</h3>
                     <p>Click here to select an image</p>
-                    <p style="color: #10b981; font-size: 0.9rem;">✅ Supports iPhone HEIC photos</p>
+                    <p style="color: #10b981; font-size: 0.9rem;"> ✅ Supports iPhone HEIC photos</p>
                     <br>
                     <button class="btn" onclick="openCamera(); event.stopPropagation();">Take Photo</button>
                     <button class="btn btn-secondary" onclick="selectFile(); event.stopPropagation();">Choose File</button>
@@ -599,16 +599,16 @@
                 <!-- Collection Summary -->
                 <div id="collectionSummary" style="margin-top: 20px; display: none;">
                     <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 10px; padding: 15px; text-align: center;">
-                        <h4 style="color: #0c4a6e; margin-bottom: 10px;">📋 Receipt Collection</h4>
+                        <h4 style="color: #0c4a6e; margin-bottom: 10px;"><img src="media/placeholder.png" alt="Collection" style="width: 20px; height: 20px; margin-right: 5px;"> Receipt Collection</h4>
                         <p id="collectionCount" style="margin-bottom: 15px; color: #0c4a6e;">0 receipts collected</p>
                         <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                            <button class="btn" onclick="exportCSV()">📥 Download CSV</button>
+                            <button class="btn" onclick="exportCSV()"><img src="media/placeholder.png" alt="Download" style="width: 16px; height: 16px; margin-right: 5px;"> Download CSV</button>
                             <button class="btn" onclick="exportToGoogleSheets()" style="background: #10b981;">
                                 <img src="media/gsheet.jpg" alt="Export" style="width: 16px; height: 16px; margin-right: 5px; border-radius: 2px;">
                                 Export to Google Sheets
                             </button>
-                            <button class="btn btn-secondary" onclick="viewCollection()">👁️ View All</button>
-                            <button class="btn" style="background: #dc2626;" onclick="clearCollection()">🗑️ Clear All</button>
+                            <button class="btn btn-secondary" onclick="viewCollection()"><img src="media/placeholder.png" alt="View" style="width: 16px; height: 16px; margin-right: 5px;"> View All</button>
+                            <button class="btn" style="background: #dc2626;" onclick="clearCollection()"><img src="media/placeholder.png" alt="Delete" style="width: 16px; height: 16px; margin-right: 5px;"> Clear All</button>
                         </div>
                     </div>
                 </div>
@@ -616,7 +616,7 @@
                 <!-- Collection Viewer -->
                 <div id="collectionViewer" style="margin-top: 20px; display: none;">
                     <div style="background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px;">
-                        <h4 style="margin-bottom: 15px;">📋 All Collected Receipts</h4>
+                        <h4 style="margin-bottom: 15px;"><img src="media/placeholder.png" alt="Collection" style="width: 20px; height: 20px; margin-right: 5px;"> All Collected Receipts</h4>
                         <div id="collectionList"></div>
                         <div style="text-align: center; margin-top: 15px;">
                             <button class="btn btn-secondary" onclick="hideCollection()">Close View</button>
@@ -757,22 +757,22 @@
         <!-- Footer -->
         <footer class="app-footer">
             <div style="margin-bottom: 15px;">
-                <h4>🚀 Receipt Scanner</h4>
+                <h4><img src="media/placeholder.png" alt="Rocket" style="width: 20px; height: 20px; margin-right: 5px;"> Receipt Scanner</h4>
                 <p style="font-size: 0.9rem; opacity: 0.9;">Open source receipt digitization</p>
             </div>
             
             <div class="footer-links">
                 <a href="https://github.com/soccer-analytics-HB-NI/receipt-scanner-pwa" target="_blank" class="footer-link">
-                    ⭐ GitHub
+                    <img src="media/placeholder.png" alt="Star" style="width: 16px; height: 16px; margin-right: 5px;"> GitHub
                 </a>
                 <a href="https://github.com/soccer-analytics-HB-NI/receipt-scanner-pwa/issues" target="_blank" class="footer-link">
-                    🐛 Issues
+                    <img src="media/placeholder.png" alt="Bug" style="width: 16px; height: 16px; margin-right: 5px;"> Issues
                 </a>
                 <span class="footer-link" onclick="copyEmail()" style="cursor: pointer;">
-                    📧 Contact
+                    <img src="media/placeholder.png" alt="Email" style="width: 16px; height: 16px; margin-right: 5px;"> Contact
                 </span>
                 <a href="https://navidistanbullu.com" target="_blank" class="footer-link">
-                     🌐 Website
+                    <img src="media/placeholder.png" alt="Globe" style="width: 16px; height: 16px; margin-right: 5px;"> Website
                 </a>
             </div>
             
@@ -795,12 +795,12 @@
                     <div id="notAuthenticatedView">
                         <p style="margin-bottom: 15px; color: #64748b;">Connect your Google account to export receipts to Google Sheets</p>
                         <button class="btn btn-google" onclick="authenticateGoogle()">
-                            🔐 Sign in with Google
+                            <img src="media/placeholder.png" alt="Lock" style="width: 16px; height: 16px; margin-right: 5px;"> Sign in with Google
                         </button>
                     </div>
                     
                     <div id="authenticatedView" style="display: none;">
-                        <p style="margin-bottom: 10px; color: #10b981;">✅ Connected to Google Sheets</p>
+                        <p style="margin-bottom: 10px; color: #10b981;"><img src="media/placeholder.png" alt="Check" style="width: 16px; height: 16px; margin-right: 5px;"> Connected to Google Sheets</p>
                         <button class="btn btn-secondary" onclick="disconnectGoogle()" style="font-size: 0.85rem; padding: 6px 12px;">
                             Disconnect
                         </button>
@@ -813,7 +813,7 @@
                     
                     <div style="margin-bottom: 15px;">
                         <button class="btn btn-secondary" onclick="loadUserSheets()" style="width: 100%;">
-                            🔄 Refresh Sheets List
+                            <img src="media/placeholder.png" alt="Refresh" style="width: 16px; height: 16px; margin-right: 5px;"> Refresh Sheets List
                         </button>
                     </div>
                     
@@ -905,7 +905,7 @@
             
             if (isConnected) {
                 statusDiv.className = 'connection-status connected';
-                icon.textContent = '✅';
+                icon.innerHTML = '<img src="media/placeholder.png" alt="Connected" style="width: 16px; height: 16px;">';
                 text.textContent = 'Connected to Google Sheets';
                 
                 if (sheetSelected) {
@@ -918,7 +918,7 @@
                 connectedView.style.display = 'block';
             } else {
                 statusDiv.className = 'connection-status disconnected';
-                icon.textContent = '❌';
+                icon.innerHTML = '<img src="media/placeholder.png" alt="Disconnected" style="width: 16px; height: 16px;">';
                 text.textContent = 'Not connected to Google Sheets';
                 subtext.textContent = 'Connect now to streamline your receipt exports later';
                 
@@ -982,7 +982,7 @@
                         'background: ' + (isPreferred ? '#eff6ff' : '#ffffff') + ';">' +
                         '<div style="font-weight: bold; color: #1f2937; margin-bottom: 4px;">' + sheet.name + '</div>' +
                         '<div style="font-size: 0.8rem; color: #64748b;">Modified: ' + formattedDate + '</div>' +
-                        (isPreferred ? '<div style="font-size: 0.75rem; color: #3b82f6; margin-top: 4px;">✓ Currently Selected</div>' : '') +
+                        (isPreferred ? '<div style="font-size: 0.75rem; color: #3b82f6; margin-top: 4px;"><img src="media/placeholder.png" alt="Check" style="width: 12px; height: 12px; margin-right: 3px;"> Currently Selected</div>' : '') +
                     '</div>';
                 });
             }
@@ -1007,14 +1007,14 @@
             .then(function(response) { return response.json(); })
             .then(function(data) {
                 if (data.sheets) {
-                    showStatus('✅ Connection successful! Found ' + data.sheets.length + ' sheets', 'success');
+                    showStatus('Connection successful! Found ' + data.sheets.length + ' sheets', 'success');
                 } else {
                     throw new Error('No sheets found');
                 }
             })
             .catch(function(error) {
                 console.error('Connection test failed:', error);
-                showStatus('❌ Connection test failed', 'error');
+                showStatus('Connection test failed', 'error');
             });
         }
 
@@ -1294,7 +1294,7 @@
                         'background: ' + (isPreferred ? '#f0fdf4' : '#ffffff') + ';">' +
                         '<div style="font-weight: bold; color: #1f2937;">' + sheet.name + '</div>' +
                         '<div style="font-size: 0.8rem; color: #64748b;">Modified: ' + new Date(sheet.modifiedTime).toLocaleDateString() + '</div>' +
-                        (isPreferred ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 4px;">✓ Preferred Sheet</div>' : '') +
+                        (isPreferred ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 4px;"><img src="media/placeholder.png" alt="Check" style="width: 12px; height: 12px; margin-right: 3px;"> Preferred Sheet</div>' : '') +
                     '</div>';
                 });
             }
@@ -1451,7 +1451,7 @@
             if (useAI) {
                 toggle.style.background = '#3b82f6';
                 slider.style.transform = 'translateX(30px)';
-                description.textContent = '✨ AI provides better accuracy and automatic categorization';
+                description.innerHTML = '<img src="media/placeholder.png" alt="Sparkles" style="width: 16px; height: 16px; margin-right: 5px;"> AI provides better accuracy and automatic categorization';
                 description.style.background = '#eff6ff';
                 description.style.color = '#1e40af';
             } else {
@@ -1720,8 +1720,8 @@
             document.getElementById('processing').style.display = 'none';
             
             var aiIndicator = data.aiParsed ? 
-                '<span style="background: #10b981; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 10px;">✨ AI Enhanced</span>' :
-                '<span style="background: #f59e0b; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 10px;">📝 Basic Parsing</span>';
+                '<span style="background: #10b981; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 10px;"><img src="media/placeholder.png" alt="Sparkles" style="width: 12px; height: 12px; margin-right: 3px;"> AI Enhanced</span>' :
+                '<span style="background: #f59e0b; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 10px;"><img src="media/placeholder.png" alt="Basic" style="width: 12px; height: 12px; margin-right: 3px;"> Basic Parsing</span>';
             
             var html = '';
             html += '<div style="margin-bottom: 15px;"><h3 style="display: inline;">Receipt Details</h3>' + aiIndicator + '</div>';
