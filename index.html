@@ -47,6 +47,7 @@
             text-align: center;
             margin-bottom: 30px;
             color: white;
+            position: relative;
         }
 
         .header h1 {
@@ -55,12 +56,59 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 5px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .nav-tab {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-tab.active {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
         .main-content {
             background: white;
             border-radius: 20px;
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             flex-grow: 1;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .upload-area {
@@ -249,6 +297,126 @@
             flex-wrap: wrap;
             margin-top: 15px;
         }
+
+        /* Documentation Styles */
+        .docs-section {
+            max-width: none;
+        }
+
+        .docs-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .docs-card h3 {
+            color: #1f2937;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .docs-card h4 {
+            color: #374151;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .docs-card p, .docs-card li {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .docs-card ul {
+            margin-left: 20px;
+        }
+
+        .architecture-diagram {
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+            font-family: monospace;
+        }
+
+        .architecture-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+
+        .arch-box {
+            background: #2563eb;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            min-width: 80px;
+        }
+
+        .arch-arrow {
+            color: #64748b;
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        .app-footer {
+            margin-top: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .footer-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 600px) {
+            .nav-tabs {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .nav-tab {
+                font-size: 0.8rem;
+                padding: 8px 16px;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -256,224 +424,383 @@
         <header class="header">
             <h1>📄 Receipt Scanner</h1>
             <p>Snap, scan, and organize your receipts</p>
+            
+            <!-- Navigation Tabs -->
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showTab('scanner')">🔍 Scanner</button>
+                <button class="nav-tab" onclick="showTab('documentation')">📚 Docs</button>
+            </div>
         </header>
 
         <main class="main-content">
-            <!-- Google Sheets Setup Section -->
-            <div class="setup-section">
-                <div class="setup-header" onclick="toggleSetupSection()">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 1.5rem;">📊</span>
-                        <h3>Google Sheets Setup</h3>
-                    </div>
-                    <span id="setupToggleIcon" style="font-size: 1.2rem; color: #64748b;">▼</span>
-                </div>
-                
-                <div id="setupContent" class="setup-content">
-                    <!-- Connection Status -->
-                    <div id="connectionStatus" class="connection-status disconnected">
-                        <span id="connectionIcon">❌</span>
-                        <div>
-                            <div id="connectionText">Not connected to Google Sheets</div>
-                            <div style="font-size: 0.85rem; opacity: 0.8;" id="connectionSubtext">Connect now to streamline your receipt exports later</div>
+            <!-- Scanner Tab Content -->
+            <div id="scanner" class="tab-content active">
+                <!-- Google Sheets Setup Section -->
+                <div class="setup-section">
+                    <div class="setup-header" onclick="toggleSetupSection()">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.5rem;">📊</span>
+                            <h3>Google Sheets Setup</h3>
                         </div>
+                        <span id="setupToggleIcon" style="font-size: 1.2rem; color: #64748b;">▼</span>
                     </div>
                     
-                    <!-- Setup Actions -->
-                    <div id="setupActions">
-                        <!-- Not Connected View -->
-                        <div id="notConnectedView">
-                            <div style="text-align: center; margin-bottom: 15px;">
-                                <p style="color: #64748b; margin-bottom: 15px;">
-                                    Set up Google Sheets integration now to make exporting receipts faster and easier later.
-                                </p>
-                                <button class="btn btn-google" onclick="authenticateGoogle()">
-                                    🔐 Connect Google Sheets
-                                </button>
+                    <div id="setupContent" class="setup-content">
+                        <!-- Connection Status -->
+                        <div id="connectionStatus" class="connection-status disconnected">
+                            <span id="connectionIcon">❌</span>
+                            <div>
+                                <div id="connectionText">Not connected to Google Sheets</div>
+                                <div style="font-size: 0.85rem; opacity: 0.8;" id="connectionSubtext">Connect now to streamline your receipt exports later</div>
                             </div>
                         </div>
                         
-                        <!-- Connected View -->
-                        <div id="connectedView" style="display: none;">
-                            <!-- Sheet Selection -->
-                            <div class="sheet-selector">
-                                <h4 style="margin-bottom: 15px;">Choose Default Export Sheet:</h4>
-                                
-                                <div style="margin-bottom: 15px;">
-                                    <button class="btn btn-secondary" onclick="loadUserSheets()" style="width: 100%;">
-                                        🔄 Load My Google Sheets
+                        <!-- Setup Actions -->
+                        <div id="setupActions">
+                            <!-- Not Connected View -->
+                            <div id="notConnectedView">
+                                <div style="text-align: center; margin-bottom: 15px;">
+                                    <p style="color: #64748b; margin-bottom: 15px;">
+                                        Set up Google Sheets integration now to make exporting receipts faster and easier later.
+                                    </p>
+                                    <button class="btn btn-google" onclick="authenticateGoogle()">
+                                        🔐 Connect Google Sheets
                                     </button>
                                 </div>
-                                
-                                <div id="sheetsListSetup" style="max-height: 200px; overflow-y: auto;">
-                                    <p style="text-align: center; color: #64748b; padding: 20px;">
-                                        Click "Load My Google Sheets" to see your available sheets
-                                    </p>
-                                </div>
-                                
-                                <!-- Selected Sheet Display -->
-                                <div id="selectedSheetDisplay" style="display: none;">
-                                    <h5 style="margin: 15px 0 8px 0;">Selected Default Sheet:</h5>
-                                    <div class="selected-sheet">
-                                        <div id="selectedSheetName" style="font-weight: bold; color: #1f2937;"></div>
-                                        <div id="selectedSheetDate" style="font-size: 0.8rem; color: #64748b; margin-top: 4px;"></div>
+                            </div>
+                            
+                            <!-- Connected View -->
+                            <div id="connectedView" style="display: none;">
+                                <!-- Sheet Selection -->
+                                <div class="sheet-selector">
+                                    <h4 style="margin-bottom: 15px;">Choose Default Export Sheet:</h4>
+                                    
+                                    <div style="margin-bottom: 15px;">
+                                        <button class="btn btn-secondary" onclick="loadUserSheets()" style="width: 100%;">
+                                            🔄 Load My Google Sheets
+                                        </button>
+                                    </div>
+                                    
+                                    <div id="sheetsListSetup" style="max-height: 200px; overflow-y: auto;">
+                                        <p style="text-align: center; color: #64748b; padding: 20px;">
+                                            Click "Load My Google Sheets" to see your available sheets
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- Selected Sheet Display -->
+                                    <div id="selectedSheetDisplay" style="display: none;">
+                                        <h5 style="margin: 15px 0 8px 0;">Selected Default Sheet:</h5>
+                                        <div class="selected-sheet">
+                                            <div id="selectedSheetName" style="font-weight: bold; color: #1f2937;"></div>
+                                            <div id="selectedSheetDate" style="font-size: 0.8rem; color: #64748b; margin-top: 4px;"></div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <!-- Quick Actions -->
-                            <div class="quick-setup-actions">
-                                <button class="btn btn-secondary" onclick="disconnectGoogle()" style="font-size: 0.9rem;">
-                                    🔌 Disconnect
-                                </button>
-                                <button class="btn btn-success" onclick="testConnection()" style="font-size: 0.9rem;">
-                                    🧪 Test Connection
-                                </button>
+                                
+                                <!-- Quick Actions -->
+                                <div class="quick-setup-actions">
+                                    <button class="btn btn-secondary" onclick="disconnectGoogle()" style="font-size: 0.9rem;">
+                                        🔌 Disconnect
+                                    </button>
+                                    <button class="btn btn-success" onclick="testConnection()" style="font-size: 0.9rem;">
+                                        🧪 Test Connection
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- AI Toggle Section -->
-            <div style="background: rgba(255, 255, 255, 0.95); border-radius: 15px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
-                    <div style="text-align: center; flex: 1;">
-                        <div style="font-size: 1.5rem; margin-bottom: 5px;">📝</div>
-                        <span style="font-size: 0.9rem; color: #64748b;">Basic</span>
-                    </div>
-                    
-                    <div style="flex: 0 0 auto; margin: 0 20px;">
-                        <div id="aiToggle" onclick="toggleAI()" style="width: 60px; height: 30px; background: #e2e8f0; border-radius: 15px; cursor: pointer; position: relative; transition: all 0.3s ease;">
-                            <div id="toggleSlider" style="width: 26px; height: 26px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                <!-- AI Toggle Section -->
+                <div style="background: rgba(255, 255, 255, 0.95); border-radius: 15px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                        <div style="text-align: center; flex: 1;">
+                            <div style="font-size: 1.5rem; margin-bottom: 5px;">📝</div>
+                            <span style="font-size: 0.9rem; color: #64748b;">Basic</span>
+                        </div>
+                        
+                        <div style="flex: 0 0 auto; margin: 0 20px;">
+                            <div id="aiToggle" onclick="toggleAI()" style="width: 60px; height: 30px; background: #e2e8f0; border-radius: 15px; cursor: pointer; position: relative; transition: all 0.3s ease;">
+                                <div id="toggleSlider" style="width: 26px; height: 26px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; flex: 1;">
+                            <div style="font-size: 1.5rem; margin-bottom: 5px;">🤖</div>
+                            <span style="font-size: 0.9rem; color: #64748b;">AI Enhanced</span>
                         </div>
                     </div>
                     
-                    <div style="text-align: center; flex: 1;">
-                        <div style="font-size: 1.5rem; margin-bottom: 5px;">🤖</div>
-                        <span style="font-size: 0.9rem; color: #64748b;">AI Enhanced</span>
+                    <div id="toggleDescription" style="text-align: center; font-size: 0.85rem; color: #64748b; padding: 10px; background: #f8fafc; border-radius: 8px;">
+                        Fast basic text parsing
                     </div>
                 </div>
-                
-                <div id="toggleDescription" style="text-align: center; font-size: 0.85rem; color: #64748b; padding: 10px; background: #f8fafc; border-radius: 8px;">
-                    Fast basic text parsing
+
+                <div class="upload-area" id="uploadArea" onclick="selectFile()">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">📷</div>
+                    <h3>Take a photo or upload receipt</h3>
+                    <p>Click here to select an image</p>
+                    <p style="color: #10b981; font-size: 0.9rem;">✅ Supports iPhone HEIC photos</p>
+                    <br>
+                    <button class="btn" onclick="openCamera(); event.stopPropagation();">Take Photo</button>
+                    <button class="btn btn-secondary" onclick="selectFile(); event.stopPropagation();">Choose File</button>
                 </div>
-            </div>
 
-            <div class="upload-area" id="uploadArea" onclick="selectFile()">
-                <div style="font-size: 3rem; margin-bottom: 15px;">📷</div>
-                <h3>Take a photo or upload receipt</h3>
-                <p>Click here to select an image</p>
-                <p style="color: #10b981; font-size: 0.9rem;">✅ Supports iPhone HEIC photos</p>
-                <br>
-                <button class="btn" onclick="openCamera(); event.stopPropagation();">Take Photo</button>
-                <button class="btn btn-secondary" onclick="selectFile(); event.stopPropagation();">Choose File</button>
-            </div>
+                <input type="file" id="fileInput" accept="image/*">
 
-            <input type="file" id="fileInput" accept="image/*">
-
-            <div class="preview-area" id="previewArea">
-                <img id="previewImage" class="preview-image" alt="Receipt preview">
-                <br><br>
-                <button class="btn" onclick="processReceipt()">Process Receipt</button>
-                <button class="btn btn-secondary" onclick="resetUpload()">Try Another</button>
-            </div>
-
-            <div class="processing" id="processing">
-                <div class="spinner"></div>
-                <p>Processing your receipt...</p>
-            </div>
-
-            <div class="results" id="results">
-                <h3>Receipt Details</h3>
-                <div id="resultsContent"></div>
-                <br>
-                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                    <button class="btn" onclick="addToCollection()">Add to Collection</button>
-                    <button class="btn btn-secondary" onclick="resetUpload()">Scan Another</button>
+                <div class="preview-area" id="previewArea">
+                    <img id="previewImage" class="preview-image" alt="Receipt preview">
+                    <br><br>
+                    <button class="btn" onclick="processReceipt()">Process Receipt</button>
+                    <button class="btn btn-secondary" onclick="resetUpload()">Try Another</button>
                 </div>
-            </div>
 
-            <!-- Collection Summary -->
-            <div id="collectionSummary" style="margin-top: 20px; display: none;">
-                <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 10px; padding: 15px; text-align: center;">
-                    <h4 style="color: #0c4a6e; margin-bottom: 10px;">📋 Receipt Collection</h4>
-                    <p id="collectionCount" style="margin-bottom: 15px; color: #0c4a6e;">0 receipts collected</p>
+                <div class="processing" id="processing">
+                    <div class="spinner"></div>
+                    <p>Processing your receipt...</p>
+                </div>
+
+                <div class="results" id="results">
+                    <h3>Receipt Details</h3>
+                    <div id="resultsContent"></div>
+                    <br>
                     <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                        <button class="btn" onclick="exportCSV()">📥 Download CSV</button>
-                        <button class="btn" onclick="exportToGoogleSheets()" style="background: #10b981;">📊 Export to Google Sheets</button>
-                        <button class="btn btn-secondary" onclick="viewCollection()">👁️ View All</button>
-                        <button class="btn" style="background: #dc2626;" onclick="clearCollection()">🗑️ Clear All</button>
+                        <button class="btn" onclick="addToCollection()">Add to Collection</button>
+                        <button class="btn btn-secondary" onclick="resetUpload()">Scan Another</button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Google Sheets Modal -->
-            <div id="googleSheetsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
-                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 15px; padding: 30px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
-                    <h3 style="margin-bottom: 20px; text-align: center;">📊 Export to Google Sheets</h3>
-                    
-                    <!-- Auth Status -->
-                    <div id="authStatus" style="margin-bottom: 20px; padding: 15px; border-radius: 10px; text-align: center;">
-                        <div id="notAuthenticatedView">
-                            <p style="margin-bottom: 15px; color: #64748b;">Connect your Google account to export receipts to Google Sheets</p>
-                            <button class="btn btn-google" onclick="authenticateGoogle()">
-                                🔐 Sign in with Google
-                            </button>
-                        </div>
-                        
-                        <div id="authenticatedView" style="display: none;">
-                            <p style="margin-bottom: 10px; color: #10b981;">✅ Connected to Google Sheets</p>
-                            <button class="btn btn-secondary" onclick="disconnectGoogle()" style="font-size: 0.85rem; padding: 6px 12px;">
-                                Disconnect
-                            </button>
+                <!-- Collection Summary -->
+                <div id="collectionSummary" style="margin-top: 20px; display: none;">
+                    <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 10px; padding: 15px; text-align: center;">
+                        <h4 style="color: #0c4a6e; margin-bottom: 10px;">📋 Receipt Collection</h4>
+                        <p id="collectionCount" style="margin-bottom: 15px; color: #0c4a6e;">0 receipts collected</p>
+                        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                            <button class="btn" onclick="exportCSV()">📥 Download CSV</button>
+                            <button class="btn" onclick="exportToGoogleSheets()" style="background: #10b981;">📊 Export to Google Sheets</button>
+                            <button class="btn btn-secondary" onclick="viewCollection()">👁️ View All</button>
+                            <button class="btn" style="background: #dc2626;" onclick="clearCollection()">🗑️ Clear All</button>
                         </div>
                     </div>
-                    
-                    <!-- Sheet Selection -->
-                    <div id="sheetSelection" style="display: none;">
-                        <h4 style="margin-bottom: 15px;">Select a Google Sheet:</h4>
-                        
-                        <div style="margin-bottom: 15px;">
-                            <button class="btn btn-secondary" onclick="loadUserSheets()" style="width: 100%;">
-                                🔄 Refresh Sheets List
-                            </button>
-                        </div>
-                        
-                        <div id="sheetsList" style="max-height: 200px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px;">
-                            <!-- Sheets will be loaded here -->
-                        </div>
-                        
-                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
-                            <label style="display: block; margin-bottom: 10px;">
-                                <input type="checkbox" id="rememberSheet" style="margin-right: 8px;">
-                                Remember this sheet for future exports
-                            </label>
-                            
-                            <div style="display: flex; gap: 10px; justify-content: center;">
-                                <button class="btn" onclick="confirmExportToSheets()" id="exportButton" disabled style="background: #10b981;">
-                                    📊 Export Receipts
-                                </button>
-                                <button class="btn btn-secondary" onclick="closeGoogleSheetsModal()">
-                                    Cancel
-                                </button>
-                            </div>
+                </div>
+
+                <!-- Collection Viewer -->
+                <div id="collectionViewer" style="margin-top: 20px; display: none;">
+                    <div style="background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px;">
+                        <h4 style="margin-bottom: 15px;">📋 All Collected Receipts</h4>
+                        <div id="collectionList"></div>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button class="btn btn-secondary" onclick="hideCollection()">Close View</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Collection Viewer -->
-            <div id="collectionViewer" style="margin-top: 20px; display: none;">
-                <div style="background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 20px;">
-                    <h4 style="margin-bottom: 15px;">📋 All Collected Receipts</h4>
-                    <div id="collectionList"></div>
-                    <div style="text-align: center; margin-top: 15px;">
-                        <button class="btn btn-secondary" onclick="hideCollection()">Close View</button>
+            <!-- Documentation Tab Content -->
+            <div id="documentation" class="tab-content docs-section">
+                <div class="docs-card">
+                    <h3>🏗️ System Architecture</h3>
+                    <p>Receipt Scanner uses a modern cloud-based architecture for scalable and reliable receipt processing.</p>
+                    
+                    <div class="architecture-diagram">
+                        <h4>📊 Cloud Infrastructure Flow</h4>
+                        
+                        <div class="architecture-flow">
+                            <div class="arch-box">📱 Frontend</div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-box">☁️ Vercel Edge</div>
+                            <div class="arch-arrow">→</div>
+                            <div class="arch-box">🤖 AI API</div>
+                        </div>
+                        
+                        <div class="architecture-flow">
+                            <div class="arch-box">📄 OCR Engine</div>
+                            <div class="arch-arrow">↕️</div>
+                            <div class="arch-box">🧠 Processing</div>
+                            <div class="arch-arrow">↕️</div>
+                            <div class="arch-box">📊 Google Sheets</div>
+                        </div>
+                        
+                        <div style="margin-top: 15px; font-size: 0.9rem; color: #64748b;">
+                            <strong>Data Flow:</strong> Image Upload → OCR Processing → AI Enhancement → Data Export
+                        </div>
                     </div>
+                </div>
+
+                <div class="docs-card">
+                    <h3>🚀 Technology Stack</h3>
+                    <h4>Frontend Components</h4>
+                    <ul>
+                        <li><strong>Tesseract.js 4.1.1:</strong> Client-side OCR processing for text extraction</li>
+                        <li><strong>HEIC2Any 0.0.4:</strong> iPhone HEIC photo conversion to JPEG</li>
+                        <li><strong>Vanilla JavaScript:</strong> No framework dependencies for fast loading</li>
+                        <li><strong>CSS3 Animations:</strong> Smooth gradients and micro-interactions</li>
+                    </ul>
+                    
+                    <h4>Backend Services</h4>
+                    <ul>
+                        <li><strong>Vercel Serverless:</strong> Auto-scaling API endpoints</li>
+                        <li><strong>Google Sheets API v4:</strong> Direct spreadsheet integration</li>
+                        <li><strong>Google OAuth 2.0:</strong> Secure authentication flow</li>
+                        <li><strong>AI Processing API:</strong> Advanced receipt parsing and categorization</li>
+                    </ul>
+                </div>
+
+                <div class="docs-card">
+                    <h3>🔧 API Endpoints</h3>
+                    <h4>Core Processing</h4>
+                    <ul>
+                        <li><code>/api/parse-receipt</code> - AI-powered receipt text parsing and categorization</li>
+                        <li><code>/api/google-auth</code> - Initiate Google OAuth authentication flow</li>
+                        <li><code>/api/google-callback</code> - Handle OAuth callback and token exchange</li>
+                    </ul>
+                    
+                    <h4>Google Sheets Integration</h4>
+                    <ul>
+                        <li><code>/api/google-sheets-list</code> - Retrieve user's Google Sheets list</li>
+                        <li><code>/api/google-sheets-export</code> - Export receipt data to selected sheet</li>
+                    </ul>
+                </div>
+
+                <div class="docs-card">
+                    <h3>📊 Data Processing Pipeline</h3>
+                    <h4>Stage 1: Image Processing</h4>
+                    <p>Images are processed client-side for privacy. HEIC photos from iPhones are automatically converted to JPEG format for compatibility.</p>
+                    
+                    <h4>Stage 2: OCR Extraction</h4>
+                    <p>Tesseract.js performs optical character recognition in the browser, extracting raw text from receipt images.</p>
+                    
+                    <h4>Stage 3: AI Enhancement (Optional)</h4>
+                    <p>When AI mode is enabled, extracted text is sent to our processing API which uses machine learning models to:</p>
+                    <ul>
+                        <li>Identify store names and locations</li>
+                        <li>Parse dates and times accurately</li>
+                        <li>Extract individual items with prices</li>
+                        <li>Categorize purchases automatically</li>
+                        <li>Calculate totals and tax amounts</li>
+                    </ul>
+                </div>
+
+                <div class="docs-card">
+                    <h3>🛡️ Security & Privacy</h3>
+                    <h4>Data Protection</h4>
+                    <ul>
+                        <li><strong>Local Processing:</strong> OCR runs entirely in your browser</li>
+                        <li><strong>HTTPS Encryption:</strong> All API communications are encrypted</li>
+                        <li><strong>No Storage:</strong> Images are not permanently stored on servers</li>
+                        <li><strong>OAuth 2.0:</strong> Secure Google account integration</li>
+                    </ul>
+                    
+                    <h4>Google Sheets Access</h4>
+                    <p>The application only requests the minimum necessary permissions to read your sheets list and write receipt data. Your Google account credentials are never stored.</p>
+                </div>
+
+                <div class="docs-card">
+                    <h3>📱 Browser Compatibility</h3>
+                    <h4>Supported Browsers</h4>
+                    <ul>
+                        <li><strong>Chrome 80+:</strong> Full feature support including camera access</li>
+                        <li><strong>Firefox 75+:</strong> Complete functionality with OCR processing</li>
+                        <li><strong>Safari 13+:</strong> iOS and macOS support with HEIC conversion</li>
+                        <li><strong>Edge 80+:</strong> Full compatibility on Windows devices</li>
+                    </ul>
+                    
+                    <h4>Mobile Support</h4>
+                    <p>Optimized for mobile devices with responsive design and camera integration for receipt capture on-the-go.</p>
+                </div>
+
+                <div class="docs-card">
+                    <h3>🔄 Deployment Architecture</h3>
+                    <h4>Hosting & CDN</h4>
+                    <ul>
+                        <li><strong>Vercel Edge Network:</strong> Global CDN for fast loading times</li>
+                        <li><strong>Serverless Functions:</strong> Auto-scaling backend processing</li>
+                        <li><strong>Environment Variables:</strong> Secure API key management</li>
+                        <li><strong>Build Optimization:</strong> Minified assets and tree shaking</li>
+                    </ul>
                 </div>
             </div>
         </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div style="margin-bottom: 15px;">
+                <h4>🚀 Receipt Scanner</h4>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Open source receipt digitization</p>
+            </div>
+            
+            <div class="footer-links">
+                <a href="https://github.com/yourusername/receipt-scanner" target="_blank" class="footer-link">
+                    ⭐ GitHub
+                </a>
+                <a href="https://github.com/yourusername/receipt-scanner/issues" target="_blank" class="footer-link">
+                    🐛 Issues
+                </a>
+                <a href="mailto:developer@example.com" class="footer-link">
+                    📧 Contact
+                </a>
+            </div>
+            
+            <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 10px;">
+                <p>Created by <a href="https://github.com/yourusername" target="_blank" style="color: #93c5fd; text-decoration: none;">@YourUsername</a></p>
+                <p>MIT License • Version 2.1.0</p>
+            </div>
+        </footer>
+
+        <!-- Google Sheets Modal -->
+        <div id="googleSheetsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 15px; padding: 30px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                <h3 style="margin-bottom: 20px; text-align: center;">📊 Export to Google Sheets</h3>
+                
+                <!-- Auth Status -->
+                <div id="authStatus" style="margin-bottom: 20px; padding: 15px; border-radius: 10px; text-align: center;">
+                    <div id="notAuthenticatedView">
+                        <p style="margin-bottom: 15px; color: #64748b;">Connect your Google account to export receipts to Google Sheets</p>
+                        <button class="btn btn-google" onclick="authenticateGoogle()">
+                            🔐 Sign in with Google
+                        </button>
+                    </div>
+                    
+                    <div id="authenticatedView" style="display: none;">
+                        <p style="margin-bottom: 10px; color: #10b981;">✅ Connected to Google Sheets</p>
+                        <button class="btn btn-secondary" onclick="disconnectGoogle()" style="font-size: 0.85rem; padding: 6px 12px;">
+                            Disconnect
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Sheet Selection -->
+                <div id="sheetSelection" style="display: none;">
+                    <h4 style="margin-bottom: 15px;">Select a Google Sheet:</h4>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <button class="btn btn-secondary" onclick="loadUserSheets()" style="width: 100%;">
+                            🔄 Refresh Sheets List
+                        </button>
+                    </div>
+                    
+                    <div id="sheetsList" style="max-height: 200px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px;">
+                        <!-- Sheets will be loaded here -->
+                    </div>
+                    
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
+                        <label style="display: block; margin-bottom: 10px;">
+                            <input type="checkbox" id="rememberSheet" style="margin-right: 8px;">
+                            Remember this sheet for future exports
+                        </label>
+                        
+                        <div style="display: flex; gap: 10px; justify-content: center;">
+                            <button class="btn" onclick="confirmExportToSheets()" id="exportButton" disabled style="background: #10b981;">
+                                📊 Export Receipts
+                            </button>
+                            <button class="btn btn-secondary" onclick="closeGoogleSheetsModal()">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="status" id="status"></div>
@@ -488,7 +815,28 @@
         var preferredSheetId = null; // Store preferred sheet ID
         var setupSectionExpanded = false; // Track setup section state
 
-        // New functions for setup section
+        // Tab switching function
+        function showTab(tabName) {
+            // Hide all tab contents
+            var contents = document.querySelectorAll('.tab-content');
+            contents.forEach(function(content) {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            var tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(function(tab) {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Google Sheets Setup functions
         function toggleSetupSection() {
             setupSectionExpanded = !setupSectionExpanded;
             var content = document.getElementById('setupContent');
@@ -626,7 +974,7 @@
             });
         }
 
-        // Check for saved auth and preferences on load
+        // Load saved auth and preferences on load
         function loadSavedAuth() {
             var savedAuth = localStorage.getItem('googleAuth');
             var savedSheetId = localStorage.getItem('preferredSheetId');
@@ -738,6 +1086,10 @@
             if (isAuthenticated) {
                 notAuthView.style.display = 'none';
                 authView.style.display = 'block';
+                sheetSelection.style.display = 'block';
+            } else {
+                notAuthView.style.display = 'block';
+                authView.style.display = 'none';
                 sheetSelection.style.display = 'none';
             }
         }
@@ -749,13 +1101,10 @@
                 .then(function(response) { return response.json(); })
                 .then(function(data) {
                     if (data.authUrl) {
-                        // For debugging, let's try direct redirect instead of popup
-                        console.log('Auth URL:', data.authUrl);
-                        
                         // Save current state before redirect
                         localStorage.setItem('authInProgress', 'true');
                         
-                        // Redirect to Google OAuth (this will come back to our callback)
+                        // Redirect to Google OAuth
                         window.location.href = data.authUrl;
                     }
                 })
@@ -775,7 +1124,6 @@
             if (error) {
                 localStorage.removeItem('authInProgress');
                 showStatus('Google sign-in failed: ' + error, 'error');
-                // Clean up URL
                 window.history.replaceState({}, document.title, window.location.pathname);
                 return;
             }
@@ -784,15 +1132,10 @@
                 localStorage.removeItem('authInProgress');
                 showStatus('Processing Google sign-in...', 'success');
                 handleAuthCode(code);
-                
-                // Clean up URL
                 window.history.replaceState({}, document.title, window.location.pathname);
             } else if (code) {
-                // Handle case where we have a code but no authInProgress flag
                 showStatus('Processing Google sign-in...', 'success');
                 handleAuthCode(code);
-                
-                // Clean up URL
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
         }
@@ -1386,7 +1729,7 @@
             for (var i = 0; i < allReceipts.length; i++) {
                 var receipt = allReceipts[i];
                 html += '<div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 10px;">';
-                html += '<div style="display: flex; justify-content: between; align-items: center; margin-bottom: 8px;">';
+                html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">';
                 html += '<strong>' + receipt.store + '</strong>';
                 html += '<span style="font-size: 0.8rem; color: #64748b; margin-left: auto;">' + receipt.scannedAt + '</span>';
                 html += '</div>';
@@ -1562,8 +1905,4 @@
         });
     </script>
 </body>
-</html>'block';
-            } else {
-                notAuthView.style.display = 'block';
-                authView.style.display = 'none';
-                sheetSelection.style.display =
+</html>
