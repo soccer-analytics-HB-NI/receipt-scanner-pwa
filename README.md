@@ -69,18 +69,6 @@ For AI and Google Sheets features, create `config.js` from `config.example.js` a
    - Create OAuth 2.0 credentials
    - Set environment variables in Vercel
 
-### Deployment
-
-```bash
-# Deploy to Vercel
-vercel --prod
-
-# Set environment variables
-vercel env add OPENAI_API_KEY
-vercel env add GOOGLE_CLIENT_ID
-vercel env add GOOGLE_CLIENT_SECRET
-vercel env add GOOGLE_REDIRECT_URI
-```
 
 ## Usage
 
