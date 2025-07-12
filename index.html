@@ -743,6 +743,67 @@
                     </ul>
                 </div>
             </div>
+
+            <!-- Privacy Policy Tab Content -->
+<div id="privacy" class="tab-content docs-section">
+    <div class="docs-card">
+        <h3>Privacy Policy for Receipt Scanner</h3>
+        <p class="last-updated">Last updated: January 2025</p>
+
+        <h4>1. Information We Collect</h4>
+        <p><strong>Receipt Images:</strong> We process receipt images locally in your browser using OCR technology. Images are not permanently stored on our servers.</p>
+        <p><strong>Google Account Information:</strong> When you connect your Google account, we only access:</p>
+        <ul>
+            <li>Basic profile information (name, email) for authentication</li>
+            <li>Read access to your Google Sheets list</li>
+            <li>Write access to selected Google Sheets for receipt data export</li>
+        </ul>
+
+        <h4>2. How We Use Your Information</h4>
+        <ul>
+            <li>Process receipt images to extract text and data</li>
+            <li>Export organized receipt data to your selected Google Sheets</li>
+            <li>Provide authentication and secure access to Google Services</li>
+            <li>Improve our OCR and parsing accuracy</li>
+        </ul>
+
+        <h4>3. Data Storage and Security</h4>
+        <p><strong>Local Processing:</strong> Receipt images are processed entirely in your browser using client-side OCR.</p>
+        <p><strong>No Image Storage:</strong> We do not permanently store receipt images on our servers.</p>
+        <p><strong>Secure Transmission:</strong> All data transmission uses HTTPS encryption.</p>
+
+        <h4>4. Contact Us</h4>
+        <p>If you have any questions about this Privacy Policy, please contact us at: navido972@gmail.com</p>
+    </div>
+</div>
+
+<!-- Terms of Service Tab Content -->
+<div id="terms" class="tab-content docs-section">
+    <div class="docs-card">
+        <h3>Terms of Service for Receipt Scanner</h3>
+        <p class="last-updated">Last updated: January 2025</p>
+
+        <h4>1. Acceptance of Terms</h4>
+        <p>By accessing and using Receipt Scanner, you accept and agree to be bound by these terms.</p>
+
+        <h4>2. Description of Service</h4>
+        <p>Receipt Scanner allows users to upload and process receipt images, extract data, and export to Google Sheets.</p>
+
+        <h4>3. User Responsibilities</h4>
+        <ul>
+            <li>Provide accurate information when connecting your Google account</li>
+            <li>Use the service only for legitimate receipt processing purposes</li>
+            <li>Not attempt to reverse engineer or exploit the service</li>
+        </ul>
+
+        <h4>4. Service Availability</h4>
+        <p>Receipt Scanner is provided "as is" without guarantees of uptime. We reserve the right to modify or discontinue the service.</p>
+
+        <h4>5. Contact Information</h4>
+        <p>Questions about these Terms of Service? Contact us at: navido972@gmail.com</p>
+    </div>
+</div>
+
         </main>
 
         <!-- Footer -->
@@ -840,6 +901,8 @@
         Email copied!
     </div>
 
+    
+
     <script>
         var currentImage = null;
         var extractedData = null;
@@ -850,26 +913,59 @@
         var preferredSheetId = null; // Store preferred sheet ID
         var setupSectionExpanded = false; // Track setup section state
 
+        // Function to get URL parameters
+function getUrlParameter(name) {
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    var results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+}
+
+// Function to show content based on URL parameter
+function handleUrlRouting() {
+    var page = getUrlParameter('page');
+    
+    if (page === 'privacy') {
+        showTab('privacy');
+        document.title = 'Privacy Policy - Receipt Scanner';
+    } else if (page === 'terms') {
+        showTab('terms');
+        document.title = 'Terms of Service - Receipt Scanner';
+    } else {
+        // Default to scanner tab
+        showTab('scanner');
+    }
+}
+
         // Tab switching function
         function showTab(tabName) {
-            // Hide all tab contents
-            var contents = document.querySelectorAll('.tab-content');
-            contents.forEach(function(content) {
-                content.classList.remove('active');
-            });
-            
-            // Remove active class from all tabs
-            var tabs = document.querySelectorAll('.nav-tab');
-            tabs.forEach(function(tab) {
-                tab.classList.remove('active');
-            });
-            
-            // Show selected tab content
-            document.getElementById(tabName).classList.add('active');
-            
-            // Add active class to clicked tab
-            event.target.classList.add('active');
-        }
+    // Hide all tab contents
+    var contents = document.querySelectorAll('.tab-content');
+    contents.forEach(function(content) {
+        content.classList.remove('active');
+    });
+    
+    // Remove active class from all tabs
+    var tabs = document.querySelectorAll('.nav-tab');
+    tabs.forEach(function(tab) {
+        tab.classList.remove('active');
+    });
+    
+    // Show selected tab content
+    document.getElementById(tabName).classList.add('active');
+    
+    // Add active class to clicked tab (if it exists)
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
+    
+    // Update URL without page reload
+    if (tabName === 'privacy' || tabName === 'terms') {
+        history.pushState(null, null, '?page=' + tabName);
+    } else {
+        history.pushState(null, null, '/');
+    }
+}
 
         // Google Sheets Setup functions
         function toggleSetupSection() {
@@ -1921,12 +2017,22 @@
 
         // File input event listener
         document.addEventListener('DOMContentLoaded', function() {
-            var fileInput = document.getElementById('fileInput');
-            fileInput.addEventListener('change', function(event) {
-                if (event.target.files.length > 0) {
-                    handleFile(event.target.files[0]);
-                }
-            });
+    var fileInput = document.getElementById('fileInput');
+    fileInput.addEventListener('change', function(event) {
+        if (event.target.files.length > 0) {
+            handleFile(event.target.files[0]);
+        }
+    });
+
+    // Handle URL routing on page load
+    handleUrlRouting();
+    
+    // Handle browser back/forward buttons
+    window.addEventListener('popstate', handleUrlRouting);
+
+    // Drag and drop
+    var uploadArea = document.getElementById('uploadArea');
+
 
             // Drag and drop
             var uploadArea = document.getElementById('uploadArea');
