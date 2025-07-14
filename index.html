@@ -2015,8 +2015,8 @@ function handleUrlRouting() {
             hideCollection(); // Hide collection viewer when resetting
         }
 
-        // File input event listener
-        document.addEventListener('DOMContentLoaded', function() {
+       // File input event listener
+document.addEventListener('DOMContentLoaded', function() {
     var fileInput = document.getElementById('fileInput');
     fileInput.addEventListener('change', function(event) {
         if (event.target.files.length > 0) {
@@ -2032,38 +2032,34 @@ function handleUrlRouting() {
 
     // Drag and drop
     var uploadArea = document.getElementById('uploadArea');
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.style.backgroundColor = '#eff6ff';
+    });
 
+    uploadArea.addEventListener('dragleave', function() {
+        uploadArea.style.backgroundColor = '';
+    });
 
-            // Drag and drop
-            var uploadArea = document.getElementById('uploadArea');
-            uploadArea.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                uploadArea.style.backgroundColor = '#eff6ff';
-            });
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.style.backgroundColor = '';
+        if (e.dataTransfer.files.length > 0) {
+            handleFile(e.dataTransfer.files[0]);
+        }
+    });
 
-            uploadArea.addEventListener('dragleave', function() {
-                uploadArea.style.backgroundColor = '';
-            });
-
-            uploadArea.addEventListener('drop', function(e) {
-                e.preventDefault();
-                uploadArea.style.backgroundColor = '';
-                if (e.dataTransfer.files.length > 0) {
-                    handleFile(e.dataTransfer.files[0]);
-                }
-            });
-
-            showStatus('Receipt Scanner ready!', 'success');
-            
-            // Initialize toggle UI
-            updateToggleUI();
-            
-            // Load saved authentication state
-            loadSavedAuth();
-            
-            // Check if returning from Google OAuth
-            checkForAuthReturn();
-        });
+    showStatus('Receipt Scanner ready!', 'success');
+    
+    // Initialize toggle UI
+    updateToggleUI();
+    
+    // Load saved authentication state
+    loadSavedAuth();
+    
+    // Check if returning from Google OAuth
+    checkForAuthReturn();
+});
     </script>
 </body>
 </html>
