@@ -2016,50 +2016,50 @@ function handleUrlRouting() {
         }
 
        // File input event listener
-document.addEventListener('DOMContentLoaded', function() {
-    var fileInput = document.getElementById('fileInput');
-    fileInput.addEventListener('change', function(event) {
-        if (event.target.files.length > 0) {
-            handleFile(event.target.files[0]);
-        }
-    });
+       document.addEventListener('DOMContentLoaded', function() {
+            var fileInput = document.getElementById('fileInput');
+            fileInput.addEventListener('change', function(event) {
+                if (event.target.files.length > 0) {
+                    handleFile(event.target.files[0]);
+                }
+            });
 
-    // Handle URL routing on page load
-    handleUrlRouting();
-    
-    // Handle browser back/forward buttons
-    window.addEventListener('popstate', handleUrlRouting);
+            // Handle URL routing on page load
+            handleUrlRouting();
+            
+            // Handle browser back/forward buttons
+            window.addEventListener('popstate', handleUrlRouting);
 
-    // Drag and drop
-    var uploadArea = document.getElementById('uploadArea');
-    uploadArea.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        uploadArea.style.backgroundColor = '#eff6ff';
-    });
+            // Drag and drop
+            var uploadArea = document.getElementById('uploadArea');
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.style.backgroundColor = '#eff6ff';
+            });
 
-    uploadArea.addEventListener('dragleave', function() {
-        uploadArea.style.backgroundColor = '';
-    });
+            uploadArea.addEventListener('dragleave', function() {
+                uploadArea.style.backgroundColor = '';
+            });
 
-    uploadArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        uploadArea.style.backgroundColor = '';
-        if (e.dataTransfer.files.length > 0) {
-            handleFile(e.dataTransfer.files[0]);
-        }
-    });
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.style.backgroundColor = '';
+                if (e.dataTransfer.files.length > 0) {
+                    handleFile(e.dataTransfer.files[0]);
+                }
+            });
 
-    showStatus('Receipt Scanner ready!', 'success');
-    
-    // Initialize toggle UI
-    updateToggleUI();
-    
-    // Load saved authentication state
-    loadSavedAuth();
-    
-    // Check if returning from Google OAuth
-    checkForAuthReturn();
-});
+            showStatus('Receipt Scanner ready!', 'success');
+            
+            // Initialize toggle UI
+            updateToggleUI();
+            
+            // Load saved authentication state
+            loadSavedAuth();
+            
+            // Check if returning from Google OAuth
+            checkForAuthReturn();
+        });
     </script>
 </body>
 </html>
