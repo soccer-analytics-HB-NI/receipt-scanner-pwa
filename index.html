@@ -626,16 +626,12 @@
             <!-- Documentation Tab Content -->
             <div id="documentation" class="tab-content docs-section">
                 <div class="docs-card">
-                    <h3>
-                        System Architecture
-                    </h3>
+                    <h3>System Architecture</h3>
                     <p>Receipt Scanner uses a modern cloud-based architecture for scalable and reliable receipt processing.</p>
                 </div>
 
                 <div class="docs-card">
-                    <h3>
-                        Technology Stack
-                    </h3>
+                    <h3>Technology Stack</h3>
                     <h4>Frontend Components</h4>
                     <ul>
                         <li><strong>Tesseract.js 4.1.1:</strong> Client-side OCR processing for text extraction</li>
@@ -654,9 +650,7 @@
                 </div>
 
                 <div class="docs-card">
-                    <h3>
-                        API Endpoints
-                    </h3>
+                    <h3>API Endpoints</h3>
                     <h4>Core Processing</h4>
                     <ul>
                         <li><code>/api/parse-receipt</code> - AI-powered receipt text parsing and categorization</li>
@@ -664,10 +658,7 @@
                         <li><code>/api/google-callback</code> - Handle OAuth callback and token exchange</li>
                     </ul>
                     
-                    <h4>
-                        <img src="media/gsheet.jpg" alt="Google Sheets" style="width: 20px; height: 20px; margin-right: 6px; border-radius: 3px; vertical-align: middle;">
-                        Google Sheets Integration
-                    </h4>
+                    <h4>Google Sheets Integration</h4>
                     <ul>
                         <li><code>/api/google-sheets-list</code> - Retrieve user's Google Sheets list</li>
                         <li><code>/api/google-sheets-export</code> - Export receipt data to selected sheet</li>
@@ -675,9 +666,7 @@
                 </div>
 
                 <div class="docs-card">
-                    <h3>
-                        Data Processing Pipeline
-                    </h3>
+                    <h3>Data Processing Pipeline</h3>
                     <h4>Stage 1: Image Processing</h4>
                     <p>Images are processed client-side for privacy. HEIC photos from iPhones are automatically converted to JPEG format for compatibility.</p>
                     
@@ -696,9 +685,7 @@
                 </div>
 
                 <div class="docs-card">
-                    <h3>
-                        Security & Privacy
-                    </h3>
+                    <h3>Security & Privacy</h3>
                     <h4>Data Protection</h4>
                     <ul>
                         <li><strong>Local Processing:</strong> OCR runs entirely in your browser</li>
@@ -707,17 +694,12 @@
                         <li><strong>OAuth 2.0:</strong> Secure Google account integration</li>
                     </ul>
                     
-                    <h4>
-                        <img src="media/gsheet.jpg" alt="Google Sheets" style="width: 20px; height: 20px; margin-right: 6px; border-radius: 3px; vertical-align: middle;">
-                        Google Sheets Access
-                    </h4>
+                    <h4>Google Sheets Access</h4>
                     <p>The application only requests the minimum necessary permissions to read your sheets list and write receipt data. Your Google account credentials are never stored.</p>
                 </div>
 
                 <div class="docs-card">
-                    <h3>
-                        Browser Compatibility
-                    </h3>
+                    <h3>Browser Compatibility</h3>
                     <h4>Supported Browsers</h4>
                     <ul>
                         <li><strong>Chrome 80+:</strong> Full feature support including camera access</li>
@@ -731,9 +713,7 @@
                 </div>
 
                 <div class="docs-card">
-                    <h3>
-                        Deployment Architecture
-                    </h3>
+                    <h3>Deployment Architecture</h3>
                     <h4>Hosting & CDN</h4>
                     <ul>
                         <li><strong>Vercel Edge Network:</strong> Global CDN for fast loading times</li>
@@ -743,18 +723,124 @@
                     </ul>
                 </div>
             </div>
+
+            <!-- Privacy Policy Tab Content -->
+            <div id="privacy" class="tab-content docs-section">
+                <div class="docs-card">
+                    <h3>Privacy Policy for Receipt Scanner</h3>
+                    <p style="font-style: italic; color: #666; margin-bottom: 30px;">Last updated: January 2025</p>
+
+                    <h4>1. Information We Collect</h4>
+                    <p><strong>Receipt Images:</strong> We process receipt images locally in your browser using OCR technology. Images are not permanently stored on our servers.</p>
+                    <p><strong>Google Account Information:</strong> When you connect your Google account, we only access:</p>
+                    <ul>
+                        <li>Basic profile information (name, email) for authentication</li>
+                        <li>Read access to your Google Sheets list</li>
+                        <li>Write access to selected Google Sheets for receipt data export</li>
+                    </ul>
+
+                    <h4>2. How We Use Your Information</h4>
+                    <ul>
+                        <li>Process receipt images to extract text and data</li>
+                        <li>Export organized receipt data to your selected Google Sheets</li>
+                        <li>Provide authentication and secure access to Google Services</li>
+                        <li>Improve our OCR and parsing accuracy</li>
+                    </ul>
+
+                    <h4>3. Data Storage and Security</h4>
+                    <p><strong>Local Processing:</strong> Receipt images are processed entirely in your browser using client-side OCR.</p>
+                    <p><strong>No Image Storage:</strong> We do not permanently store receipt images on our servers.</p>
+                    <p><strong>Secure Transmission:</strong> All data transmission uses HTTPS encryption.</p>
+
+                    <h4>4. Google Sheets Integration</h4>
+                    <p>When you connect your Google account:</p>
+                    <ul>
+                        <li>We request minimal necessary permissions</li>
+                        <li>You control which Google Sheet receives your data</li>
+                        <li>You can disconnect at any time</li>
+                        <li>We don't access other Google services beyond Sheets</li>
+                    </ul>
+
+                    <h4>5. Your Rights</h4>
+                    <p>You have the right to:</p>
+                    <ul>
+                        <li>Disconnect your Google account at any time</li>
+                        <li>Delete locally stored receipt data</li>
+                        <li>Request deletion of any data we may have</li>
+                        <li>Access information about your data usage</li>
+                    </ul>
+
+                    <h4>6. Contact Us</h4>
+                    <p>If you have any questions about this Privacy Policy, please contact us at: navido972@gmail.com</p>
+                </div>
+            </div>
+
+            <!-- Terms of Service Tab Content -->
+            <div id="terms" class="tab-content docs-section">
+                <div class="docs-card">
+                    <h3>Terms of Service for Receipt Scanner</h3>
+                    <p style="font-style: italic; color: #666; margin-bottom: 30px;">Last updated: January 2025</p>
+
+                    <h4>1. Acceptance of Terms</h4>
+                    <p>By accessing and using Receipt Scanner, you accept and agree to be bound by these terms.</p>
+
+                    <h4>2. Description of Service</h4>
+                    <p>Receipt Scanner allows users to upload and process receipt images, extract data, and export to Google Sheets.</p>
+
+                    <h4>3. User Responsibilities</h4>
+                    <ul>
+                        <li>Provide accurate information when connecting your Google account</li>
+                        <li>Use the service only for legitimate receipt processing purposes</li>
+                        <li>Not attempt to reverse engineer or exploit the service</li>
+                        <li>Respect the intellectual property rights of others</li>
+                    </ul>
+
+                    <h4>4. Google Account Integration</h4>
+                    <p>When you connect your Google account:</p>
+                    <ul>
+                        <li>You grant Receipt Scanner permission to access your Google Sheets</li>
+                        <li>You can revoke these permissions at any time</li>
+                        <li>We only access the specific sheets you select for data export</li>
+                        <li>Your Google account credentials are handled securely through Google's OAuth system</li>
+                    </ul>
+
+                    <h4>5. Service Availability</h4>
+                    <p>Receipt Scanner is provided "as is" without guarantees of uptime. We reserve the right to modify or discontinue the service with reasonable notice.</p>
+
+                    <h4>6. Limitations of Liability</h4>
+                    <p>Receipt Scanner and its developers are not liable for:</p>
+                    <ul>
+                        <li>Any loss of data or receipt information</li>
+                        <li>Inaccuracies in OCR text extraction or AI parsing</li>
+                        <li>Any damages resulting from use of the service</li>
+                        <li>Issues arising from third-party services (Google Sheets, etc.)</li>
+                    </ul>
+
+                    <h4>7. Open Source License</h4>
+                    <p>Receipt Scanner is released under the MIT License. View the source code: <a href="https://github.com/soccer-analytics-HB-NI/receipt-scanner-pwa" target="_blank" style="color: #2563eb;">GitHub Repository</a></p>
+
+                    <h4>8. Contact Information</h4>
+                    <p>Questions about these Terms of Service? Contact us at: navido972@gmail.com</p>
+                </div>
+            </div>
         </main>
 
         <!-- Footer -->
         <footer class="app-footer">
             <div style="margin-bottom: 15px;">
-                <h4> Receipt Scanner</h4>
+                <h4>Receipt Scanner</h4>
                 <p style="font-size: 0.9rem; opacity: 0.9;">Open source receipt digitization</p>
             </div>
             
             <div class="footer-links">
                 <a href="https://github.com/soccer-analytics-HB-NI/receipt-scanner-pwa" target="_blank" class="footer-link">
                     <img src="media/github-mark.png" alt="Star" style="width: 16px; height: 16px; margin-right: 5px;"> GitHub
+                </a>
+                <a href="/?page=privacy" class="footer-link">
+                    🔒 Privacy Policy
+                </a>
+                <a href="/?page=terms" class="footer-link">
+                    📄 Terms of Service
                 </a>
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSc3uU_cmLFlOa0TnVP5u6UUgzFwQGQFgobGh4fll8LT0L8Ptw/viewform?usp=preview" target="_blank" class="footer-link">
                     💬 Feedback
@@ -850,7 +936,32 @@
         var preferredSheetId = null; // Store preferred sheet ID
         var setupSectionExpanded = false; // Track setup section state
 
-        // Tab switching function
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Function to show content based on URL parameter
+        function handleUrlRouting() {
+            var page = getUrlParameter('page');
+            
+            if (page === 'privacy') {
+                showTab('privacy');
+                document.title = 'Privacy Policy - Receipt Scanner';
+            } else if (page === 'terms') {
+                showTab('terms');
+                document.title = 'Terms of Service - Receipt Scanner';
+            } else {
+                // Default to scanner tab
+                showTab('scanner');
+                document.title = 'Receipt Scanner';
+            }
+        }
+
+        // Tab switching function (UPDATED to handle privacy/terms)
         function showTab(tabName) {
             // Hide all tab contents
             var contents = document.querySelectorAll('.tab-content');
@@ -867,1097 +978,15 @@
             // Show selected tab content
             document.getElementById(tabName).classList.add('active');
             
-            // Add active class to clicked tab
-            event.target.classList.add('active');
-        }
-
-        // Google Sheets Setup functions
-        function toggleSetupSection() {
-            setupSectionExpanded = !setupSectionExpanded;
-            var content = document.getElementById('setupContent');
-            var icon = document.getElementById('setupToggleIcon');
+            // Add active class to clicked tab (only if event exists)
+            if (typeof event !== 'undefined' && event && event.target) {
+                event.target.classList.add('active');
+            }
             
-            if (setupSectionExpanded) {
-                content.classList.add('expanded');
-                icon.textContent = '▲';
+            // Update URL without page reload
+            if (tabName === 'privacy' || tabName === 'terms') {
+                history.pushState(null, null, '?page=' + tabName);
             } else {
-                content.classList.remove('expanded');
-                icon.textContent = '▼';
+                history.pushState(null, null, '/');
             }
         }
-
-        function updateConnectionStatus(isConnected, sheetSelected = false) {
-            var statusDiv = document.getElementById('connectionStatus');
-            var icon = document.getElementById('connectionIcon');
-            var text = document.getElementById('connectionText');
-            var subtext = document.getElementById('connectionSubtext');
-            var notConnectedView = document.getElementById('notConnectedView');
-            var connectedView = document.getElementById('connectedView');
-            
-            if (isConnected) {
-                statusDiv.className = 'connection-status connected';
-                text.textContent = '✅ Connected to Google Sheets';
-                
-                if (sheetSelected) {
-                    subtext.textContent = 'Default export sheet configured - ready for quick exports!';
-                } else {
-                    subtext.textContent = 'Select a default sheet below for faster exports';
-                }
-                
-                notConnectedView.style.display = 'none';
-                connectedView.style.display = 'block';
-            } else {
-                statusDiv.className = 'connection-status disconnected';
-                icon.innerHTML = '❌ Not connected to Google Sheets ';
-                text.textContent = 'Not connected to Google Sheets';
-                subtext.textContent = 'Connect now to streamline your receipt exports later';
-                
-                notConnectedView.style.display = 'block';
-                connectedView.style.display = 'none';
-            }
-        }
-
-        function displaySelectedSheet(sheetId, sheetName, sheetDate) {
-            var display = document.getElementById('selectedSheetDisplay');
-            var nameDiv = document.getElementById('selectedSheetName');
-            var dateDiv = document.getElementById('selectedSheetDate');
-            
-            if (sheetId && sheetName) {
-                display.style.display = 'block';
-                nameDiv.textContent = sheetName;
-                dateDiv.textContent = 'Modified: ' + sheetDate;
-            } else {
-                display.style.display = 'none';
-            }
-        }
-
-        function selectSheetInSetup(sheetId, sheetName, sheetDate) {
-            // Update selection in setup view
-            var items = document.querySelectorAll('#sheetsListSetup .sheet-item');
-            items.forEach(function(item) {
-                if (item.getAttribute('data-sheet-id') === sheetId) {
-                    item.style.background = '#eff6ff';
-                    item.style.borderColor = '#3b82f6';
-                } else {
-                    item.style.background = '#ffffff';
-                    item.style.borderColor = '#e5e7eb';
-                }
-            });
-
-            // Save preference immediately
-            preferredSheetId = sheetId;
-            saveAuthState();
-            
-            // Update display
-            displaySelectedSheet(sheetId, sheetName, sheetDate);
-            updateConnectionStatus(true, true);
-            
-            showStatus('Default export sheet set to: ' + sheetName, 'success');
-        }
-
-        function displaySheetsListInSetup(sheets) {
-            var sheetsList = document.getElementById('sheetsListSetup');
-            var html = '';
-
-            if (sheets.length === 0) {
-                html = '<p style="text-align: center; color: #64748b; padding: 20px;">No Google Sheets found. Create one first!</p>';
-            } else {
-                sheets.forEach(function(sheet) {
-                    var isPreferred = sheet.id === preferredSheetId;
-                    var formattedDate = new Date(sheet.modifiedTime).toLocaleDateString();
-                    
-                    html += '<div class="sheet-item" data-sheet-id="' + sheet.id + '" onclick="selectSheetInSetup(\'' + sheet.id + '\', \'' + sheet.name.replace(/'/g, "\\'") + '\', \'' + formattedDate + '\')" style="' +
-                        'padding: 12px; margin: 8px 0; border: 1px solid ' + (isPreferred ? '#3b82f6' : '#e5e7eb') + '; ' +
-                        'border-radius: 8px; cursor: pointer; transition: all 0.2s ease; ' +
-                        'background: ' + (isPreferred ? '#eff6ff' : '#ffffff') + ';">' +
-                        '<div style="font-weight: bold; color: #1f2937; margin-bottom: 4px;">' + sheet.name + '</div>' +
-                        '<div style="font-size: 0.8rem; color: #64748b;">Modified: ' + formattedDate + '</div>' +
-                        (isPreferred ? '<div style="font-size: 0.75rem; color: #3b82f6; margin-top: 4px;"> Currently Selected</div>' : '') +
-                    '</div>';
-                });
-            }
-
-            sheetsList.innerHTML = html;
-        }
-
-        function testConnection() {
-            if (!googleAuth) {
-                showStatus('Please connect to Google first', 'error');
-                return;
-            }
-
-            showStatus('Testing Google Sheets connection...', 'success');
-            
-            // Test by trying to load sheets
-            fetch('/api/google-sheets-list', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ access_token: googleAuth.access_token })
-            })
-            .then(function(response) { return response.json(); })
-            .then(function(data) {
-                if (data.sheets) {
-                    showStatus('Connection successful! Found ' + data.sheets.length + ' sheets', 'success');
-                } else {
-                    throw new Error('No sheets found');
-                }
-            })
-            .catch(function(error) {
-                console.error('Connection test failed:', error);
-                showStatus('Connection test failed', 'error');
-            });
-        }
-
-        // Load saved auth and preferences on load
-        function loadSavedAuth() {
-            var savedAuth = localStorage.getItem('googleAuth');
-            var savedSheetId = localStorage.getItem('preferredSheetId');
-            
-            if (savedAuth) {
-                try {
-                    googleAuth = JSON.parse(savedAuth);
-                    // Check if token is still valid (simple expiry check)
-                    var expiryTime = googleAuth.expires_at || 0;
-                    if (Date.now() < expiryTime) {
-                        updateGoogleAuthUI(true);
-                        updateConnectionStatus(true, !!savedSheetId);
-                        
-                        // If we have a preferred sheet, find its details
-                        if (savedSheetId) {
-                            preferredSheetId = savedSheetId;
-                            // Try to load sheet details to display properly
-                            loadUserSheetsQuietly();
-                        }
-                    } else {
-                        // Token expired, clear it
-                        localStorage.removeItem('googleAuth');
-                        googleAuth = null;
-                        updateConnectionStatus(false);
-                    }
-                } catch (e) {
-                    localStorage.removeItem('googleAuth');
-                    updateConnectionStatus(false);
-                }
-            } else {
-                updateConnectionStatus(false);
-            }
-            
-            if (savedSheetId) {
-                preferredSheetId = savedSheetId;
-            }
-        }
-
-        // Quietly load sheets without showing status messages (for initialization)
-        function loadUserSheetsQuietly() {
-            if (!googleAuth) return;
-
-            fetch('/api/google-sheets-list', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ access_token: googleAuth.access_token })
-            })
-            .then(function(response) { return response.json(); })
-            .then(function(data) {
-                if (data.sheets) {
-                    userSheets = data.sheets;
-                    
-                    // Find the preferred sheet details
-                    var preferredSheet = userSheets.find(function(sheet) {
-                        return sheet.id === preferredSheetId;
-                    });
-                    
-                    if (preferredSheet) {
-                        displaySelectedSheet(
-                            preferredSheet.id, 
-                            preferredSheet.name, 
-                            new Date(preferredSheet.modifiedTime).toLocaleDateString()
-                        );
-                        updateConnectionStatus(true, true);
-                    }
-                }
-            })
-            .catch(function(error) {
-                console.error('Quiet load sheets error:', error);
-                // Don't show error status for quiet loading
-            });
-        }
-
-        // Google Sheets Integration Functions
-        function exportToGoogleSheets() {
-            if (allReceipts.length === 0) {
-                showStatus('No receipts to export', 'error');
-                return;
-            }
-
-            // Check if user has a preferred sheet and is authenticated
-            if (googleAuth && preferredSheetId) {
-                // Skip selection and export directly
-                confirmExportToSheets();
-                return;
-            }
-
-            // Show the Google Sheets modal
-            document.getElementById('googleSheetsModal').style.display = 'block';
-            
-            if (googleAuth) {
-                updateGoogleAuthUI(true);
-                showSheetSelection();
-                loadUserSheets();
-            } else {
-                updateGoogleAuthUI(false);
-            }
-        }
-
-        function closeGoogleSheetsModal() {
-            document.getElementById('googleSheetsModal').style.display = 'none';
-        }
-
-        function updateGoogleAuthUI(isAuthenticated) {
-            var notAuthView = document.getElementById('notAuthenticatedView');
-            var authView = document.getElementById('authenticatedView');
-            var sheetSelection = document.getElementById('sheetSelection');
-            
-            if (isAuthenticated) {
-                notAuthView.style.display = 'none';
-                authView.style.display = 'block';
-                sheetSelection.style.display = 'block';
-            } else {
-                notAuthView.style.display = 'block';
-                authView.style.display = 'none';
-                sheetSelection.style.display = 'none';
-            }
-        }
-
-        function authenticateGoogle() {
-            showStatus('Redirecting to Google...', 'success');
-            
-            fetch('/api/google-auth')
-                .then(function(response) { return response.json(); })
-                .then(function(data) {
-                    if (data.authUrl) {
-                        // Save current state before redirect
-                        localStorage.setItem('authInProgress', 'true');
-                        
-                        // Redirect to Google OAuth
-                        window.location.href = data.authUrl;
-                    }
-                })
-                .catch(function(error) {
-                    console.error('Auth error:', error);
-                    showStatus('Failed to start Google authentication', 'error');
-                });
-        }
-
-        // Check if we're returning from auth on page load
-        function checkForAuthReturn() {
-            var urlParams = new URLSearchParams(window.location.search);
-            var code = urlParams.get('code');
-            var error = urlParams.get('error');
-            var authInProgress = localStorage.getItem('authInProgress');
-            
-            if (error) {
-                localStorage.removeItem('authInProgress');
-                showStatus('Google sign-in failed: ' + error, 'error');
-                window.history.replaceState({}, document.title, window.location.pathname);
-                return;
-            }
-            
-            if (code && authInProgress) {
-                localStorage.removeItem('authInProgress');
-                showStatus('Processing Google sign-in...', 'success');
-                handleAuthCode(code);
-                window.history.replaceState({}, document.title, window.location.pathname);
-            } else if (code) {
-                showStatus('Processing Google sign-in...', 'success');
-                handleAuthCode(code);
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-        }
-
-        function handleAuthCode(code) {
-            fetch('/api/google-callback', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ code: code })
-            })
-            .then(function(response) { return response.json(); })
-            .then(function(data) {
-                if (data.access_token) {
-                    googleAuth = {
-                        access_token: data.access_token,
-                        refresh_token: data.refresh_token,
-                        expires_at: Date.now() + (data.expires_in * 1000)
-                    };
-                    
-                    saveAuthState();
-                    updateGoogleAuthUI(true);
-                    updateConnectionStatus(true, false);
-                    showSheetSelection();
-                    loadUserSheets();
-                    showStatus('Successfully connected to Google!', 'success');
-                    
-                    // Auto-expand setup section if it's collapsed
-                    if (!setupSectionExpanded) {
-                        toggleSetupSection();
-                    }
-                } else {
-                    throw new Error(data.error || 'Failed to get access token');
-                }
-            })
-            .catch(function(error) {
-                console.error('Token exchange error:', error);
-                showStatus('Failed to complete Google authentication', 'error');
-            });
-        }
-
-        function disconnectGoogle() {
-            googleAuth = null;
-            preferredSheetId = null;
-            localStorage.removeItem('googleAuth');
-            localStorage.removeItem('preferredSheetId');
-            updateGoogleAuthUI(false);
-            updateConnectionStatus(false);
-            
-            // Clear the selected sheet display
-            displaySelectedSheet(null, null, null);
-            
-            showStatus('Disconnected from Google', 'success');
-        }
-
-        function showSheetSelection() {
-            document.getElementById('sheetSelection').style.display = 'block';
-        }
-
-        function loadUserSheets() {
-            if (!googleAuth) {
-                showStatus('Please authenticate with Google first', 'error');
-                return;
-            }
-
-            var sheetsList = document.getElementById('sheetsList');
-            var sheetsListSetup = document.getElementById('sheetsListSetup');
-            
-            // Update both modal and setup views
-            if (sheetsList) {
-                sheetsList.innerHTML = '<p style="text-align: center; color: #64748b;">Loading your Google Sheets...</p>';
-            }
-            sheetsListSetup.innerHTML = '<p style="text-align: center; color: #64748b; padding: 20px;">Loading your Google Sheets...</p>';
-
-            fetch('/api/google-sheets-list', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ access_token: googleAuth.access_token })
-            })
-            .then(function(response) { return response.json(); })
-            .then(function(data) {
-                if (data.sheets) {
-                    userSheets = data.sheets;
-                    displaySheetsList(data.sheets);
-                    displaySheetsListInSetup(data.sheets);
-                } else {
-                    throw new Error('No sheets found');
-                }
-            })
-            .catch(function(error) {
-                console.error('Load sheets error:', error);
-                if (sheetsList) {
-                    sheetsList.innerHTML = '<p style="text-align: center; color: #dc2626;">Failed to load sheets. Try refreshing.</p>';
-                }
-                sheetsListSetup.innerHTML = '<p style="text-align: center; color: #dc2626; padding: 20px;">Failed to load sheets. Try refreshing.</p>';
-            });
-        }
-
-        function displaySheetsList(sheets) {
-            var sheetsList = document.getElementById('sheetsList');
-            if (!sheetsList) return;
-            
-            var html = '';
-
-            if (sheets.length === 0) {
-                html = '<p style="text-align: center; color: #64748b;">No Google Sheets found. Create one first!</p>';
-            } else {
-                sheets.forEach(function(sheet) {
-                    var isPreferred = sheet.id === preferredSheetId;
-                    html += '<div class="sheet-item" data-sheet-id="' + sheet.id + '" onclick="selectSheet(\'' + sheet.id + '\', \'' + sheet.name + '\')" style="' +
-                        'padding: 10px; margin: 5px 0; border: 1px solid ' + (isPreferred ? '#10b981' : '#e5e7eb') + '; ' +
-                        'border-radius: 8px; cursor: pointer; transition: all 0.2s ease; ' +
-                        'background: ' + (isPreferred ? '#f0fdf4' : '#ffffff') + ';">' +
-                        '<div style="font-weight: bold; color: #1f2937;">' + sheet.name + '</div>' +
-                        '<div style="font-size: 0.8rem; color: #64748b;">Modified: ' + new Date(sheet.modifiedTime).toLocaleDateString() + '</div>' +
-                        (isPreferred ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 4px;"><img src="media/placeholder.png" alt="Check" style="width: 12px; height: 12px; margin-right: 3px;"> Preferred Sheet</div>' : '') +
-                    '</div>';
-                });
-            }
-
-            sheetsList.innerHTML = html;
-        }
-
-        var selectedSheetId = null;
-        var selectedSheetName = null;
-
-        function selectSheet(sheetId, sheetName) {
-            selectedSheetId = sheetId;
-            selectedSheetName = sheetName;
-
-            // Update UI to show selection
-            var items = document.querySelectorAll('#sheetsList .sheet-item');
-            items.forEach(function(item) {
-                if (item.getAttribute('data-sheet-id') === sheetId) {
-                    item.style.background = '#eff6ff';
-                    item.style.borderColor = '#3b82f6';
-                } else {
-                    item.style.background = '#ffffff';
-                    item.style.borderColor = '#e5e7eb';
-                }
-            });
-
-            // Enable export button
-            var exportButton = document.getElementById('exportButton');
-            if (exportButton) {
-                exportButton.disabled = false;
-            }
-        }
-
-        function confirmExportToSheets() {
-            var targetSheetId = selectedSheetId || preferredSheetId;
-            var targetSheetName = selectedSheetName || 'Selected Sheet';
-
-            if (!targetSheetId) {
-                showStatus('Please select a Google Sheet first', 'error');
-                return;
-            }
-
-            if (!googleAuth) {
-                showStatus('Please authenticate with Google first', 'error');
-                return;
-            }
-
-            // Save preference if checkbox is checked
-            var rememberCheckbox = document.getElementById('rememberSheet');
-            if (rememberCheckbox && rememberCheckbox.checked && selectedSheetId) {
-                preferredSheetId = selectedSheetId;
-                saveAuthState();
-            }
-
-            // Show loading state
-            var exportButton = document.getElementById('exportButton');
-            if (exportButton) {
-                exportButton.textContent = 'Exporting...';
-                exportButton.disabled = true;
-            }
-
-            // Export to Google Sheets
-            fetch('/api/google-sheets-export', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    access_token: googleAuth.access_token,
-                    sheet_id: targetSheetId,
-                    receipts: allReceipts
-                })
-            })
-            .then(function(response) { return response.json(); })
-            .then(function(data) {
-                if (data.success) {
-                    showStatus('Successfully exported ' + allReceipts.length + ' receipts to Google Sheets!', 'success');
-                    closeGoogleSheetsModal();
-                    
-                    // Show link to open the sheet
-                    setTimeout(function() {
-                        if (confirm('Export successful! Would you like to open the Google Sheet?')) {
-                            window.open(data.spreadsheetUrl, '_blank');
-                        }
-                    }, 1000);
-                } else {
-                    throw new Error(data.error || 'Export failed');
-                }
-            })
-            .catch(function(error) {
-                console.error('Export error:', error);
-                showStatus('Failed to export to Google Sheets: ' + error.message, 'error');
-            })
-            .finally(function() {
-                if (exportButton) {
-                    exportButton.innerHTML = '<img src="media/gsheet.jpg" alt="Export" style="width: 16px; height: 16px; margin-right: 5px; border-radius: 2px;"> Export Receipts';
-                    exportButton.disabled = false;
-                }
-            });
-        }
-
-        function saveAuthState() {
-            if (googleAuth) {
-                localStorage.setItem('googleAuth', JSON.stringify(googleAuth));
-            }
-            if (preferredSheetId) {
-                localStorage.setItem('preferredSheetId', preferredSheetId);
-            }
-        }
-
-        function showStatus(message, type) {
-            var status = document.getElementById('status');
-            status.textContent = message;
-            status.className = 'status ' + type;
-            status.style.display = 'block';
-            
-            setTimeout(function() {
-                status.style.display = 'none';
-            }, 3000);
-        }
-
-        function copyEmail() {
-            const email = 'navido972@gmail.com';
-            
-            // Create a temporary textarea element to copy the email
-            const tempTextArea = document.createElement('textarea');
-            tempTextArea.value = email;
-            document.body.appendChild(tempTextArea);
-            tempTextArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempTextArea);
-            
-            // Show popup notification
-            const popup = document.getElementById('popup');
-            popup.classList.add('show');
-            
-            // Hide popup after 2 seconds
-            setTimeout(() => {
-                popup.classList.remove('show');
-            }, 2000);
-        }
-
-        function toggleAI() {
-            useAI = !useAI;
-            updateToggleUI();
-            
-            var message = useAI ? 'AI Enhanced mode enabled' : 'Basic mode enabled';
-            showStatus(message, 'success');
-        }
-
-        function updateToggleUI() {
-            var toggle = document.getElementById('aiToggle');
-            var slider = document.getElementById('toggleSlider');
-            var description = document.getElementById('toggleDescription');
-            
-            if (useAI) {
-                toggle.style.background = '#3b82f6';
-                slider.style.transform = 'translateX(30px)';
-                description.innerHTML = '✨ AI provides better accuracy and automatic categorization';
-                description.style.background = '#eff6ff';
-                description.style.color = '#1e40af';
-            } else {
-                toggle.style.background = '#e2e8f0';
-                slider.style.transform = 'translateX(0px)';
-                description.textContent = 'Fast basic text parsing';
-                description.style.background = '#f8fafc';
-                description.style.color = '#64748b';
-            }
-        }
-
-        function openCamera() {
-            var fileInput = document.getElementById('fileInput');
-            fileInput.setAttribute('capture', 'environment');
-            fileInput.click();
-        }
-
-        function selectFile() {
-            var fileInput = document.getElementById('fileInput');
-            fileInput.removeAttribute('capture');
-            fileInput.click();
-        }
-
-        function convertHeicToJpeg(file) {
-            return new Promise(function(resolve, reject) {
-                if (typeof heic2any === 'undefined') {
-                    reject(new Error('HEIC conversion not available'));
-                    return;
-                }
-
-                showStatus('Converting iPhone photo...', 'success');
-                
-                heic2any({
-                    blob: file,
-                    toType: 'image/jpeg',
-                    quality: 0.8
-                }).then(function(convertedBlob) {
-                    var convertedFile = new File([convertedBlob], 
-                        file.name.replace(/\.(heic|heif)$/i, '.jpg'), 
-                        { type: 'image/jpeg' }
-                    );
-                    showStatus('iPhone photo converted!', 'success');
-                    resolve(convertedFile);
-                }).catch(function(error) {
-                    reject(new Error('Conversion failed: ' + error.message));
-                });
-            });
-        }
-
-        function handleFile(file) {
-            var isHeic = file.name.toLowerCase().endsWith('.heic') || 
-                        file.name.toLowerCase().endsWith('.heif') ||
-                        file.type.toLowerCase().includes('heic') ||
-                        file.type.toLowerCase().includes('heif');
-
-            if (isHeic) {
-                convertHeicToJpeg(file).then(function(convertedFile) {
-                    processFile(convertedFile);
-                }).catch(function(error) {
-                    showStatus(error.message, 'error');
-                });
-            } else {
-                processFile(file);
-            }
-        }
-
-        function processFile(file) {
-            if (file.size > 25 * 1024 * 1024) {
-                showStatus('File too large. Maximum 25MB.', 'error');
-                return;
-            }
-
-            currentImage = file;
-            
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var img = document.getElementById('previewImage');
-                img.src = e.target.result;
-                
-                document.getElementById('uploadArea').style.display = 'none';
-                document.getElementById('previewArea').style.display = 'block';
-                showStatus('Image loaded successfully!', 'success');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function processReceipt() {
-            if (!currentImage) {
-                showStatus('No image selected', 'error');
-                return;
-            }
-
-            document.getElementById('previewArea').style.display = 'none';
-            document.getElementById('processing').style.display = 'block';
-
-            performOCR().then(function(text) {
-                if (useAI) {
-                    updateProcessingText('AI is organizing receipt data...');
-                    return parseReceiptWithAI(text);
-                } else {
-                    updateProcessingText('Organizing receipt data...');
-                    return parseReceiptText(text);
-                }
-            }).then(function(data) {
-                displayResults(data);
-            }).catch(function(error) {
-                showStatus('Processing failed: ' + error.message, 'error');
-                document.getElementById('processing').style.display = 'none';
-                document.getElementById('previewArea').style.display = 'block';
-            });
-        }
-
-        function updateProcessingText(text) {
-            var processing = document.getElementById('processing');
-            var p = processing.querySelector('p');
-            if (p) p.textContent = text;
-        }
-
-        function parseReceiptWithAI(text) {
-            return new Promise(function(resolve, reject) {
-                // Call your Vercel serverless function
-                fetch('/api/parse-receipt', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ 
-                        text: text,
-                        extractText: false // Since we already have the text from OCR
-                    })
-                })
-                .then(function(response) {
-                    if (!response.ok) {
-                        throw new Error('API request failed: ' + response.status);
-                    }
-                    return response.json();
-                })
-                .then(function(data) {
-                    // Transform the API response to match our format
-                    var aiData = {
-                        store: data.store || 'Unknown Store',
-                        date: data.date || new Date().toLocaleDateString(),
-                        total: data.total || 'N/A',
-                        items: data.items || [],
-                        rawText: text,
-                        aiParsed: true
-                    };
-                    
-                    // Ensure items have the right structure
-                    for (var i = 0; i < aiData.items.length; i++) {
-                        if (!aiData.items[i].category) {
-                            aiData.items[i].category = 'General';
-                        }
-                    }
-                    
-                    resolve(aiData);
-                })
-                .catch(function(error) {
-                    console.error('AI parsing failed:', error);
-                    showStatus('AI parsing failed, using basic parsing', 'error');
-                    // Fallback to basic parsing
-                    var basicData = parseReceiptText(text);
-                    basicData.aiParsed = false;
-                    resolve(basicData);
-                });
-            });
-        }
-
-        function performOCR() {
-            return new Promise(function(resolve, reject) {
-                if (typeof Tesseract === 'undefined') {
-                    reject(new Error('OCR library not loaded'));
-                    return;
-                }
-
-                var img = document.getElementById('previewImage');
-                
-                Tesseract.recognize(img, 'eng', {
-                    logger: function(m) {
-                        if (m.status === 'recognizing text' && m.progress) {
-                            var progress = Math.round(m.progress * 100);
-                            var processing = document.getElementById('processing');
-                            var p = processing.querySelector('p');
-                            if (p) p.textContent = 'Reading text... ' + progress + '%';
-                        }
-                    }
-                }).then(function(result) {
-                    if (!result.data.text || result.data.text.trim().length === 0) {
-                        reject(new Error('No text detected'));
-                        return;
-                    }
-                    resolve(result.data.text);
-                }).catch(function(error) {
-                    reject(error);
-                });
-            });
-        }
-
-        function parseReceiptText(text) {
-            var lines = text.split('\n').filter(function(line) {
-                return line.trim().length > 0;
-            });
-
-            var store = 'Unknown Store';
-            if (lines.length > 0) {
-                store = lines[0].trim();
-            }
-
-            // Better date detection
-            var date = new Date().toLocaleDateString();
-            var datePatterns = [
-                /\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/,
-                /\b\d{1,2}-\d{1,2}-\d{2,4}\b/,
-                /\b\d{4}-\d{1,2}-\d{1,2}\b/
-            ];
-            
-            for (var p = 0; p < datePatterns.length; p++) {
-                var match = text.match(datePatterns[p]);
-                if (match) {
-                    date = match[0];
-                    break;
-                }
-            }
-
-            var total = 'N/A';
-            var amounts = text.match(/\$\d+\.\d{2}/g);
-            if (amounts && amounts.length > 0) {
-                total = amounts[amounts.length - 1];
-            }
-
-            var items = [];
-            for (var i = 0; i < lines.length; i++) {
-                var line = lines[i];
-                if (line.match(/\$\d+\.\d{2}/)) {
-                    var name = line.replace(/\$\d+\.\d{2}.*/, '').trim();
-                    var price = line.match(/\$\d+\.\d{2}/)[0];
-                    if (name.length > 2) {
-                        items.push({ 
-                            name: name, 
-                            price: price,
-                            category: 'General'
-                        });
-                    }
-                }
-            }
-
-            if (items.length === 0) {
-                items.push({ 
-                    name: 'Items found but details unclear', 
-                    price: total,
-                    category: 'General'
-                });
-            }
-
-            return {
-                store: store,
-                date: date,
-                total: total,
-                items: items,
-                rawText: text,
-                aiParsed: false
-            };
-        }
-
-        function displayResults(data) {
-            document.getElementById('processing').style.display = 'none';
-            
-            var aiIndicator = data.aiParsed ? 
-                '<span style="background: #10b981; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 10px;"><img src="media/OpenAI_Logo.svg.png" alt="Sparkles" style="width: 24px; height: 12px; margin-right: 3px;"> AI Enhanced</span>' :
-                '<span style="background: #f59e0b; color: white; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 10px;"><img src="media/parsing.png" alt="Basic" style="width: 12px; height: 12px; margin-right: 3px;"> Basic Parsing</span>';
-            
-            var html = '';
-            html += '<div style="margin-bottom: 15px;"><h3 style="display: inline;">Receipt Details</h3>' + aiIndicator + '</div>';
-            html += '<div class="result-item"><strong>Store:</strong> ' + data.store + '</div>';
-            html += '<div class="result-item"><strong>Date:</strong> ' + data.date + '</div>';
-            html += '<div class="result-item"><strong>Total:</strong> ' + data.total + '</div>';
-            html += '<div class="result-item"><strong>Items:</strong><ul style="margin-top: 10px;">';
-            
-            for (var i = 0; i < data.items.length; i++) {
-                var item = data.items[i];
-                html += '<li>' + item.name + ' - ' + item.price;
-                if (data.aiParsed && item.category !== 'General') {
-                    html += ' <em style="color: #64748b;">(' + item.category + ')</em>';
-                }
-                html += '</li>';
-            }
-            
-            html += '</ul></div>';
-            
-            // Add raw text view
-            html += '<details style="margin-top: 15px;">';
-            html += '<summary style="cursor: pointer; font-weight: bold; color: #64748b;">View Extracted Text</summary>';
-            html += '<div style="background: #f1f5f9; padding: 10px; border-radius: 5px; margin-top: 10px; font-family: monospace; font-size: 0.85rem; white-space: pre-wrap;">' + data.rawText + '</div>';
-            html += '</details>';
-            
-            document.getElementById('resultsContent').innerHTML = html;
-            document.getElementById('results').style.display = 'block';
-            extractedData = data;
-        }
-
-        // Collection Management Functions
-        function addToCollection() {
-            if (!extractedData) {
-                showStatus('No receipt data to add', 'error');
-                return;
-            }
-
-            // Add timestamp and unique ID
-            var receiptWithId = JSON.parse(JSON.stringify(extractedData));
-            receiptWithId.id = Date.now();
-            receiptWithId.scannedAt = new Date().toLocaleString();
-            
-            allReceipts.push(receiptWithId);
-            updateCollectionDisplay();
-            showStatus('Receipt added to collection! (' + allReceipts.length + ' total)', 'success');
-            
-            // Auto-reset for next scan
-            setTimeout(function() {
-                resetUpload();
-            }, 1500);
-        }
-
-        function updateCollectionDisplay() {
-            var summary = document.getElementById('collectionSummary');
-            var count = document.getElementById('collectionCount');
-            
-            if (allReceipts.length > 0) {
-                summary.style.display = 'block';
-                count.textContent = allReceipts.length + ' receipt' + (allReceipts.length === 1 ? '' : 's') + ' collected';
-            } else {
-                summary.style.display = 'none';
-            }
-        }
-
-        function viewCollection() {
-            var viewer = document.getElementById('collectionViewer');
-            var list = document.getElementById('collectionList');
-            
-            var html = '';
-            for (var i = 0; i < allReceipts.length; i++) {
-                var receipt = allReceipts[i];
-                html += '<div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; margin-bottom: 10px;">';
-                html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">';
-                html += '<strong>' + receipt.store + '</strong>';
-                html += '<span style="font-size: 0.8rem; color: #64748b; margin-left: auto;">' + receipt.scannedAt + '</span>';
-                html += '</div>';
-                html += '<div>Date: ' + receipt.date + ' | Total: ' + receipt.total + ' | Items: ' + receipt.items.length + '</div>';
-                html += '<button class="btn" style="background: #dc2626; font-size: 0.8rem; padding: 4px 8px; margin-top: 8px;" onclick="removeFromCollection(' + i + ')">Remove</button>';
-                html += '</div>';
-            }
-            
-            if (allReceipts.length === 0) {
-                html = '<p style="text-align: center; color: #64748b;">No receipts collected yet.</p>';
-            }
-            
-            list.innerHTML = html;
-            viewer.style.display = 'block';
-        }
-
-        function hideCollection() {
-            document.getElementById('collectionViewer').style.display = 'none';
-        }
-
-        function removeFromCollection(index) {
-            allReceipts.splice(index, 1);
-            updateCollectionDisplay();
-            viewCollection(); // Refresh the view
-            showStatus('Receipt removed from collection', 'success');
-        }
-
-        function clearCollection() {
-            if (confirm('Are you sure you want to clear all ' + allReceipts.length + ' receipts?')) {
-                allReceipts = [];
-                updateCollectionDisplay();
-                hideCollection();
-                showStatus('All receipts cleared', 'success');
-            }
-        }
-
-        // CSV Export Functions
-        function exportCSV() {
-            if (allReceipts.length === 0) {
-                showStatus('No receipts to export', 'error');
-                return;
-            }
-
-            var csv = generateCSV();
-            downloadCSV(csv);
-            showStatus('CSV downloaded with ' + allReceipts.length + ' receipts!', 'success');
-        }
-
-        function generateCSV() {
-            // Find the maximum number of items across all receipts
-            var maxItems = 0;
-            for (var i = 0; i < allReceipts.length; i++) {
-                if (allReceipts[i].items.length > maxItems) {
-                    maxItems = allReceipts[i].items.length;
-                }
-            }
-
-            // Create CSV header
-            var headers = ['Store', 'Date', 'Total', 'Scanned At', 'AI Parsed'];
-            
-            // Add product columns
-            for (var p = 1; p <= maxItems; p++) {
-                headers.push('Product ' + p + ' Name');
-                headers.push('Product ' + p + ' Price');
-                headers.push('Product ' + p + ' Category');
-            }
-
-            var csvContent = headers.join(',') + '\n';
-
-            // Add data rows
-            for (var i = 0; i < allReceipts.length; i++) {
-                var receipt = allReceipts[i];
-                var row = [];
-                
-                // Basic receipt info
-                row.push(escapeCSV(receipt.store));
-                row.push(escapeCSV(receipt.date));
-                row.push(escapeCSV(receipt.total));
-                row.push(escapeCSV(receipt.scannedAt));
-                row.push(receipt.aiParsed ? 'Yes' : 'No');
-                
-                // Add items
-                for (var j = 0; j < maxItems; j++) {
-                    if (j < receipt.items.length) {
-                        var item = receipt.items[j];
-                        row.push(escapeCSV(item.name || ''));
-                        row.push(escapeCSV(item.price || ''));
-                        row.push(escapeCSV(item.category || ''));
-                    } else {
-                        row.push('', '', ''); // Empty cells for missing items
-                    }
-                }
-                
-                csvContent += row.join(',') + '\n';
-            }
-
-            return csvContent;
-        }
-
-        function escapeCSV(field) {
-            if (field === null || field === undefined) return '';
-            var str = String(field);
-            if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-                return '"' + str.replace(/"/g, '""') + '"';
-            }
-            return str;
-        }
-
-        function downloadCSV(csvContent) {
-            var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            var link = document.createElement('a');
-            
-            if (link.download !== undefined) {
-                var url = URL.createObjectURL(blob);
-                link.setAttribute('href', url);
-                link.setAttribute('download', 'receipts-' + new Date().toISOString().split('T')[0] + '.csv');
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-        }
-
-        function resetUpload() {
-            currentImage = null;
-            extractedData = null;
-            document.getElementById('fileInput').value = '';
-            document.getElementById('uploadArea').style.display = 'block';
-            document.getElementById('previewArea').style.display = 'none';
-            document.getElementById('processing').style.display = 'none';
-            document.getElementById('results').style.display = 'none';
-            hideCollection(); // Hide collection viewer when resetting
-        }
-
-        // File input event listener
-        document.addEventListener('DOMContentLoaded', function() {
-            var fileInput = document.getElementById('fileInput');
-            fileInput.addEventListener('change', function(event) {
-                if (event.target.files.length > 0) {
-                    handleFile(event.target.files[0]);
-                }
-            });
-
-            // Drag and drop
-            var uploadArea = document.getElementById('uploadArea');
-            uploadArea.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                uploadArea.style.backgroundColor = '#eff6ff';
-            });
-
-            uploadArea.addEventListener('dragleave', function() {
-                uploadArea.style.backgroundColor = '';
-            });
-
-            uploadArea.addEventListener('drop', function(e) {
-                e.preventDefault();
-                uploadArea.style.backgroundColor = '';
-                if (e.dataTransfer.files.length > 0) {
-                    handleFile(e.dataTransfer.files[0]);
-                }
-            });
-
-            showStatus('Receipt Scanner ready!', 'success');
-            
-            // Initialize toggle UI
-            updateToggleUI();
-            
-            // Load saved authentication state
-            loadSavedAuth();
-            
-            // Check if returning from Google OAuth
-            checkForAuthReturn();
-        });
-    </script>
-</body>
-</html>
